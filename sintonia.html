@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sintonia - Game UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0b2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 420px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 0 10px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #e94560, #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+        }
+
+        .top-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00ff88;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .help-icon {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #00ff88;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+            color: #00ff88;
+        }
+
+        .help-icon:hover {
+            background: #00ff8822;
+            box-shadow: 0 0 20px #00ff88;
+        }
+
+        /* Main Card */
+        .main-card {
+            background: rgba(20, 20, 30, 0.6);
+            border: 2px solid #e94560;
+            border-radius: 24px;
+            padding: 40px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 40px rgba(233, 69, 96, 0.4), inset 0 0 40px rgba(233, 69, 96, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .phrase-text {
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            line-height: 1.3;
+            background: linear-gradient(180deg, #ff6b9d, #e94560);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0;
+        }
+
+        /* Special Rule */
+        .special-rule {
+            background: rgba(20, 20, 30, 0.4);
+            border: 2px solid #ff8800;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 12px;
+            align-items: start;
+            box-shadow: 0 0 20px rgba(255, 136, 0, 0.2);
+        }
+
+        .warning-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .rule-content {
+            flex: 1;
+        }
+
+        .rule-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ff8800;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .rule-text {
+            font-size: 13px;
+            color: #ccc;
+            line-height: 1.4;
+        }
+
+        /* Players Section */
+        .players-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .players-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .player-count {
+            font-size: 12px;
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #00ff88;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .player-card {
+            background: rgba(30, 30, 45, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .player-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 107, 157, 0.5);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.3);
+        }
+
+        .player-card.host {
+            border-color: #ffd700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .crown {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 20px;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .player-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .player-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .player-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            color: #fff;
+            box-shadow: 0 8px 30px rgba(168, 85, 247, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(168, 85, 247, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Ordering Screen */
+        .ordering-container {
+            display: none;
+        }
+
+        .ordering-container.active {
+            display: block;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .drag-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .drag-item {
+            background: rgba(30, 30, 45, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: move;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .drag-item:hover {
+            border-color: rgba(168, 85, 247, 0.5);
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .position-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .drag-player-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .drag-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .drag-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .drag-player-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .drag-player-status {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .drag-handle {
+            font-size: 20px;
+            color: #666;
+            cursor: move;
+        }
+
+        .screen-toggle {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #00ff88;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Initial Screen -->
+        <div id="initialScreen">
+            <div class="top-bar">
+                <div class="logo">Sintonia</div>
+                <div class="top-icons">
+                    <div class="status-dot"></div>
+                    <div class="help-icon">?</div>
+                </div>
+            </div>
+
+            <div class="main-card">
+                <div class="phrase-text">Desenhos animados mais nostálgicos da infância</div>
+            </div>
+
+            <div class="special-rule">
+                <div class="warning-icon">⚠️</div>
+                <div class="rule-content">
+                    <div class="rule-title">Regra Especial</div>
+                    <div class="rule-text">Todos os jogadores receberam números neste dispositivo.</div>
+                </div>
+            </div>
+
+            <div class="players-header">
+                <div class="players-title">Jogadores</div>
+                <div class="player-count">4 na rodada</div>
+            </div>
+
+            <div class="players-grid">
+                <div class="player-card host">
+                    <div class="crown">👑</div>
+                    <div class="player-avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%234a9eff'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3ET%3C/text%3E%3C/svg%3E"
+                            alt="Tal">
+                    </div>
+                    <div class="player-name">Tal</div>
+                </div>
+                <div class="player-card">
+                    <div class="player-avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2366c2a5'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3ED%3C/text%3E%3C/svg%3E"
+                            alt="dasda">
+                    </div>
+                    <div class="player-name">dasda</div>
+                </div>
+                <div class="player-card">
+                    <div class="player-avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23ff6b9d'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3ED%3C/text%3E%3C/svg%3E"
+                            alt="dasdad">
+                    </div>
+                    <div class="player-name">dasdad</div>
+                </div>
+                <div class="player-card">
+                    <div class="player-avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23a855f7'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3ED%3C/text%3E%3C/svg%3E"
+                            alt="dasdasd">
+                    </div>
+                    <div class="player-name">dasdasd</div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="goToOrdering()">Ir para organização</button>
+                <button class="btn btn-secondary">Voltar ao lobby</button>
+            </div>
+        </div>
+
+        <!-- Ordering Screen -->
+        <div id="orderingScreen" class="ordering-container">
+            <div class="top-bar">
+                <div class="logo">Sintonia</div>
+                <div class="top-icons">
+                    <div class="status-dot"></div>
+                    <div class="help-icon">?</div>
+                </div>
+            </div>
+
+            <div class="main-card">
+                <div class="phrase-text">Desenhos animados mais nostálgicos da infância</div>
+            </div>
+
+            <div class="subtitle">Organize os jogadores do menor para o maior número</div>
+
+            <div class="drag-list" id="dragList">
+                <div class="drag-item" draggable="true">
+                    <div class="position-number">1</div>
+                    <div class="drag-player-info">
+                        <div class="drag-avatar">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2366c2a5'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3ED%3C/text%3E%3C/svg%3E"
+                                alt="dasda">
+                        </div>
+                        <div>
+                            <div class="drag-player-name">dasda</div>
+                            <div class="drag-player-status">Número oculto</div>
+                        </div>
+                    </div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="drag-item" draggable="true">
+                    <div class="position-number">2</div>
+                    <div class="drag-player-info">
+                        <div class="drag-avatar">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23ff6b9d'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3ED%3C/text%3E%3C/svg%3E"
+                                alt="dasdad">
+                        </div>
+                        <div>
+                            <div class="drag-player-name">dasdad</div>
+                            <div class="drag-player-status">Número oculto</div>
+                        </div>
+                    </div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="drag-item" draggable="true">
+                    <div class="position-number">3</div>
+                    <div class="drag-player-info">
+                        <div class="drag-avatar">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%234a9eff'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3ET%3C/text%3E%3C/svg%3E"
+                                alt="Tal">
+                        </div>
+                        <div>
+                            <div class="drag-player-name">Tal</div>
+                            <div class="drag-player-status">Número oculto</div>
+                        </div>
+                    </div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                <div class="drag-item" draggable="true">
+                    <div class="position-number">4</div>
+                    <div class="drag-player-info">
+                        <div class="drag-avatar">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23a855f7'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3ED%3C/text%3E%3C/svg%3E"
+                                alt="dasdasd">
+                        </div>
+                        <div>
+                            <div class="drag-player-name">dasdasd</div>
+                            <div class="drag-player-status">Número oculto</div>
+                        </div>
+                    </div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary">Revelar ordem</button>
+                <button class="btn btn-secondary" onclick="goToInitial()">Voltar ao lobby</button>
+            </div>
+        </div>
+
+        <div class="screen-toggle">
+            <button class="toggle-btn" onclick="toggleScreen()">Alternar telas (demo)</button>
+        </div>
+    </div>
+
+    <script>
+        // Screen toggle functionality
+        function goToOrdering() {
+            document.getElementById('initialScreen').style.display = 'none';
+            document.getElementById('orderingScreen').classList.add('active');
+        }
+
+        function goToInitial() {
+            document.getElementById('orderingScreen').classList.remove('active');
+            document.getElementById('initialScreen').style.display = 'block';
+        }
+
+        function toggleScreen() {
+            const initial = document.getElementById('initialScreen');
+            const ordering = document.getElementById('orderingScreen');
+
+            if (initial.style.display === 'none') {
+                goToInitial();
+            } else {
+                goToOrdering();
+            }
+        }
+
+        // Drag and drop functionality
+        let draggedElement = null;
+
+        const dragItems = document.querySelectorAll('.drag-item');
+
+        dragItems.forEach(item => {
+            item.addEventListener('dragstart', function () {
+                draggedElement = this;
+                this.classList.add('dragging');
+            });
+
+            item.addEventListener('dragend', function () {
+                this.classList.remove('dragging');
+            });
+
+            item.addEventListener('dragover', function (e) {
+                e.preventDefault();
+            });
+
+            item.addEventListener('drop', function (e) {
+                e.preventDefault();
+                if (draggedElement !== this) {
+                    const allItems = Array.from(document.querySelectorAll('.drag-item'));
+                    const draggedIndex = allItems.indexOf(draggedElement);
+                    const targetIndex = allItems.indexOf(this);
+
+                    if (draggedIndex < targetIndex) {
+                        this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                    } else {
+                        this.parentNode.insertBefore(draggedElement, this);
+                    }
+
+                    updatePositionNumbers();
+                }
+            });
+        });
+
+        function updatePositionNumbers() {
+            const items = document.querySelectorAll('.drag-item');
+            items.forEach((item, index) => {
+                const numberElement = item.querySelector('.position-number');
+                numberElement.textContent = index + 1;
+            });
+        }
+    </script>
+</body>
+
+</html>

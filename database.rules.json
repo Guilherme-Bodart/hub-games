@@ -1,0 +1,30 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$roomCode": {
+        ".read": "$roomCode.matches(/^[A-Z0-9]{5}$/) && auth != null && root.child('rooms/' + $roomCode + '/lobby/members/' + auth.uid).exists()",
+        ".write": "$roomCode.matches(/^[A-Z0-9]{5}$/) && auth != null && !data.exists() && newData.child('lobby/members/' + auth.uid).exists()",
+        "lobby": {
+          ".read": "$roomCode.matches(/^[A-Z0-9]{5}$/) && auth != null",
+          ".write": "auth != null && (root.child('rooms/' + $roomCode + '/lobby/members/' + auth.uid).exists() || (!data.child('members/' + auth.uid).exists() && newData.child('members/' + auth.uid).isString() && newData.child('devices/' + newData.child('members/' + auth.uid).val() + '/ownerUid').val() === auth.uid))",
+          "members": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid"
+            }
+          },
+          "devices": {
+            "$deviceId": {
+              ".write": "auth != null && ((!data.exists() && newData.child('ownerUid').val() === auth.uid) || (data.exists() && data.child('ownerUid').val() === auth.uid))"
+            }
+          }
+        },
+        "games": {
+          ".read": "auth != null && root.child('rooms/' + $roomCode + '/lobby/members/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('rooms/' + $roomCode + '/lobby/members/' + auth.uid).exists()"
+        }
+      }
+    }
+  }
+}

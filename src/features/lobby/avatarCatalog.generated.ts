@@ -1,0 +1,31 @@
+// AUTO-GENERATED FILE. DO NOT EDIT MANUALLY.
+// Run: npm run avatars:sync
+import { ImageSourcePropType } from 'react-native';
+
+export const GENERATED_AVATAR_ASSETS: ReadonlyArray<ImageSourcePropType> = [
+  require('../../../assets/images/avatar_1.webp'),
+  require('../../../assets/images/avatar_2.webp'),
+  require('../../../assets/images/avatar_3.webp'),
+  require('../../../assets/images/avatar_4.webp'),
+  require('../../../assets/images/avatar_5.webp'),
+  require('../../../assets/images/avatar_6.webp'),
+  require('../../../assets/images/avatar_7.webp'),
+  require('../../../assets/images/avatar_8.webp'),
+  require('../../../assets/images/avatar_9.webp'),
+  require('../../../assets/images/avatar_10.webp'),
+  require('../../../assets/images/avatar_11.webp'),
+  require('../../../assets/images/avatar_12.webp'),
+  require('../../../assets/images/avatar_13.webp'),
+  require('../../../assets/images/avatar_14.webp'),
+  require('../../../assets/images/avatar_15.webp'),
+  require('../../../assets/images/avatar_16.webp'),
+  require('../../../assets/images/avatar_17.webp'),
+  require('../../../assets/images/avatar_18.webp'),
+  require('../../../assets/images/avatar_19.webp'),
+  require('../../../assets/images/avatar_20.webp'),
+  require('../../../assets/images/avatar_21.webp'),
+  require('../../../assets/images/avatar_22.webp'),
+  require('../../../assets/images/avatar_23.webp'),
+  require('../../../assets/images/avatar_24.webp'),
+  require('../../../assets/images/avatar_25.webp'),
+];

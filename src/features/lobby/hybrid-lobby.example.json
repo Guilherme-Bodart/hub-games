@@ -1,0 +1,56 @@
+﻿{
+  "roomCode": "7ZP2K",
+  "gameId": "sintonia",
+  "mode": "remote",
+  "selectedDeviceId": "device-local-1",
+  "devices": [
+    {
+      "id": "device-local-1",
+      "label": "Seu celular",
+      "isLocalDevice": true,
+      "isConnected": true,
+      "players": [
+        {
+          "id": "p-gui",
+          "name": "Gui",
+          "avatarId": 0,
+          "isReady": true,
+          "isHost": true,
+          "deviceId": "device-local-1"
+        },
+        {
+          "id": "p-luna",
+          "name": "Luna",
+          "avatarId": 1,
+          "isReady": true,
+          "isHost": false,
+          "deviceId": "device-local-1"
+        }
+      ]
+    },
+    {
+      "id": "device-remote-1",
+      "label": "Celular do Pedro",
+      "isLocalDevice": false,
+      "isConnected": true,
+      "players": [
+        {
+          "id": "p-pedro",
+          "name": "Pedro",
+          "avatarId": 2,
+          "isReady": true,
+          "isHost": false,
+          "deviceId": "device-remote-1"
+        },
+        {
+          "id": "p-ana",
+          "name": "Ana",
+          "avatarId": 3,
+          "isReady": false,
+          "isHost": false,
+          "deviceId": "device-remote-1"
+        }
+      ]
+    }
+  ]
+}

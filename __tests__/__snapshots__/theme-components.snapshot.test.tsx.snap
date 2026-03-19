@@ -1,0 +1,553 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Neon design system snapshots Button snapshot [{ name: 'arcadeIce', label: 'Arcade Ice' }] 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    [
+      {
+        "alignItems": "center",
+        "borderRadius": 14,
+        "borderWidth": 1,
+        "justifyContent": "center",
+        "minHeight": 50,
+        "paddingHorizontal": 14,
+        "paddingVertical": 10,
+      },
+      {
+        "backgroundColor": "#4DA3FF",
+        "borderColor": "#4DA3FF5C",
+        "opacity": 1,
+        "shadowColor": "#4DA3FF",
+      },
+      {
+        "elevation": 9,
+        "shadowOffset": {
+          "height": 0,
+          "width": 0,
+        },
+        "shadowOpacity": 0.56,
+        "shadowRadius": 12,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 15,
+        },
+        {
+          "color": "#09111F",
+          "fontFamily": "Inter_700Bold",
+          "fontWeight": "700",
+        },
+      ]
+    }
+  >
+    Play - Arcade Ice
+  </Text>
+</View>
+`;
+
+exports[`Neon design system snapshots Button snapshot [{ name: 'neonParty', label: 'Neon Party' }] 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    [
+      {
+        "alignItems": "center",
+        "borderRadius": 14,
+        "borderWidth": 1,
+        "justifyContent": "center",
+        "minHeight": 50,
+        "paddingHorizontal": 14,
+        "paddingVertical": 10,
+      },
+      {
+        "backgroundColor": "#BB86FC",
+        "borderColor": "#BB86FC5C",
+        "opacity": 1,
+        "shadowColor": "#BB86FC",
+      },
+      {
+        "elevation": 9,
+        "shadowOffset": {
+          "height": 0,
+          "width": 0,
+        },
+        "shadowOpacity": 0.56,
+        "shadowRadius": 12,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 15,
+        },
+        {
+          "color": "#0F0F1A",
+          "fontFamily": "Inter_700Bold",
+          "fontWeight": "700",
+        },
+      ]
+    }
+  >
+    Play - Neon Party
+  </Text>
+</View>
+`;
+
+exports[`Neon design system snapshots Button snapshot [{ name: 'sunsetPulse', label: 'Sunset Pulse' }] 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    [
+      {
+        "alignItems": "center",
+        "borderRadius": 14,
+        "borderWidth": 1,
+        "justifyContent": "center",
+        "minHeight": 50,
+        "paddingHorizontal": 14,
+        "paddingVertical": 10,
+      },
+      {
+        "backgroundColor": "#FF7EDB",
+        "borderColor": "#FF7EDB5C",
+        "opacity": 1,
+        "shadowColor": "#FF7EDB",
+      },
+      {
+        "elevation": 9,
+        "shadowOffset": {
+          "height": 0,
+          "width": 0,
+        },
+        "shadowOpacity": 0.56,
+        "shadowRadius": 12,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 15,
+        },
+        {
+          "color": "#1A1018",
+          "fontFamily": "Inter_700Bold",
+          "fontWeight": "700",
+        },
+      ]
+    }
+  >
+    Play - Sunset Pulse
+  </Text>
+</View>
+`;
+
+exports[`Neon design system snapshots Card snapshot [{ name: 'arcadeIce', label: 'Arcade Ice' }] 1`] = `
+<View
+  style={
+    [
+      {
+        "gap": 8,
+        "padding": 16,
+      },
+      {
+        "backgroundColor": "#132039",
+        "borderColor": "#4DA3FF75",
+        "borderRadius": 16,
+        "borderWidth": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 18,
+        },
+        {
+          "color": "#F4F3FF",
+          "fontFamily": "Inter_700Bold",
+          "fontWeight": "700",
+        },
+      ]
+    }
+  >
+    Impostor Neon
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 14,
+        },
+        {
+          "color": "#F4F3FFD1",
+          "fontFamily": "Inter_400Regular",
+          "fontWeight": "400",
+        },
+      ]
+    }
+  >
+    Round checkpoint UI tokenized.
+  </Text>
+</View>
+`;
+
+exports[`Neon design system snapshots Card snapshot [{ name: 'neonParty', label: 'Neon Party' }] 1`] = `
+<View
+  style={
+    [
+      {
+        "gap": 8,
+        "padding": 16,
+      },
+      {
+        "backgroundColor": "#1E1E2E",
+        "borderColor": "#BB86FC75",
+        "borderRadius": 16,
+        "borderWidth": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 18,
+        },
+        {
+          "color": "#F4F3FF",
+          "fontFamily": "Inter_700Bold",
+          "fontWeight": "700",
+        },
+      ]
+    }
+  >
+    Impostor Neon
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 14,
+        },
+        {
+          "color": "#F4F3FFD1",
+          "fontFamily": "Inter_400Regular",
+          "fontWeight": "400",
+        },
+      ]
+    }
+  >
+    Round checkpoint UI tokenized.
+  </Text>
+</View>
+`;
+
+exports[`Neon design system snapshots Card snapshot [{ name: 'sunsetPulse', label: 'Sunset Pulse' }] 1`] = `
+<View
+  style={
+    [
+      {
+        "gap": 8,
+        "padding": 16,
+      },
+      {
+        "backgroundColor": "#2B1A2F",
+        "borderColor": "#FF7EDB75",
+        "borderRadius": 16,
+        "borderWidth": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 18,
+        },
+        {
+          "color": "#F4F3FF",
+          "fontFamily": "Inter_700Bold",
+          "fontWeight": "700",
+        },
+      ]
+    }
+  >
+    Impostor Neon
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 14,
+        },
+        {
+          "color": "#F4F3FFD1",
+          "fontFamily": "Inter_400Regular",
+          "fontWeight": "400",
+        },
+      ]
+    }
+  >
+    Round checkpoint UI tokenized.
+  </Text>
+</View>
+`;
+
+exports[`Neon design system snapshots Input snapshot [{ name: 'arcadeIce', label: 'Arcade Ice' }] 1`] = `
+<View>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "marginBottom": 6,
+        },
+        {
+          "color": "#F4F3FFD1",
+          "fontFamily": "Inter_400Regular",
+          "fontWeight": "400",
+        },
+      ]
+    }
+  >
+    Nickname
+  </Text>
+  <TextInput
+    autoCapitalize="none"
+    autoCorrect={false}
+    onChangeText={[Function]}
+    placeholder="Type your name"
+    placeholderTextColor="#F4F3FF8A"
+    spellCheck={false}
+    style={
+      [
+        {
+          "borderRadius": 14,
+          "borderWidth": 1,
+          "fontSize": 16,
+          "minHeight": 48,
+          "paddingHorizontal": 14,
+          "paddingVertical": 10,
+        },
+        {
+          "backgroundColor": "#132039E6",
+          "borderColor": "#4DA3FF6B",
+          "color": "#F4F3FF",
+          "fontFamily": "Inter_400Regular",
+          "fontWeight": "400",
+        },
+      ]
+    }
+    value="Player01"
+  />
+</View>
+`;
+
+exports[`Neon design system snapshots Input snapshot [{ name: 'neonParty', label: 'Neon Party' }] 1`] = `
+<View>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "marginBottom": 6,
+        },
+        {
+          "color": "#F4F3FFD1",
+          "fontFamily": "Inter_400Regular",
+          "fontWeight": "400",
+        },
+      ]
+    }
+  >
+    Nickname
+  </Text>
+  <TextInput
+    autoCapitalize="none"
+    autoCorrect={false}
+    onChangeText={[Function]}
+    placeholder="Type your name"
+    placeholderTextColor="#F4F3FF8A"
+    spellCheck={false}
+    style={
+      [
+        {
+          "borderRadius": 14,
+          "borderWidth": 1,
+          "fontSize": 16,
+          "minHeight": 48,
+          "paddingHorizontal": 14,
+          "paddingVertical": 10,
+        },
+        {
+          "backgroundColor": "#1E1E2EE6",
+          "borderColor": "#BB86FC6B",
+          "color": "#F4F3FF",
+          "fontFamily": "Inter_400Regular",
+          "fontWeight": "400",
+        },
+      ]
+    }
+    value="Player01"
+  />
+</View>
+`;
+
+exports[`Neon design system snapshots Input snapshot [{ name: 'sunsetPulse', label: 'Sunset Pulse' }] 1`] = `
+<View>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "marginBottom": 6,
+        },
+        {
+          "color": "#F4F3FFD1",
+          "fontFamily": "Inter_400Regular",
+          "fontWeight": "400",
+        },
+      ]
+    }
+  >
+    Nickname
+  </Text>
+  <TextInput
+    autoCapitalize="none"
+    autoCorrect={false}
+    onChangeText={[Function]}
+    placeholder="Type your name"
+    placeholderTextColor="#F4F3FF8A"
+    spellCheck={false}
+    style={
+      [
+        {
+          "borderRadius": 14,
+          "borderWidth": 1,
+          "fontSize": 16,
+          "minHeight": 48,
+          "paddingHorizontal": 14,
+          "paddingVertical": 10,
+        },
+        {
+          "backgroundColor": "#2B1A2FE6",
+          "borderColor": "#FF7EDB6B",
+          "color": "#F4F3FF",
+          "fontFamily": "Inter_400Regular",
+          "fontWeight": "400",
+        },
+      ]
+    }
+    value="Player01"
+  />
+</View>
+`;

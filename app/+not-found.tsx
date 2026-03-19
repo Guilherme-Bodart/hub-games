@@ -1,40 +1,44 @@
 import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
-import { Text, View } from '@/components/Themed';
+import { useTheme } from '@/src/theme';
+import { Button, Card, Screen } from '@/src/ui/atoms';
 
 export default function NotFoundScreen() {
+  const { theme } = useTheme();
+
   return (
     <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
-      <View style={styles.container}>
-        <Text style={styles.title}>This screen doesn't exist.</Text>
-
-        <Link href="/" style={styles.link}>
-          <Text style={styles.linkText}>Go to home screen!</Text>
-        </Link>
-      </View>
+      <Stack.Screen options={{ title: 'Rota nao encontrada' }} />
+      <Screen contentContainerStyle={styles.container}>
+        <Card title="Ops" subtitle="Essa tela nao existe no hub.">
+          <Text
+            style={[
+              styles.text,
+              {
+                color: theme.semantic.text.secondary,
+                fontFamily: theme.semantic.typography.bodyFamily,
+                fontWeight: theme.semantic.typography.bodyWeight,
+              },
+            ]}>
+            Volte para o catalogo e continue a festa.
+          </Text>
+          <Link href="/" asChild>
+            <Button label="Ir para home" onPress={() => undefined} />
+          </Link>
+        </Card>
+      </Screen>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-  linkText: {
+  text: {
     fontSize: 14,
-    color: '#2e78b7',
   },
 });

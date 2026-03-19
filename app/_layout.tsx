@@ -1,57 +1,195 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+import { DarkTheme, Theme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
+import {
+  Inter_400Regular,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+  useFonts,
+} from '@expo-google-fonts/inter';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { View } from 'react-native';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { preloadWarmBootAssets } from '@/src/bootstrap/warmBoot';
+import { ensureFirebaseAnonymousAuth, subscribeFirebaseConnection } from '@/src/integrations/firebase';
+import { useLobbySessionStore } from '@/src/features/lobby';
+import { FirebaseConnectionState } from '@/src/integrations/firebase';
+import { I18nProvider, useI18n } from '@/src/i18n';
+import { ThemeProvider, useTheme } from '@/src/theme';
+import { triggerGameFeedback } from '@/src/ui/feedback';
+import { MotionProvider, useReducedMotion } from '@/src/ui/motion';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Inter_400Regular,
+    Inter_700Bold,
+    Inter_800ExtraBold,
   });
+  const [bootReady, setBootReady] = useState(false);
+  const [connectionState, setConnectionState] = useState<FirebaseConnectionState>('connecting');
+  const previousConnectionState = useRef<FirebaseConnectionState | null>(null);
+  const didRestoreRemoteSessionRef = useRef(false);
+  const restoreRemoteSessionIfAny = useLobbySessionStore((state) => state.restoreRemoteSessionIfAny);
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    if (!loaded) {
+      return;
     }
+
+    let active = true;
+
+    const warmBoot = async () => {
+      await preloadWarmBootAssets();
+
+      if (active) {
+        setBootReady(true);
+      }
+    };
+
+    void warmBoot();
+
+    return () => {
+      active = false;
+    };
   }, [loaded]);
 
-  if (!loaded) {
+  useEffect(() => {
+    if (!loaded || !bootReady) {
+      return;
+    }
+
+    SplashScreen.hideAsync();
+  }, [bootReady, loaded]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeFirebaseConnection((status) => {
+      const nextState = status.state;
+      const lastState = previousConnectionState.current;
+      previousConnectionState.current = nextState;
+      setConnectionState(nextState);
+
+      if (lastState !== nextState) {
+        if (nextState === 'disconnected') {
+          triggerGameFeedback('reconnect');
+        } else if (nextState === 'error') {
+          triggerGameFeedback('warning');
+        }
+      }
+
+      if (!__DEV__) {
+        return;
+      }
+
+      const detail = status.message ? ` (${status.message})` : '';
+      console.log(`[firebase] ${status.state}${detail}`);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    void ensureFirebaseAnonymousAuth()
+      .then((uid) => {
+        if (__DEV__) {
+          console.log(`[firebase-auth] anonymous uid=${uid.slice(0, 8)}...`);
+        }
+      })
+      .catch((error) => {
+        if (__DEV__) {
+          console.log(
+            `[firebase-auth] failed: ${error instanceof Error ? error.message : 'unknown error'}`
+          );
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    if (didRestoreRemoteSessionRef.current) {
+      return;
+    }
+
+    didRestoreRemoteSessionRef.current = true;
+    void restoreRemoteSessionIfAny().catch(() => undefined);
+  }, [restoreRemoteSessionIfAny]);
+
+  if (!loaded || !bootReady) {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <ThemeProvider>
+      <I18nProvider>
+        <MotionProvider>
+          <RootLayoutNav connectionState={connectionState} />
+        </MotionProvider>
+      </I18nProvider>
+    </ThemeProvider>
+  );
 }
 
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+function RootLayoutNav({ connectionState }: { connectionState: FirebaseConnectionState }) {
+  const { theme } = useTheme();
+  const { t } = useI18n();
+  const reduceMotion = useReducedMotion();
+
+  const navigationTheme = useMemo<Theme>(
+    () => ({
+      ...DarkTheme,
+      dark: true,
+      colors: {
+        ...DarkTheme.colors,
+        background: theme.semantic.bg.app,
+        card: theme.semantic.bg.surface,
+        border: theme.semantic.border.subtle,
+        text: theme.semantic.text.primary,
+        primary: theme.semantic.button.primary.bg,
+        notification: theme.semantic.status.error,
+      },
+    }),
+    [theme]
+  );
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+    <NavigationThemeProvider value={navigationTheme}>
+      <View style={{ flex: 1 }}>
+        <Stack
+          screenOptions={{
+            animation: reduceMotion ? 'none' : 'fade_from_bottom',
+            contentStyle: { backgroundColor: theme.semantic.bg.app },
+            headerStyle: { backgroundColor: theme.semantic.bg.surface },
+            headerTintColor: theme.semantic.text.primary,
+            headerTitleStyle: {
+              fontFamily: theme.semantic.typography.titleFamily,
+              fontWeight: theme.semantic.typography.titleWeight,
+            },
+          }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="lobby" options={{ title: t('tabs.lobby') }} />
+          <Stack.Screen
+            name="game/[gameId]"
+            options={{ headerShown: false, title: t('tabs.lobby') }}
+          />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: 'modal', title: t('settings.title') }}
+          />
+        </Stack>
+      </View>
+    </NavigationThemeProvider>
   );
 }
