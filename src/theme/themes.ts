@@ -7,31 +7,31 @@ const themePresets: Record<ThemeName, { label: string; raw: RawColors }> = {
   neonParty: {
     label: 'Neon Party',
     raw: {
-      background: '#0F0F1A',
-      primary: '#BB86FC',
-      secondary: '#03DAC6',
-      accent: '#CF6679',
-      surface: '#1E1E2E',
+      background: '#070A18',
+      primary: '#C778FF',
+      secondary: '#10D8C2',
+      accent: '#FF5F8B',
+      surface: '#121933',
     },
   },
   sunsetPulse: {
     label: 'Sunset Pulse',
     raw: {
-      background: '#1A1018',
-      primary: '#FF7EDB',
-      secondary: '#5EFFC6',
-      accent: '#FF6E6E',
-      surface: '#2B1A2F',
+      background: '#170C14',
+      primary: '#FF8F6B',
+      secondary: '#FF6FC8',
+      accent: '#FFD45C',
+      surface: '#2B1830',
     },
   },
   arcadeIce: {
     label: 'Arcade Ice',
     raw: {
-      background: '#09111F',
-      primary: '#4DA3FF',
-      secondary: '#58F5D0',
-      accent: '#FF7B9C',
-      surface: '#132039',
+      background: '#091326',
+      primary: '#48B7FF',
+      secondary: '#9D83FF',
+      accent: '#30E5B4',
+      surface: '#152640',
     },
   },
 };
@@ -48,7 +48,7 @@ const buildTheme = (name: ThemeName): ThemeTokens => {
       bg: {
         app: raw.background,
         surface: raw.surface,
-        elevated: withAlpha(raw.primary, 0.12),
+        elevated: withAlpha(raw.primary, 0.14),
         overlay: withAlpha(raw.background, 0.9),
       },
       text: {
@@ -58,8 +58,8 @@ const buildTheme = (name: ThemeName): ThemeTokens => {
         inverse: raw.background,
       },
       border: {
-        subtle: withAlpha(raw.primary, 0.36),
-        accent: withAlpha(raw.secondary, 0.58),
+        subtle: withAlpha(raw.primary, 0.33),
+        accent: withAlpha(raw.secondary, 0.62),
         focus: raw.secondary,
       },
       button: {
@@ -87,7 +87,7 @@ const buildTheme = (name: ThemeName): ThemeTokens => {
       },
       card: {
         bg: raw.surface,
-        border: withAlpha(raw.primary, 0.46),
+        border: withAlpha(raw.primary, 0.38),
         radius: 16,
         borderWidth: 1,
       },
@@ -145,19 +145,19 @@ const buildTheme = (name: ThemeName): ThemeTokens => {
       },
       elevation: {
         low: {
-          shadowOpacity: 0.12,
-          shadowRadius: 4,
+          shadowOpacity: 0.14,
+          shadowRadius: 5,
           elevation: 2,
         },
         medium: {
-          shadowOpacity: 0.16,
-          shadowRadius: 8,
-          elevation: 4,
+          shadowOpacity: 0.22,
+          shadowRadius: 12,
+          elevation: 6,
         },
         high: {
-          shadowOpacity: 0.22,
-          shadowRadius: 16,
-          elevation: 8,
+          shadowOpacity: 0.34,
+          shadowRadius: 20,
+          elevation: 10,
         },
       },
       motion: {

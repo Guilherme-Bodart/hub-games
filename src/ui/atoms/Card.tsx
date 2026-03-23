@@ -50,6 +50,13 @@ export function Card({
         },
         style,
       ]}>
+      <View
+        pointerEvents="none"
+        style={[
+          styles.topSheen,
+          { backgroundColor: `${theme.semantic.button.primary.bg}1c` },
+        ]}
+      />
       {showHeader ? (
         <View style={styles.header}>
           {title ? (
@@ -87,6 +94,15 @@ export function Card({
 
 const styles = StyleSheet.create({
   card: {
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  topSheen: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 42,
   },
   header: {
     gap: 4,

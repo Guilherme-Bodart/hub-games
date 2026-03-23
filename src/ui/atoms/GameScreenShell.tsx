@@ -29,6 +29,12 @@ export function GameScreenShell({
         <View pointerEvents="none" style={styles.backdropLayer}>
           <View
             style={[
+              styles.backdropBase,
+              { backgroundColor: withAlpha(theme.semantic.bg.app, 0.86) },
+            ]}
+          />
+          <View
+            style={[
               styles.backdropOrbTop,
               { backgroundColor: withAlpha(theme.semantic.status.error, 0.14) },
             ]}
@@ -42,7 +48,13 @@ export function GameScreenShell({
           <View
             style={[
               styles.backdropOrbCenter,
-              { backgroundColor: withAlpha(theme.semantic.button.primary.bg, 0.1) },
+              { backgroundColor: withAlpha(theme.semantic.button.primary.bg, 0.12) },
+            ]}
+          />
+          <View
+            style={[
+              styles.backdropOrbSecondary,
+              { backgroundColor: withAlpha(theme.semantic.button.secondary.bg, 0.1) },
             ]}
           />
           {[0, 1, 2, 3, 4].map((line) => (
@@ -85,6 +97,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     overflow: 'hidden',
   },
+  backdropBase: {
+    ...StyleSheet.absoluteFillObject,
+  },
   backdropOrbTop: {
     position: 'absolute',
     width: 320,
@@ -108,6 +123,14 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     top: '27%',
     alignSelf: 'center',
+  },
+  backdropOrbSecondary: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 999,
+    top: '40%',
+    right: -80,
   },
   scanline: {
     position: 'absolute',

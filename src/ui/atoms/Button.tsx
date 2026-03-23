@@ -35,12 +35,17 @@ export function Button({
     size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd;
   const isDisabled = disabled || loading;
   const isPrimaryLike = variant === 'primary' || variant === 'accent' || variant === 'destructive';
+  const glowOpacity = variant === 'primary' ? 0.78 : variant === 'accent' ? 0.68 : 0.6;
+  const glowRadius = variant === 'primary' ? 22 : variant === 'accent' ? 18 : 14;
+  const borderColor =
+    variant === 'ghost' ? theme.semantic.border.subtle : withAlpha(palette.bg, 0.86);
 
   return (
     <Pressable
       testID={testID}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityState={{ disabled: isDisabled, busy: loading || undefined }}
       disabled={isDisabled}
       onPress={onPress}
       style={({ pressed }) => [
@@ -53,13 +58,15 @@ export function Button({
             : pressed
               ? theme.semantic.motion.feedback.pressedOpacity
               : 1,
-          borderColor:
-            variant === 'ghost' ? theme.semantic.border.subtle : withAlpha(palette.bg, 0.8),
+          borderColor,
           shadowColor: theme.semantic.shadow.neon,
+          shadowOpacity: isPrimaryLike ? glowOpacity : 0,
+          shadowRadius: isPrimaryLike ? glowRadius : 0,
+          shadowOffset: { width: 0, height: 0 },
+          elevation: isPrimaryLike ? (variant === 'primary' ? 12 : 8) : 0,
           borderRadius: theme.semantic.layout.radius.lg,
           borderWidth: theme.semantic.layout.borderWidth.subtle,
         },
-        isPrimaryLike ? styles.neonGlow : styles.flat,
         style,
       ]}>
       {loading ? (
@@ -110,17 +117,5 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginRight: 2,
-  },
-  neonGlow: {
-    shadowOpacity: 0.6,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 10,
-  },
-  flat: {
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 0,
   },
 });

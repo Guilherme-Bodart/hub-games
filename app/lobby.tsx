@@ -2,7 +2,7 @@
 import * as Haptics from 'expo-haptics';
 import { useNavigation, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
   FadeInDown,
@@ -45,7 +45,7 @@ const PENDING_BORDER_PULSE_MS = 640;
 const READY_GLOW_PULSE_MS = 680;
 const START_COUNTDOWN_MS = 3200;
 
-function PlayerAvatar({
+const PlayerAvatar = memo(function PlayerAvatar({
   player,
   isLocalDevice,
   onToggleReady,
@@ -162,7 +162,10 @@ function PlayerAvatar({
 
       {!player.isHost && isLocalDevice ? (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Remover jogador ${player.name}`}
           onPress={onRemove}
+          hitSlop={8}
           style={styles.iconAction}>
           <Text
             style={[
@@ -178,7 +181,13 @@ function PlayerAvatar({
         </Pressable>
       ) : null}
 
-      <Pressable disabled={!isLocalDevice} onPress={onToggleReady} style={styles.avatarPressable}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${player.name}. ${player.isReady ? 'Marcar pendente' : 'Marcar pronto'}`}
+        accessibilityState={{ disabled: !isLocalDevice, selected: player.isReady }}
+        disabled={!isLocalDevice}
+        onPress={onToggleReady}
+        style={styles.avatarPressable}>
         <AvatarSprite
           avatarId={player.avatarId}
           size={56}
@@ -213,7 +222,16 @@ function PlayerAvatar({
       </View>
     </Animated.View>
   );
-}
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.isLocalDevice === nextProps.isLocalDevice &&
+    prevProps.player.id === nextProps.player.id &&
+    prevProps.player.name === nextProps.player.name &&
+    prevProps.player.avatarId === nextProps.player.avatarId &&
+    prevProps.player.isHost === nextProps.player.isHost &&
+    prevProps.player.isReady === nextProps.player.isReady
+  );
+});
 
 export default function LobbyScreen() {
   const { theme } = useTheme();
@@ -338,10 +356,9 @@ export default function LobbyScreen() {
         : t('connection.error');
   const lobbyTitle = selectedGame ? selectedGame.title[locale] : t('tabs.lobby');
   const isCompactViewport = viewportWidth < 390;
-  const playerColumns =
-    viewportWidth >= 760 ? 4 : viewportWidth >= 560 ? 3 : viewportWidth >= 390 ? 2 : 1;
+  const playerColumns = viewportWidth >= 980 ? 4 : viewportWidth >= 700 ? 3 : 2;
   const playerCellWidth =
-    playerColumns === 4 ? '23.6%' : playerColumns === 3 ? '31.8%' : playerColumns === 2 ? '48.6%' : '100%';
+    playerColumns === 4 ? '23.6%' : playerColumns === 3 ? '31.8%' : '48.6%';
   const panelCopy =
     locale === 'pt'
       ? {
@@ -609,6 +626,44 @@ export default function LobbyScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View
           style={[
+            styles.topHeader,
+            {
+              borderColor: withAlpha(theme.semantic.button.primary.bg, 0.44),
+              backgroundColor: withAlpha(theme.semantic.bg.surface, 0.72),
+            },
+          ]}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={locale === 'pt' ? 'Voltar' : 'Back'}
+            onPress={leaveLobby}
+            style={[
+              styles.topHeaderBack,
+              {
+                borderColor: theme.semantic.border.subtle,
+                backgroundColor: theme.semantic.bg.surface,
+              },
+            ]}>
+            <SymbolView
+              name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
+              size={16}
+              tintColor={theme.semantic.text.primary}
+            />
+          </Pressable>
+          <Text
+            style={[
+              styles.topHeaderTitle,
+              {
+                color: theme.semantic.text.primary,
+                fontFamily: theme.semantic.typography.titleFamily,
+                fontWeight: theme.semantic.typography.titleWeight,
+              },
+            ]}>
+            {t('tabs.lobby')}
+          </Text>
+        </View>
+
+        <View
+          style={[
             styles.sessionPanel,
             {
               borderColor: withAlpha(theme.semantic.button.primary.bg, 0.52),
@@ -719,6 +774,9 @@ export default function LobbyScreen() {
               </Pressable>
 
               <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={isRoomCodeHidden ? 'Mostrar código da sala' : 'Ocultar código da sala'}
+                accessibilityState={{ selected: !isRoomCodeHidden }}
                 onPress={() => {
                   setIsRoomCodeHidden((current) => !current);
                   void Haptics.selectionAsync();
@@ -793,6 +851,10 @@ export default function LobbyScreen() {
             style={styles.addInputWrap}
           />
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('lobby.addPersonPlaceholder')}
+            accessibilityState={{ disabled: !canAddPlayer }}
+            disabled={!canAddPlayer}
             onPress={() => {
               if (!nickname.trim() || !canAddPlayer) {
                 return;
@@ -913,6 +975,12 @@ export default function LobbyScreen() {
           </Text>
           <View style={styles.settingsToggleRow}>
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={panelCopy.hostOnly}
+              accessibilityState={{
+                disabled: !isSettingsEditable,
+                selected: actionAuthorityMode === 'host-only',
+              }}
               disabled={!isSettingsEditable}
               onPress={() =>
                 updateGameSettings({
@@ -950,6 +1018,12 @@ export default function LobbyScreen() {
             </Pressable>
 
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={panelCopy.collaborative}
+              accessibilityState={{
+                disabled: !isSettingsEditable,
+                selected: actionAuthorityMode === 'collaborative',
+              }}
               disabled={!isSettingsEditable}
               onPress={() =>
                 updateGameSettings({
@@ -1002,6 +1076,12 @@ export default function LobbyScreen() {
               </Text>
               <View style={styles.settingsToggleRow}>
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={panelCopy.words}
+                  accessibilityState={{
+                    disabled: !isSettingsEditable,
+                    selected: impostorContentMode === 'words',
+                  }}
                   disabled={!isSettingsEditable}
                   onPress={() =>
                     updateGameSettings({
@@ -1039,6 +1119,12 @@ export default function LobbyScreen() {
                 </Pressable>
 
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={panelCopy.questions}
+                  accessibilityState={{
+                    disabled: !isSettingsEditable,
+                    selected: impostorContentMode === 'questions',
+                  }}
                   disabled={!isSettingsEditable}
                   onPress={() =>
                     updateGameSettings({
@@ -1090,6 +1176,11 @@ export default function LobbyScreen() {
                 </Text>
                 <View style={styles.stepperControls}>
                   <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`Diminuir ${panelCopy.roundPlayers}`}
+                    accessibilityState={{
+                      disabled: !isSettingsEditable || impostorTargetPlayers <= minimumPlayers,
+                    }}
                     disabled={!isSettingsEditable || impostorTargetPlayers <= minimumPlayers}
                     onPress={() =>
                       updateGameSettings({
@@ -1129,6 +1220,11 @@ export default function LobbyScreen() {
                     {impostorTargetPlayers}
                   </Text>
                   <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`Aumentar ${panelCopy.roundPlayers}`}
+                    accessibilityState={{
+                      disabled: !isSettingsEditable || impostorTargetPlayers >= maximumPlayers,
+                    }}
                     disabled={!isSettingsEditable || impostorTargetPlayers >= maximumPlayers}
                     onPress={() =>
                       updateGameSettings({
@@ -1179,6 +1275,9 @@ export default function LobbyScreen() {
                   return (
                     <Pressable
                       key={`imp-${countOption}`}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${countOption} ${panelCopy.impostors}`}
+                      accessibilityState={{ disabled: isDisabled, selected: isActive }}
                       disabled={isDisabled}
                       onPress={() =>
                         updateGameSettings({
@@ -1255,23 +1354,44 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingVertical: 16,
-    gap: 8,
+    paddingVertical: 14,
+    gap: 10,
     paddingBottom: 164,
     width: '100%',
     maxWidth: 620,
     alignSelf: 'center',
   },
-  sessionPanel: {
+  topHeader: {
     borderWidth: 1,
     borderRadius: 18,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 10,
-    gap: 6,
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  topHeaderBack: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topHeaderTitle: {
+    fontSize: 34,
+    lineHeight: 36,
+  },
+  sessionPanel: {
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 8,
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
     shadowOffset: { width: 0, height: 0 },
-    elevation: 3,
+    elevation: 7,
   },
   sessionHeaderRow: {
     flexDirection: 'row',
@@ -1280,8 +1400,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sessionTitle: {
-    fontSize: 36,
-    lineHeight: 40,
+    fontSize: 46,
+    lineHeight: 48,
   },
   roomCodeWrap: {
     alignItems: 'center',
@@ -1321,7 +1441,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
-    gap: 6,
+    gap: 7,
   },
   countdownPill: {
     alignSelf: 'center',
@@ -1407,7 +1527,7 @@ const styles = StyleSheet.create({
   playersList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    justifyContent: 'space-between',
   },
   emptyPlayersState: {
     borderWidth: 1,
@@ -1421,14 +1541,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   playerCell: {
-    minWidth: 150,
+    minWidth: 0,
+    marginBottom: 8,
   },
   playerRow: {
     width: '100%',
-    minHeight: 114,
+    minHeight: 118,
     borderWidth: CARD_BORDER_WIDTH,
     borderRadius: 16,
-    padding: 8,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',

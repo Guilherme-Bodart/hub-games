@@ -9,6 +9,7 @@ import { gameCatalog, GameCatalogItem, getGameById } from '@/src/features/catalo
 import { useLobbySessionStore } from '@/src/features/lobby';
 import { useI18n } from '@/src/i18n';
 import { useTheme } from '@/src/theme';
+import { withAlpha } from '@/src/theme/utils';
 import { triggerGameFeedback } from '@/src/ui/feedback';
 import { createCatalogCardEntering, useReducedMotion } from '@/src/ui/motion';
 import { BottomActionDock, Button, GameTopBar, Input, Modal } from '@/src/ui/atoms';
@@ -190,6 +191,17 @@ export default function CatalogScreen() {
                 },
               ]}>
               <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`${game.title[locale]}. ${
+                  game.status === 'coming'
+                    ? locale === 'pt'
+                      ? 'Em breve'
+                      : 'Coming soon'
+                    : locale === 'pt'
+                      ? 'Abrir jogo'
+                      : 'Open game'
+                }`}
+                accessibilityState={{ disabled: game.status === 'coming' }}
                 onPress={() => openGame(game)}
                 style={({ pressed }) => [
                   styles.gameCard,
@@ -204,9 +216,18 @@ export default function CatalogScreen() {
                     styles.cover,
                     {
                       borderColor: theme.semantic.border.subtle,
-                      backgroundColor: theme.semantic.bg.surface,
+                      backgroundColor: withAlpha(theme.semantic.bg.surface, 0.9),
                     },
                   ]}>
+                  <View
+                    pointerEvents="none"
+                    style={[
+                      styles.coverGlow,
+                      {
+                        backgroundColor: withAlpha(theme.semantic.button.secondary.bg, 0.16),
+                      },
+                    ]}
+                  />
                   <View
                     style={[
                       styles.coverPlaceholder,
@@ -251,7 +272,7 @@ export default function CatalogScreen() {
                     style={[
                       styles.iconBadge,
                       {
-                        backgroundColor: theme.semantic.badge.neutralBg,
+                        backgroundColor: theme.semantic.badge.successBg,
                       },
                     ]}>
                     <SymbolView
@@ -263,7 +284,7 @@ export default function CatalogScreen() {
                       style={[
                         styles.iconBadgeLabel,
                         {
-                          color: theme.semantic.badge.neutralText,
+                          color: theme.semantic.badge.successText,
                           fontFamily: theme.semantic.typography.bodyFamily,
                           fontWeight: theme.semantic.typography.bodyWeight,
                         },
@@ -278,7 +299,7 @@ export default function CatalogScreen() {
                     style={[
                       styles.iconBadge,
                       {
-                        backgroundColor: theme.semantic.badge.neutralBg,
+                        backgroundColor: theme.semantic.badge.infoBg,
                       },
                     ]}>
                     <SymbolView
@@ -296,7 +317,7 @@ export default function CatalogScreen() {
                       style={[
                         styles.iconBadgeLabel,
                         {
-                          color: theme.semantic.badge.neutralText,
+                          color: theme.semantic.badge.infoText,
                           fontFamily: theme.semantic.typography.bodyFamily,
                           fontWeight: theme.semantic.typography.bodyWeight,
                         },
@@ -450,7 +471,7 @@ const styles = StyleSheet.create({
   container: {
     gap: 16,
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 14,
     paddingBottom: 164,
   },
   grid: {
@@ -465,17 +486,19 @@ const styles = StyleSheet.create({
   gridItem: {
   },
   gameCard: {
-    borderRadius: 18,
-    borderWidth: 1,
+    borderRadius: 20,
+    borderWidth: 1.2,
     padding: 14,
-    minHeight: 220,
+    minHeight: 236,
     gap: 12,
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
     shadowOffset: { width: 0, height: 0 },
-    elevation: 4,
+    elevation: 8,
   },
   cover: {
+    position: 'relative',
+    overflow: 'hidden',
     borderRadius: 12,
     borderWidth: 1,
     width: '100%',
@@ -483,6 +506,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
+    marginBottom: 2,
+  },
+  coverGlow: {
+    ...StyleSheet.absoluteFillObject,
   },
   coverPlaceholder: {
     width: '100%',
@@ -498,8 +525,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   gameTitle: {
-    fontSize: 28,
-    lineHeight: 32,
+    fontSize: 42,
+    lineHeight: 44,
   },
   badgeRow: {
     flexDirection: 'row',

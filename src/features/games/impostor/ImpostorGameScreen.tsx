@@ -1,5 +1,5 @@
 import { SymbolView } from 'expo-symbols';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
   FadeInDown,
@@ -47,7 +47,7 @@ type ClueSlotCardProps = {
   theme: ReturnType<typeof useTheme>['theme'];
 };
 
-function ClueSlotCard({
+const ClueSlotCard = memo(function ClueSlotCard({
   player,
   clue,
   isActive,
@@ -141,7 +141,20 @@ function ClueSlotCard({
       </View>
     </Animated.View>
   );
-}
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.player.id === nextProps.player.id &&
+    prevProps.player.name === nextProps.player.name &&
+    prevProps.player.avatarId === nextProps.player.avatarId &&
+    prevProps.clue === nextProps.clue &&
+    prevProps.isActive === nextProps.isActive &&
+    prevProps.typingLabel === nextProps.typingLabel &&
+    prevProps.waitingLabel === nextProps.waitingLabel &&
+    prevProps.previousClues.length === nextProps.previousClues.length &&
+    prevProps.previousClues.every((value, index) => value === nextProps.previousClues[index]) &&
+    prevProps.theme === nextProps.theme
+  );
+});
 
 export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRuntimeScreenProps) {
   const { theme } = useTheme();
@@ -894,10 +907,13 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                   return (
                     <Pressable
                       key={player.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${player.name}. ${copy.holdRevealHint}`}
                       onPressIn={() => startRevealHold(player.id)}
                       onPressOut={() => stopRevealHold(player.id)}
                       style={[
                         styles.playerCard,
+                        styles.revealPlayerCard,
                         {
                           width: playerCardWidth,
                           borderColor:
@@ -906,11 +922,39 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                               : theme.semantic.border.subtle,
                           backgroundColor: theme.semantic.bg.surface,
                           opacity: heldRevealId && heldRevealId !== player.id ? 0.36 : 1,
+                          borderWidth: heldRevealId === player.id ? 1.8 : 1.2,
+                          shadowOpacity: heldRevealId === player.id ? 0.62 : 0.2,
+                          shadowRadius: heldRevealId === player.id ? 16 : 7,
+                          elevation: heldRevealId === player.id ? 12 : 4,
                         },
                       ]}>
+                      <View
+                        pointerEvents="none"
+                        style={[
+                          styles.revealCardFrame,
+                          { borderColor: withAlpha(theme.semantic.text.primary, 0.11) },
+                        ]}
+                      />
                       <AvatarSprite avatarId={player.avatarId} size={34} />
                       <Text style={[styles.playerName, { color: theme.semantic.text.primary }]}>
                         {player.name}
+                      </Text>
+                      <View
+                        style={[
+                          styles.revealLock,
+                          {
+                            borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
+                            backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.72),
+                          },
+                        ]}>
+                        <SymbolView
+                          name={{ ios: 'lock.fill', android: 'lock', web: 'lock' }}
+                          size={12}
+                          tintColor={theme.semantic.text.muted}
+                        />
+                      </View>
+                      <Text style={[styles.revealHint, { color: theme.semantic.text.muted }]}>
+                        {copy.holdRevealHint}
                       </Text>
                     </Pressable>
                   );
@@ -931,6 +975,58 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               />
               {isRemote && !canControl ? <Text style={{ color: theme.semantic.text.muted }}>{copy.hostOnly}</Text> : null}
             </Card>
+          ) : null}
+
+          {round.phase === 'reveal' && revealedPlayer && revealedPrompt ? (
+            <View
+              style={[
+                styles.revealHeroCard,
+                {
+                  borderColor: withAlpha(theme.semantic.button.primary.bg, 0.86),
+                  backgroundColor: withAlpha(theme.semantic.bg.surface, 0.92),
+                  shadowColor: theme.semantic.button.primary.bg,
+                },
+              ]}>
+              <View
+                style={[
+                  styles.revealHeroFrame,
+                  { borderColor: withAlpha(theme.semantic.text.primary, 0.14) },
+                ]}
+              />
+              <View
+                style={[
+                  styles.revealHeroFrameInner,
+                  { borderColor: withAlpha(theme.semantic.text.primary, 0.1) },
+                ]}
+              />
+              <AvatarSprite avatarId={revealedPlayer.avatarId} size={80} />
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.revealHeroName,
+                  {
+                    color: theme.semantic.text.primary,
+                    fontFamily: theme.semantic.typography.titleFamily,
+                    fontWeight: theme.semantic.typography.titleWeight,
+                  },
+                ]}>
+                {revealedPlayer.name}
+              </Text>
+              <Text
+                style={[
+                  styles.revealHeroSecret,
+                  {
+                    color: revealedIsImpostor
+                      ? theme.semantic.status.error
+                      : theme.semantic.button.primary.bg,
+                  },
+                ]}>
+                {revealedPrompt}
+              </Text>
+              <Text style={[styles.revealHeroHint, { color: theme.semantic.text.secondary }]}>
+                {copy.releaseRevealHint}
+              </Text>
+            </View>
           ) : null}
 
           {round.phase === 'clues' ? (
@@ -1102,6 +1198,12 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                         entering={FadeInDown.duration(320).delay(index * 40)}
                         style={[styles.votePlayerCell, { width: voteCellWidth }]}>
                         <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`${isPt ? 'Selecionar suspeito' : 'Select suspect'}: ${player.name}`}
+                          accessibilityState={{
+                            disabled: !activeVotingPlayerId || !votingRevealDone || isVoteSelectionLocked,
+                            selected,
+                          }}
                           disabled={!activeVotingPlayerId || !votingRevealDone || isVoteSelectionLocked}
                           onPress={() => {
                             if (!activeVotingPlayerId || !votingRevealDone || isVoteSelectionLocked) {
@@ -1252,6 +1354,9 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                         <Text style={{ color: theme.semantic.text.primary }}>{player.name}</Text>
                         <View style={styles.decisionButtons}>
                           <Pressable
+                            accessibilityRole="button"
+                            accessibilityState={{ selected: currentVote === 'vote-suspect' }}
+                            accessibilityLabel={`${player.name}. ${copy.goSuspects}`}
                             onPress={() => {
                               const response = submitRoundDecisionVote(
                                 round,
@@ -1291,6 +1396,9 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                             </Text>
                           </Pressable>
                           <Pressable
+                            accessibilityRole="button"
+                            accessibilityState={{ selected: currentVote === 'continue-clues' }}
+                            accessibilityLabel={`${player.name}. ${copy.continueClues}`}
                             onPress={() => {
                               const response = submitRoundDecisionVote(
                                 round,
@@ -1404,6 +1512,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               {resultStage < resultActionsAt ? (
                 <Pressable
                   accessibilityRole="button"
+                  accessibilityLabel={copy.skipSuspense}
                   onPress={fastForwardResult}
                   style={[
                     styles.skipButton,
@@ -1653,6 +1762,84 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     gap: 8,
+  },
+  revealPlayerCard: {
+    position: 'relative',
+    overflow: 'hidden',
+    minHeight: 132,
+    justifyContent: 'center',
+  },
+  revealCardFrame: {
+    position: 'absolute',
+    top: 7,
+    right: 7,
+    bottom: 7,
+    left: 7,
+    borderWidth: 1,
+    borderRadius: 12,
+  },
+  revealLock: {
+    width: 30,
+    height: 30,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  revealHint: {
+    fontSize: 11,
+    lineHeight: 12,
+    textAlign: 'center',
+  },
+  revealHeroCard: {
+    borderWidth: 1.5,
+    borderRadius: 26,
+    minHeight: 360,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 14,
+    paddingHorizontal: 28,
+    paddingVertical: 28,
+    shadowOpacity: 0.68,
+    shadowRadius: 26,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 15,
+    overflow: 'hidden',
+  },
+  revealHeroFrame: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    bottom: 12,
+    left: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  revealHeroFrameInner: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    bottom: 24,
+    left: 24,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  revealHeroName: {
+    fontSize: 34,
+    lineHeight: 36,
+    textAlign: 'center',
+  },
+  revealHeroSecret: {
+    fontSize: 44,
+    lineHeight: 50,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  revealHeroHint: {
+    fontSize: 15,
+    lineHeight: 18,
+    textAlign: 'center',
   },
   playerName: {
     fontSize: 13,

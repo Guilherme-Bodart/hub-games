@@ -1,15 +1,26 @@
 import * as Haptics from 'expo-haptics';
 import { SymbolView } from 'expo-symbols';
-import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { memo, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  LayoutChangeEvent,
+  PanResponder,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import Animated, {
   Easing,
   Layout,
+  Extrapolation,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withSequence,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -47,6 +58,8 @@ import { withAlpha } from '@/src/theme/utils';
 import { AvatarSprite, Badge, BottomActionDock, Button, Card, GameScreenShell, GameTopBar, Modal } from '@/src/ui/atoms';
 
 const CARD_DROP_VERTICAL_STEP = 92;
+const ORDERING_GRID_ROW_GAP = 4;
+const ORDERING_GRID_COLUMN_GAP = 10;
 const REVEAL_INTERVAL_MS = 200;
 const ORDER_SYNC_DEBOUNCE_MS = 90;
 
@@ -58,9 +71,10 @@ type SecretPlayerCardProps = {
   canReveal: boolean;
   columns: number;
   compact: boolean;
+  holdHintLabel: string;
 };
 
-function SecretPlayerCard({
+const SecretPlayerCard = memo(function SecretPlayerCard({
   player,
   isRevealed,
   onPressIn,
@@ -68,6 +82,7 @@ function SecretPlayerCard({
   canReveal,
   columns,
   compact,
+  holdHintLabel,
 }: SecretPlayerCardProps) {
   const { theme } = useTheme();
   const burst = useSharedValue(0);
@@ -107,6 +122,13 @@ function SecretPlayerCard({
 
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !canReveal }}
+      accessibilityLabel={
+        canReveal
+          ? `${player.name}. ${isRevealed ? 'Numero revelado' : holdHintLabel}`
+          : `${player.name}. Bloqueado neste dispositivo`
+      }
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       disabled={!canReveal}
@@ -121,9 +143,22 @@ function SecretPlayerCard({
             : isRevealed
               ? theme.semantic.button.primary.bg
               : theme.semantic.border.subtle,
+          borderWidth: isRevealed ? 1.7 : 1.3,
+          shadowColor: isRevealed ? theme.semantic.button.primary.bg : theme.semantic.shadow.neon,
+          shadowOpacity: isRevealed ? 0.54 : 0.34,
+          shadowRadius: isRevealed ? 14 : 8,
+          elevation: isRevealed ? 10 : 4,
           opacity: canReveal ? (pressed ? 0.82 : 1) : 0.62,
         },
       ]}>
+      <View
+        pointerEvents="none"
+        style={[styles.secretFrame, { borderColor: withAlpha(theme.semantic.text.primary, 0.13) }]}
+      />
+      <View
+        pointerEvents="none"
+        style={[styles.secretFrameInner, { borderColor: withAlpha(theme.semantic.text.primary, 0.09) }]}
+      />
       {player.isHost ? (
         <View style={styles.hostCrown}>
           <SymbolView
@@ -135,16 +170,32 @@ function SecretPlayerCard({
       ) : null}
 
       {!shouldShowSecret ? (
-        <View
-          style={[
-            styles.secretAvatar,
-            {
-              borderColor: theme.semantic.border.subtle,
-              backgroundColor: theme.semantic.bg.elevated,
-            },
-          ]}>
-          <AvatarSprite avatarId={player.avatarId} size={38} />
-        </View>
+        <>
+          <View
+            style={[
+              styles.secretAvatar,
+              {
+                borderColor: theme.semantic.border.subtle,
+                backgroundColor: theme.semantic.bg.elevated,
+              },
+            ]}>
+            <AvatarSprite avatarId={player.avatarId} size={38} />
+          </View>
+          <View
+            style={[
+              styles.secretLockWrap,
+              {
+                borderColor: withAlpha(theme.semantic.border.subtle, 0.9),
+                backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.75),
+              },
+            ]}>
+            <SymbolView
+              name={{ ios: 'lock.fill', android: 'lock', web: 'lock' }}
+              size={14}
+              tintColor={theme.semantic.text.muted}
+            />
+          </View>
+        </>
       ) : (
         <>
           <Animated.View
@@ -200,9 +251,36 @@ function SecretPlayerCard({
           />
         </Animated.View>
       ) : null}
+      {!shouldShowSecret ? (
+        <Text
+          style={[
+            styles.secretHint,
+            {
+              color: theme.semantic.text.muted,
+              fontFamily: theme.semantic.typography.bodyFamily,
+              fontWeight: theme.semantic.typography.bodyWeight,
+            },
+          ]}>
+          {holdHintLabel}
+        </Text>
+      ) : null}
     </Pressable>
   );
-}
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.player.id === nextProps.player.id &&
+    prevProps.player.name === nextProps.player.name &&
+    prevProps.player.avatarId === nextProps.player.avatarId &&
+    prevProps.player.secretNumber === nextProps.player.secretNumber &&
+    prevProps.player.isHost === nextProps.player.isHost &&
+    prevProps.player.isLocalDevice === nextProps.player.isLocalDevice &&
+    prevProps.isRevealed === nextProps.isRevealed &&
+    prevProps.canReveal === nextProps.canReveal &&
+    prevProps.columns === nextProps.columns &&
+    prevProps.compact === nextProps.compact &&
+    prevProps.holdHintLabel === nextProps.holdHintLabel
+  );
+});
 
 type OrderingCardProps = {
   index: number;
@@ -210,17 +288,19 @@ type OrderingCardProps = {
   revealFeedback: SintoniaRevealFeedback;
   isDragEnabled: boolean;
   onDrop: (playerId: string, dragX: number, dragY: number) => boolean;
+  onMeasure?: (layout: { width: number; height: number }) => void;
   columns: number;
   compact: boolean;
   hiddenNumberLabel: string;
 };
 
-function OrderingCard({
+const OrderingCard = memo(function OrderingCard({
   index,
   player,
   revealFeedback,
   isDragEnabled,
   onDrop,
+  onMeasure,
   columns,
   compact,
   hiddenNumberLabel,
@@ -247,6 +327,10 @@ function OrderingCard({
     shadowRadius: 8 + dragActive.value * 14,
     elevation: 2 + dragActive.value * 10,
   }));
+  const dragGlowStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(dragActive.value, [0, 1], [0, 1], Extrapolation.CLAMP),
+    transform: [{ scale: interpolate(dragActive.value, [0, 1], [0.98, 1.02], Extrapolation.CLAMP) }],
+  }));
 
   const frontFaceStyle = useAnimatedStyle(() => ({
     transform: [
@@ -263,6 +347,21 @@ function OrderingCard({
     ],
     opacity: interpolate(flipProgress.value, [0, 0.45, 0.55, 1], [0, 0, 1, 1]),
   }));
+
+  const handleLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      if (!onMeasure) {
+        return;
+      }
+
+      const { width, height } = event.nativeEvent.layout;
+
+      if (width > 0 && height > 0) {
+        onMeasure({ width, height });
+      }
+    },
+    [onMeasure]
+  );
 
   const panResponder = useMemo(
     () =>
@@ -293,32 +392,34 @@ function OrderingCard({
             moved = onDrop(player.id, gestureState.dx, gestureState.dy);
           }
 
-          translateX.value = withTiming(0, {
-            duration: moved ? 120 : 90,
-            easing: Easing.out(Easing.cubic),
+          translateX.value = withSpring(0, {
+            damping: moved ? 20 : 16,
+            stiffness: moved ? 320 : 280,
+            overshootClamping: moved,
           });
-          translateY.value = withTiming(0, {
-            duration: moved ? 120 : 90,
-            easing: Easing.out(Easing.cubic),
+          translateY.value = withSpring(0, {
+            damping: moved ? 20 : 16,
+            stiffness: moved ? 320 : 280,
+            overshootClamping: moved,
           });
           if (moved) {
             scale.value = withSequence(
-              withTiming(1.02, { duration: 70, easing: Easing.out(Easing.quad) }),
+              withTiming(1.03, { duration: 60, easing: Easing.out(Easing.quad) }),
               withTiming(1, { duration: 120, easing: Easing.out(Easing.cubic) })
             );
             dragActive.value = withSequence(
-              withTiming(0.56, { duration: 80 }),
-              withTiming(0, { duration: 160 })
+              withTiming(0.72, { duration: 80 }),
+              withTiming(0, { duration: 150 })
             );
             return;
           }
 
-          scale.value = withTiming(1, { duration: 110, easing: Easing.out(Easing.cubic) });
-          dragActive.value = withTiming(0, { duration: 120 });
+          scale.value = withTiming(1, { duration: 130, easing: Easing.out(Easing.cubic) });
+          dragActive.value = withTiming(0, { duration: 150 });
         },
         onPanResponderTerminate: () => {
-          translateX.value = withTiming(0, { duration: 90, easing: Easing.out(Easing.cubic) });
-          translateY.value = withTiming(0, { duration: 90, easing: Easing.out(Easing.cubic) });
+          translateX.value = withSpring(0, { damping: 16, stiffness: 280 });
+          translateY.value = withSpring(0, { damping: 16, stiffness: 280 });
           scale.value = withTiming(1, { duration: 100, easing: Easing.out(Easing.cubic) });
           dragActive.value = withTiming(0, { duration: 120 });
         },
@@ -339,6 +440,7 @@ function OrderingCard({
   return (
     <Animated.View
       layout={Layout.springify().damping(18).stiffness(170)}
+      onLayout={handleLayout}
       style={[
         styles.orderingCard,
         {
@@ -359,6 +461,17 @@ function OrderingCard({
         dragStyle,
       ]}
       {...panResponder.panHandlers}>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.orderingDragGlow,
+          {
+            borderColor: withAlpha(theme.semantic.button.primary.bg, 0.95),
+            shadowColor: theme.semantic.button.primary.bg,
+          },
+          dragGlowStyle,
+        ]}
+      />
       <View style={styles.flipShell}>
         <Animated.View
           style={[
@@ -509,7 +622,21 @@ function OrderingCard({
       </View>
     </Animated.View>
   );
-}
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.index === nextProps.index &&
+    prevProps.player.id === nextProps.player.id &&
+    prevProps.player.name === nextProps.player.name &&
+    prevProps.player.avatarId === nextProps.player.avatarId &&
+    prevProps.player.secretNumber === nextProps.player.secretNumber &&
+    prevProps.player.isHost === nextProps.player.isHost &&
+    prevProps.revealFeedback === nextProps.revealFeedback &&
+    prevProps.isDragEnabled === nextProps.isDragEnabled &&
+    prevProps.columns === nextProps.columns &&
+    prevProps.compact === nextProps.compact &&
+    prevProps.hiddenNumberLabel === nextProps.hiddenNumberLabel
+  );
+});
 
 const waitWithTrackedTimer = (
   timersRef: MutableRefObject<Array<ReturnType<typeof setTimeout>>>,
@@ -539,6 +666,9 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
   const [activeSecretPlayerId, setActiveSecretPlayerId] = useState<string | null>(null);
   const [roundError, setRoundError] = useState(false);
   const [rulesVisible, setRulesVisible] = useState(false);
+  const [orderingCardMetrics, setOrderingCardMetrics] = useState<{ width: number; height: number } | null>(
+    null
+  );
 
   const timersRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
   const orderSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -665,10 +795,30 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
     () => orderedPlayerIds.map((playerId) => playersById[playerId]).filter(Boolean),
     [orderedPlayerIds, playersById]
   );
+  const activeSecretPlayer = useMemo(
+    () =>
+      activeSecretPlayerId
+        ? orderedPlayers.find((player) => player.id === activeSecretPlayerId) ?? null
+        : null,
+    [activeSecretPlayerId, orderedPlayers]
+  );
   const isCompactViewport = viewportWidth < 390;
   const secretGridColumns =
     viewportWidth >= 760 ? 4 : viewportWidth >= 560 ? 3 : isCompactViewport ? 1 : 2;
   const orderingGridColumns = viewportWidth >= 900 ? 4 : viewportWidth >= 520 ? 3 : 2;
+  const handleOrderingCardMeasure = useCallback((layout: { width: number; height: number }) => {
+    setOrderingCardMetrics((current) => {
+      if (
+        current &&
+        Math.abs(current.width - layout.width) < 1 &&
+        Math.abs(current.height - layout.height) < 1
+      ) {
+        return current;
+      }
+
+      return layout;
+    });
+  }, []);
 
   const onDropPlayer = useCallback(
     (playerId: string, dragX: number, dragY: number): boolean => {
@@ -685,12 +835,13 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
           return currentOrder;
         }
 
-        const columnStep = Math.max(
-          120,
-          (viewportWidth - 32 - (orderingGridColumns - 1) * 8) / orderingGridColumns
-        );
+        const fallbackColumnStep = orderingGridColumns === 4 ? 92 : orderingGridColumns === 3 ? 118 : 164;
+        const columnStep =
+          (orderingCardMetrics?.width ?? fallbackColumnStep) + ORDERING_GRID_COLUMN_GAP;
+        const rowStep =
+          (orderingCardMetrics?.height ?? CARD_DROP_VERTICAL_STEP) + ORDERING_GRID_ROW_GAP;
         const deltaColumns = Math.round(dragX / columnStep);
-        const deltaRows = Math.round(dragY / CARD_DROP_VERTICAL_STEP);
+        const deltaRows = Math.round(dragY / rowStep);
         const deltaSlots = deltaRows * orderingGridColumns + deltaColumns;
 
         if (deltaSlots === 0) {
@@ -724,7 +875,7 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
 
       return moved;
     },
-    [isRemoteRealtime, localDeviceId, orderingGridColumns, phase, roomCode, viewportWidth]
+    [isRemoteRealtime, localDeviceId, orderingCardMetrics, orderingGridColumns, phase, roomCode]
   );
 
   const revealOrder = useCallback(async () => {
@@ -1105,6 +1256,66 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
           style={styles.topBarSpacing}
         />
 
+        {phase === 'secrets' && activeSecretPlayer ? (
+          <Animated.View
+            style={[
+              styles.secretHeroOverlay,
+              {
+                borderColor: withAlpha(theme.semantic.button.primary.bg, 0.82),
+                backgroundColor: withAlpha(theme.semantic.bg.surface, 0.9),
+                shadowColor: theme.semantic.button.primary.bg,
+              },
+            ]}>
+            <View
+              style={[
+                styles.secretHeroFrame,
+                { borderColor: withAlpha(theme.semantic.text.primary, 0.14) },
+              ]}
+            />
+            <View
+              style={[
+                styles.secretHeroFrameInner,
+                { borderColor: withAlpha(theme.semantic.text.primary, 0.1) },
+              ]}
+            />
+            <AvatarSprite avatarId={activeSecretPlayer.avatarId} size={78} />
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.secretHeroName,
+                {
+                  color: theme.semantic.text.primary,
+                  fontFamily: theme.semantic.typography.titleFamily,
+                  fontWeight: theme.semantic.typography.titleWeight,
+                },
+              ]}>
+              {activeSecretPlayer.name}
+            </Text>
+            <Text
+              style={[
+                styles.secretHeroNumber,
+                {
+                  color: theme.semantic.button.primary.bg,
+                  fontFamily: theme.semantic.typography.numberFamily,
+                  fontWeight: theme.semantic.typography.numberWeight,
+                },
+              ]}>
+              {activeSecretPlayer.secretNumber}
+            </Text>
+            <Text
+              style={[
+                styles.secretHeroHint,
+                {
+                  color: theme.semantic.text.secondary,
+                  fontFamily: theme.semantic.typography.bodyFamily,
+                  fontWeight: theme.semantic.typography.bodyWeight,
+                },
+              ]}>
+              {locale === 'pt' ? 'Solte para ocultar' : 'Release to hide'}
+            </Text>
+          </Animated.View>
+        ) : null}
+
         <Animated.View
           style={[
             styles.themeWrap,
@@ -1239,6 +1450,7 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                   player={player}
                   columns={secretGridColumns}
                   compact={isCompactViewport}
+                  holdHintLabel={locale === 'pt' ? 'Segure para revelar' : 'Hold to reveal'}
                   isRevealed={activeSecretPlayerId === player.id}
                   canReveal={player.isLocalDevice}
                   onPressIn={() => {
@@ -1267,6 +1479,7 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                   key={player.id}
                   index={index}
                   player={player}
+                  onMeasure={handleOrderingCardMeasure}
                   columns={orderingGridColumns}
                   compact={isCompactViewport}
                   revealFeedback={revealedById[player.id] ?? 'hidden'}
@@ -1439,6 +1652,24 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     elevation: 4,
   },
+  secretFrame: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    bottom: 6,
+    left: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  secretFrameInner: {
+    position: 'absolute',
+    top: 14,
+    right: 14,
+    bottom: 14,
+    left: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
   hostCrown: {
     position: 'absolute',
     top: 4,
@@ -1454,6 +1685,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 2,
+  },
+  secretLockWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 6,
   },
   secretAvatarText: {
     fontSize: 16,
@@ -1478,6 +1718,59 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 13,
   },
+  secretHint: {
+    marginTop: 2,
+    fontSize: 11,
+    lineHeight: 12,
+    textAlign: 'center',
+  },
+  secretHeroOverlay: {
+    borderWidth: 1.5,
+    borderRadius: 26,
+    minHeight: 360,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 14,
+    paddingHorizontal: 28,
+    paddingVertical: 28,
+    shadowOpacity: 0.66,
+    shadowRadius: 26,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 14,
+    overflow: 'hidden',
+  },
+  secretHeroFrame: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    bottom: 12,
+    left: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  secretHeroFrameInner: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    bottom: 24,
+    left: 24,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  secretHeroName: {
+    fontSize: 34,
+    lineHeight: 36,
+    textAlign: 'center',
+  },
+  secretHeroNumber: {
+    fontSize: 98,
+    lineHeight: 100,
+  },
+  secretHeroHint: {
+    fontSize: 16,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
   remoteSignal: {
     marginTop: 2,
     width: 18,
@@ -1490,14 +1783,25 @@ const styles = StyleSheet.create({
   orderingGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    rowGap: 4,
-    columnGap: 10,
+    rowGap: ORDERING_GRID_ROW_GAP,
+    columnGap: ORDERING_GRID_COLUMN_GAP,
     paddingBottom: 4,
   },
   orderingCard: {
     width: '48.8%',
     padding: 0,
     minHeight: 88,
+    position: 'relative',
+  },
+  orderingDragGlow: {
+    ...StyleSheet.absoluteFillObject,
+    borderWidth: 1.6,
+    borderRadius: 12,
+    shadowOpacity: 0.64,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 10,
+    zIndex: 9,
   },
   flipShell: {
     minHeight: 62,

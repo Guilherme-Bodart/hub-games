@@ -65,8 +65,17 @@ export function Modal({
             },
             style,
           ]}>
+          <View
+            pointerEvents="none"
+            style={[
+              styles.topSheen,
+              { backgroundColor: `${theme.semantic.button.primary.bg}22` },
+            ]}
+          />
           <Pressable
             onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel="Fechar modal"
             style={[
               styles.closeArea,
               {
@@ -110,15 +119,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   content: {
+    position: 'relative',
+    overflow: 'hidden',
   },
   closeArea: {
-    alignSelf: 'flex-end',
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 2,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  topSheen: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 42,
   },
   title: {
     fontSize: 22,
     lineHeight: 26,
     letterSpacing: 0.3,
+    paddingRight: 54,
   },
 });
