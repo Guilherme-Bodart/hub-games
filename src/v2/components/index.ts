@@ -8,3 +8,14 @@ export {
   V2Modal,
   V2BottomDock,
 } from './primitives';
+export {
+  BentoCard,
+  ClayButton,
+  GlassPanel,
+  HybridBadge,
+  HybridHeader,
+  HybridInput,
+  HybridModal,
+  FloatingDock,
+  MeshBackdrop,
+} from './base';

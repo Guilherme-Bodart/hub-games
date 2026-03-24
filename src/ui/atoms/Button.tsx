@@ -1,7 +1,9 @@
 import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { useTheme } from '@/src/theme';
 import { withAlpha } from '@/src/theme/utils';
+import { tactileGlossColors, tactileShadowStyle } from '@/src/ui/atoms/tactile';
 
 type ButtonVariant = 'primary' | 'secondary' | 'accent' | 'ghost' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -34,11 +36,8 @@ export function Button({
   const sizeStyle =
     size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd;
   const isDisabled = disabled || loading;
-  const isPrimaryLike = variant === 'primary' || variant === 'accent' || variant === 'destructive';
-  const glowOpacity = variant === 'primary' ? 0.78 : variant === 'accent' ? 0.68 : 0.6;
-  const glowRadius = variant === 'primary' ? 22 : variant === 'accent' ? 18 : 14;
-  const borderColor =
-    variant === 'ghost' ? theme.semantic.border.subtle : withAlpha(palette.bg, 0.86);
+  const borderColor = variant === 'ghost' ? withAlpha('#000000', 0.08) : withAlpha('#000000', 0.12);
+  const shadowStyle = isDisabled ? undefined : tactileShadowStyle;
 
   return (
     <Pressable
@@ -51,6 +50,7 @@ export function Button({
       style={({ pressed }) => [
         styles.base,
         sizeStyle,
+        shadowStyle,
         {
           backgroundColor: palette.bg,
           opacity: isDisabled
@@ -59,16 +59,18 @@ export function Button({
               ? theme.semantic.motion.feedback.pressedOpacity
               : 1,
           borderColor,
-          shadowColor: theme.semantic.shadow.neon,
-          shadowOpacity: isPrimaryLike ? glowOpacity : 0,
-          shadowRadius: isPrimaryLike ? glowRadius : 0,
-          shadowOffset: { width: 0, height: 0 },
-          elevation: isPrimaryLike ? (variant === 'primary' ? 12 : 8) : 0,
           borderRadius: theme.semantic.layout.radius.lg,
-          borderWidth: theme.semantic.layout.borderWidth.subtle,
+          borderWidth: theme.semantic.layout.borderWidth.medium,
         },
         style,
       ]}>
+      <LinearGradient
+        pointerEvents="none"
+        colors={tactileGlossColors}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
       {loading ? (
         <ActivityIndicator
           size="small"
@@ -101,6 +103,7 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     flexDirection: 'row',
     gap: 8,
+    overflow: 'hidden',
   },
   sizeSm: {
     minHeight: 44,

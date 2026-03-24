@@ -1,15 +1,18 @@
 import { DarkTheme, Theme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import {
-  Inter_400Regular,
-  Inter_700Bold,
-  Inter_800ExtraBold,
+  Baloo2_700Bold,
+} from '@expo-google-fonts/baloo-2';
+import {
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
   useFonts,
-} from '@expo-google-fonts/inter';
+} from '@expo-google-fonts/nunito';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import 'react-native-reanimated';
+import '../global.css';
 
 import { preloadWarmBootAssets } from '@/src/bootstrap/warmBoot';
 import { ensureFirebaseAnonymousAuth, subscribeFirebaseConnection } from '@/src/integrations/firebase';
@@ -30,9 +33,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    Inter_400Regular,
-    Inter_700Bold,
-    Inter_800ExtraBold,
+    Baloo2_700Bold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
   });
   const [bootReady, setBootReady] = useState(false);
   const [connectionState, setConnectionState] = useState<FirebaseConnectionState>('connecting');

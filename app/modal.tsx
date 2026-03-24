@@ -1,96 +1,227 @@
-import { SymbolView } from 'expo-symbols';
-import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+﻿import { LinearGradient } from 'expo-linear-gradient';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useI18n } from '@/src/i18n';
-import { useTheme } from '@/src/theme';
-import { Button, Card, Screen } from '@/src/ui/atoms';
+import { resolveThemeSystemGradient, ThemeName, useTheme } from '@/src/theme';
+import { withAlpha } from '@/src/theme/utils';
+import { Screen } from '@/src/ui/atoms';
+
+const resolveThemePreview = (themeName: ThemeName): [string, string] =>
+  resolveThemeSystemGradient(themeName);
 
 export default function ModalScreen() {
-  const router = useRouter();
   const { theme, themeName, options, setTheme } = useTheme();
   const { t, locale, setLocale } = useI18n();
+  const [bgStart, bgEnd] = resolveThemeSystemGradient(themeName);
 
   return (
     <Screen scroll contentContainerStyle={styles.container}>
-      <View style={styles.topRow}>
-        <View />
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('settings.close')}
-          onPress={() => router.back()}
-          style={[
-            styles.closeIconWrap,
-            {
-              borderColor: theme.semantic.border.subtle,
-              backgroundColor: theme.semantic.bg.elevated,
-            },
-          ]}>
-          <SymbolView
-            name={{ ios: 'xmark', android: 'close', web: 'close' }}
-            size={18}
-            tintColor={theme.semantic.status.error}
-          />
-        </Pressable>
+      <LinearGradient
+        pointerEvents="none"
+        colors={[bgStart, bgEnd]}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <View pointerEvents="none" style={styles.backgroundMilkOverlay} />
+
+      <View
+        style={[
+          styles.glassCard,
+          {
+            borderColor: 'rgba(255,255,255,0.86)',
+            backgroundColor: 'rgba(255,255,255,0.5)',
+          },
+        ]}>
+        <Text style={styles.sectionTitle}>{t('settings.theme')}</Text>
+        <Text style={styles.sectionSubtitle}>{t('settings.subtitle')}</Text>
+
+        <View style={styles.optionStack}>
+          {options.slice(0, 3).map((option) => {
+            const selected = themeName === option.name;
+            const [startColor, endColor] = resolveThemePreview(option.name);
+
+            return (
+              <Pressable
+                key={option.name}
+                onPress={() => setTheme(option.name)}
+                style={({ pressed }) => [
+                  styles.themeOptionWrap,
+                  {
+                    opacity: pressed ? 0.9 : 1,
+                    borderColor: selected ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.58)',
+                    backgroundColor: selected ? 'transparent' : 'rgba(255,255,255,0.24)',
+                  },
+                ]}>
+                {selected ? (
+                  <LinearGradient
+                    colors={[startColor, endColor]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    style={styles.themeOptionGradient}
+                  />
+                ) : null}
+                <Text style={[styles.themeOptionText, selected ? styles.themeOptionTextSelected : null]}>
+                  {option.label.toUpperCase()}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
-      <Card title={t('settings.theme')} subtitle={t('settings.subtitle')}>
-        <View style={styles.group}>
-          <View style={styles.buttons}>
-            {options.map((option) => (
-              <Button
-                key={option.name}
-                label={option.label}
-                variant={themeName === option.name ? 'primary' : 'ghost'}
-                onPress={() => setTheme(option.name)}
-              />
-            ))}
-          </View>
-        </View>
-      </Card>
-
-      <Card title={t('settings.language')}>
-        <View style={styles.buttons}>
-          <Button
-            label={t('settings.portuguese')}
-            variant={locale === 'pt' ? 'secondary' : 'ghost'}
+      <View
+        style={[
+          styles.glassCard,
+          {
+            borderColor: 'rgba(255,255,255,0.86)',
+            backgroundColor: 'rgba(255,255,255,0.5)',
+          },
+        ]}>
+        <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
+        <View style={styles.optionStack}>
+          <Pressable
             onPress={() => setLocale('pt')}
-          />
-          <Button
-            label={t('settings.english')}
-            variant={locale === 'en' ? 'secondary' : 'ghost'}
+            style={({ pressed }) => [
+              styles.langOption,
+              locale === 'pt'
+                ? {
+                    backgroundColor: theme.semantic.button.secondary.bg,
+                    borderColor: withAlpha(theme.semantic.button.secondary.bg, 0.88),
+                  }
+                : {
+                    backgroundColor: 'rgba(255,255,255,0.28)',
+                    borderColor: withAlpha(theme.semantic.border.subtle, 0.56),
+                  },
+              pressed ? styles.optionPressed : null,
+            ]}>
+            <Text
+              style={[
+                styles.langOptionText,
+                locale === 'pt'
+                  ? { color: theme.semantic.button.secondary.text }
+                  : { color: '#2B2A46' },
+              ]}>
+              {t('settings.portuguese').toUpperCase()}
+            </Text>
+          </Pressable>
+          <Pressable
             onPress={() => setLocale('en')}
-          />
+            style={({ pressed }) => [
+              styles.langOption,
+              locale === 'en'
+                ? {
+                    backgroundColor: theme.semantic.button.secondary.bg,
+                    borderColor: withAlpha(theme.semantic.button.secondary.bg, 0.88),
+                  }
+                : {
+                    backgroundColor: 'rgba(255,255,255,0.28)',
+                    borderColor: withAlpha(theme.semantic.border.subtle, 0.56),
+                  },
+              pressed ? styles.optionPressed : null,
+            ]}>
+            <Text
+              style={[
+                styles.langOptionText,
+                locale === 'en'
+                  ? { color: theme.semantic.button.secondary.text }
+                  : { color: '#2B2A46' },
+              ]}>
+              {t('settings.english').toUpperCase()}
+            </Text>
+          </Pressable>
         </View>
-      </Card>
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundMilkOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.38)',
+  },
   container: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 12,
+    paddingHorizontal: 18,
+    paddingTop: 16,
+    paddingBottom: 24,
+    gap: 14,
   },
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  glassCard: {
+    borderWidth: 1,
+    borderRadius: 24,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    gap: 10,
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 0,
+  },
+  sectionTitle: {
+    color: '#2B2A46',
+    fontSize: 30,
+    lineHeight: 30,
+    fontFamily: 'Baloo2_700Bold',
+    letterSpacing: 0.4,
+  },
+  sectionSubtitle: {
+    color: '#4A4A6F',
+    fontSize: 14,
+    lineHeight: 18,
+    fontFamily: 'Nunito_700Bold',
+  },
+  optionStack: {
+    gap: 10,
+  },
+  themeOptionWrap: {
+    position: 'relative',
+    minHeight: 52,
+    borderRadius: 16,
+    borderWidth: 1,
+    overflow: 'hidden',
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
-  closeIconWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: 999,
+  themeOptionGradient: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  themeOptionText: {
+    color: '#2B2A46',
+    fontSize: 24,
+    lineHeight: 24,
+    fontFamily: 'Baloo2_700Bold',
+    letterSpacing: 0.8,
+  },
+  themeOptionTextSelected: {
+    color: '#1E1B33',
+  },
+  langOption: {
+    minHeight: 52,
+    borderRadius: 16,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
-  group: {
-    gap: 8,
+  langOptionText: {
+    color: '#2B2A46',
+    fontSize: 24,
+    lineHeight: 24,
+    fontFamily: 'Baloo2_700Bold',
+    letterSpacing: 0.8,
   },
-  buttons: {
-    gap: 8,
+  optionPressed: {
+    opacity: 0.88,
   },
 });
 

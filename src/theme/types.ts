@@ -172,9 +172,9 @@ export type ThemeSemanticTokens = {
     titleFamily: string;
     bodyFamily: string;
     numberFamily: string;
-    titleWeight: '700';
-    bodyWeight: '400';
-    numberWeight: '800';
+    titleWeight: '400' | '500' | '600' | '700' | '800' | '900';
+    bodyWeight: '400' | '500' | '600' | '700' | '800' | '900';
+    numberWeight: '400' | '500' | '600' | '700' | '800' | '900';
   };
 };
 

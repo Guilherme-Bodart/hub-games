@@ -3,36 +3,46 @@ import { withAlpha } from '@/src/theme/utils';
 
 const textPrimary = '#F4F3FF';
 
-const themePresets: Record<ThemeName, { label: string; raw: RawColors }> = {
+const themePresets: Record<
+  ThemeName,
+  {
+    label: string;
+    raw: RawColors;
+    systemGradient: [string, string];
+  }
+> = {
   neonParty: {
-    label: 'Neon Party',
+    label: 'Lime Pop',
     raw: {
-      background: '#070A18',
-      primary: '#C778FF',
-      secondary: '#10D8C2',
-      accent: '#FF5F8B',
-      surface: '#121933',
+      background: '#122116',
+      primary: '#5DE07D',
+      secondary: '#F3D14A',
+      accent: '#8AF16A',
+      surface: '#1D3123',
     },
+    systemGradient: ['#5DE07D', '#F3D14A'],
   },
   sunsetPulse: {
-    label: 'Sunset Pulse',
+    label: 'Sunset Fire',
     raw: {
-      background: '#170C14',
-      primary: '#FF8F6B',
-      secondary: '#FF6FC8',
-      accent: '#FFD45C',
-      surface: '#2B1830',
+      background: '#241017',
+      primary: '#FF5F5F',
+      secondary: '#FF9A45',
+      accent: '#FF66B3',
+      surface: '#38202A',
     },
+    systemGradient: ['#FF5F5F', '#FF9A45'],
   },
   arcadeIce: {
-    label: 'Arcade Ice',
+    label: 'Blue Nebula',
     raw: {
-      background: '#091326',
-      primary: '#48B7FF',
-      secondary: '#9D83FF',
-      accent: '#30E5B4',
-      surface: '#152640',
+      background: '#101A31',
+      primary: '#4F9CFF',
+      secondary: '#8B78FF',
+      accent: '#B48BFF',
+      surface: '#1C2B4A',
     },
+    systemGradient: ['#4F9CFF', '#8B78FF'],
   },
 };
 
@@ -205,12 +215,12 @@ const buildTheme = (name: ThemeName): ThemeTokens => {
         modal: 50,
       },
       typography: {
-        titleFamily: 'Inter_700Bold',
-        bodyFamily: 'Inter_400Regular',
-        numberFamily: 'Inter_800ExtraBold',
-        titleWeight: '700',
+        titleFamily: 'Baloo2_700Bold',
+        bodyFamily: 'Nunito_700Bold',
+        numberFamily: 'Nunito_800ExtraBold',
+        titleWeight: '400',
         bodyWeight: '400',
-        numberWeight: '800',
+        numberWeight: '400',
       },
     },
   };
@@ -233,5 +243,8 @@ export const isThemeName = (value: string): value is ThemeName =>
   Object.prototype.hasOwnProperty.call(themePresets, value);
 
 export const getTheme = (name: ThemeName): ThemeTokens => themes[name];
+
+export const resolveThemeSystemGradient = (name: ThemeName): [string, string] =>
+  themePresets[name].systemGradient;
 
 export const defaultThemeName: ThemeName = 'neonParty';

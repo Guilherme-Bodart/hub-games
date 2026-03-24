@@ -1,5 +1,6 @@
 ﻿import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -8,10 +9,6 @@ import Animated, {
   FadeInDown,
   FadeOutUp,
   Layout,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -35,127 +32,56 @@ import {
 import { useI18n } from '@/src/i18n';
 import { useTheme } from '@/src/theme';
 import { withAlpha } from '@/src/theme/utils';
-import { AvatarSprite, Badge, BottomActionDock, Button, Card, Input, Modal } from '@/src/ui/atoms';
+import { AvatarSprite, Badge, BottomActionDock, Button, Card, Modal } from '@/src/ui/atoms';
 import { triggerGameFeedback } from '@/src/ui/feedback';
 import { getDuration, useReducedMotion } from '@/src/ui/motion';
 
-const CARD_BORDER_WIDTH = 1.5;
-const READY_BORDER_TRANSITION_MS = 320;
-const PENDING_BORDER_PULSE_MS = 640;
-const READY_GLOW_PULSE_MS = 680;
 const START_COUNTDOWN_MS = 3200;
+const QUICK_PLAYER_NAMES_PT = ['Alex', 'Bia', 'Caio', 'Duda', 'Enzo', 'Lia', 'Nina', 'Rafa'];
+const QUICK_PLAYER_NAMES_EN = ['Alex', 'Bea', 'Cody', 'Dina', 'Evan', 'Lia', 'Nina', 'Rafa'];
 
 const PlayerAvatar = memo(function PlayerAvatar({
   player,
   isLocalDevice,
   onToggleReady,
   onRemove,
+  accentTone,
 }: {
   player: LobbyPlayer;
   isLocalDevice: boolean;
   onToggleReady: () => void;
   onRemove: () => void;
+  accentTone: 'cyan' | 'pink' | 'violet';
 }) {
   const { theme } = useTheme();
-  const pendingPulse = useSharedValue(0.56);
-  const glow = useSharedValue(0.7);
-  const readyProgress = useSharedValue(player.isReady ? 1 : 0);
-
-  useEffect(() => {
-    readyProgress.value = withTiming(player.isReady ? 1 : 0, {
-      duration: READY_BORDER_TRANSITION_MS,
-    });
-  }, [player.isReady, readyProgress]);
-
-  useEffect(() => {
-    if (player.isReady) {
-      glow.value = withRepeat(withTiming(1, { duration: READY_GLOW_PULSE_MS }), -1, true);
-      return;
-    }
-
-    glow.value = withTiming(0.65, { duration: 220 });
-  }, [glow, player.isReady]);
-
-  useEffect(() => {
-    if (player.isReady) {
-      pendingPulse.value = withTiming(0.16, { duration: 180 });
-      return;
-    }
-
-    pendingPulse.value = 0.64;
-    pendingPulse.value = withRepeat(
-      withTiming(1.16, { duration: PENDING_BORDER_PULSE_MS }),
-      -1,
-      true
-    );
-  }, [pendingPulse, player.isReady]);
-
-  const readyGlowStyle = useAnimatedStyle(() => {
-    const readyGlow = readyProgress.value * (0.82 + glow.value * 0.3);
-    const pendingGlow = (1 - readyProgress.value) * (0.54 + pendingPulse.value * 0.42);
-
-    return {
-      shadowOpacity: 0.1 + readyGlow * 0.44 + pendingGlow * 0.36,
-      shadowRadius:
-        8 +
-        readyProgress.value * (10 + glow.value * 4) +
-        (1 - readyProgress.value) * (7 + pendingPulse.value * 4),
-      elevation:
-        3 +
-        readyProgress.value * (7 + glow.value * 3) +
-        (1 - readyProgress.value) * (6 + pendingPulse.value * 6),
-    };
-  });
-
-  const readyBorderStyle = useAnimatedStyle(() => ({
-    opacity: readyProgress.value * (0.86 + glow.value * 0.28),
-  }));
-
-  const pendingBorderStyle = useAnimatedStyle(() => ({
-    opacity: (1 - readyProgress.value) * (0.72 + pendingPulse.value * 0.34),
-  }));
+  const deviceOpacity = isLocalDevice ? 1 : 0.62;
+  const toneColor =
+    accentTone === 'cyan' ? '#27D5E5' : accentTone === 'pink' ? '#FF8EC6' : '#9A8BFF';
+  const readyColor = player.isReady ? '#1FCFAE' : toneColor;
 
   return (
-    <Animated.View
+    <View
       style={[
-        styles.playerRow,
+        styles.playerCard,
         {
-          borderColor: 'transparent',
-          backgroundColor: theme.semantic.bg.surface,
-          shadowColor: player.isReady
-            ? theme.semantic.status.success
-            : theme.semantic.status.warning,
+          opacity: deviceOpacity,
+          borderColor: withAlpha(readyColor, 0.88),
+          shadowColor: readyColor,
         },
-        readyGlowStyle,
       ]}>
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          styles.pendingBorder,
-          {
-            borderColor: withAlpha(theme.semantic.status.warning, 0.98),
-          },
-          pendingBorderStyle,
-        ]}
-      />
-
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          styles.readyBorder,
-          {
-            borderColor: withAlpha(theme.semantic.status.success, 0.98),
-          },
-          readyBorderStyle,
-        ]}
-      />
-
       {player.isHost ? (
-        <View style={styles.hostBadge}>
+        <View
+          style={[
+            styles.hostBadge,
+            {
+              backgroundColor: '#FFD86B',
+              borderColor: '#F9BE2F',
+            },
+          ]}>
           <SymbolView
             name={{ ios: 'crown.fill', android: 'crown', web: 'crown' }}
-            size={14}
-            tintColor={theme.semantic.button.primary.bg}
+            size={11}
+            tintColor="#5C3A00"
           />
         </View>
       ) : null}
@@ -171,12 +97,12 @@ const PlayerAvatar = memo(function PlayerAvatar({
             style={[
               styles.iconActionLabel,
               {
-                color: theme.semantic.status.error,
+                color: '#FFFFFF',
                 fontFamily: theme.semantic.typography.titleFamily,
                 fontWeight: theme.semantic.typography.titleWeight,
               },
             ]}>
-            X
+            ×
           </Text>
         </Pressable>
       ) : null}
@@ -187,43 +113,48 @@ const PlayerAvatar = memo(function PlayerAvatar({
         accessibilityState={{ disabled: !isLocalDevice, selected: player.isReady }}
         disabled={!isLocalDevice}
         onPress={onToggleReady}
-        style={styles.avatarPressable}>
-        <AvatarSprite
-          avatarId={player.avatarId}
-          size={56}
-          style={{ opacity: isLocalDevice ? 1 : 0.88 }}
-        />
-      </Pressable>
-
-      <View style={styles.playerMeta}>
-        <View style={styles.playerNameRow}>
-          <SymbolView
-            name={
-              isLocalDevice
-                ? { ios: 'iphone', android: 'smartphone', web: 'smartphone' }
-                : { ios: 'cloud.fill', android: 'cloud', web: 'cloud' }
-            }
-            size={12}
-            tintColor={theme.semantic.text.muted}
-          />
-          <Text
-            numberOfLines={1}
+        style={styles.playerCardPressable}>
+        <View style={styles.avatarShell}>
+          <View
             style={[
-              styles.playerName,
+              styles.avatarOrb,
               {
-                color: theme.semantic.text.primary,
-                fontFamily: theme.semantic.typography.titleFamily,
-                fontWeight: theme.semantic.typography.titleWeight,
+                borderColor: withAlpha(readyColor, 0.98),
+                shadowColor: readyColor,
+                backgroundColor: '#FFFFFF',
               },
             ]}>
-            {player.name}
-          </Text>
+            <AvatarSprite avatarId={player.avatarId} size={44} style={{ opacity: isLocalDevice ? 1 : 0.78 }} />
+          </View>
         </View>
-      </View>
-    </Animated.View>
+        <Text
+          numberOfLines={1}
+          style={[
+            styles.playerName,
+            {
+              color: '#2B2A46',
+              fontFamily: theme.semantic.typography.titleFamily,
+              fontWeight: theme.semantic.typography.titleWeight,
+            },
+          ]}>
+          {player.name}
+        </Text>
+        <SymbolView
+          name={
+            isLocalDevice
+              ? { ios: 'iphone', android: 'smartphone', web: 'smartphone' }
+              : { ios: 'wifi', android: 'wifi', web: 'wifi' }
+          }
+          size={12}
+          tintColor="#6B7790"
+          style={styles.deviceIcon}
+        />
+      </Pressable>
+    </View>
   );
 }, (prevProps, nextProps) => {
   return (
+    prevProps.accentTone === nextProps.accentTone &&
     prevProps.isLocalDevice === nextProps.isLocalDevice &&
     prevProps.player.id === nextProps.player.id &&
     prevProps.player.name === nextProps.player.name &&
@@ -256,7 +187,6 @@ export default function LobbyScreen() {
   const clearRemoteStart = useLobbySessionStore((state) => state.clearRemoteStart);
   const endSession = useLobbySessionStore((state) => state.endSession);
 
-  const [nickname, setNickname] = useState('');
   const [copied, setCopied] = useState(false);
   const [isRoomCodeHidden, setIsRoomCodeHidden] = useState(true);
   const [settingsVisible, setSettingsVisible] = useState(false);
@@ -331,13 +261,14 @@ export default function LobbyScreen() {
     : maximumPlayers;
   const tooManyPlayers = totalPlayers > lobbyPlayersLimit;
   const canAddPlayer = totalPlayers < lobbyPlayersLimit;
+  const showAddCard = canAddPlayer && totalPlayers < lobbyPlayersLimit;
   const canStartGame = totalPlayers >= minimumPlayers && !tooManyPlayers && readyCount === totalPlayers;
   const canHostStartThisLobby = lobby?.mode === 'remote' ? isLocalHost : true;
   const isSettingsEditable = isLocalHost;
   const playersEmptyHint =
     locale === 'pt'
-      ? 'Nenhum jogador nesta sala ainda. Adicione pelo menos um apelido para comecar.'
-      : 'No players in this room yet. Add at least one nickname to get started.';
+      ? 'Nenhum jogador nesta sala ainda. Toque no card "+" para adicionar.'
+      : 'No players in this room yet. Tap the "+" card to add one.';
   const impostorLobbyBadgeLabel =
     locale === 'pt'
       ? `${impostorCount} impostor${impostorCount > 1 ? 'es' : ''}`
@@ -356,9 +287,15 @@ export default function LobbyScreen() {
         : t('connection.error');
   const lobbyTitle = selectedGame ? selectedGame.title[locale] : t('tabs.lobby');
   const isCompactViewport = viewportWidth < 390;
-  const playerColumns = viewportWidth >= 980 ? 4 : viewportWidth >= 700 ? 3 : 2;
+  const playerColumns = viewportWidth >= 980 ? 6 : viewportWidth >= 760 ? 5 : viewportWidth >= 390 ? 4 : 3;
   const playerCellWidth =
-    playerColumns === 4 ? '23.6%' : playerColumns === 3 ? '31.8%' : '48.6%';
+    playerColumns === 6 ? '15.4%' : playerColumns === 5 ? '18.8%' : playerColumns === 4 ? '23.2%' : '31.2%';
+  const nextAutoName = useMemo(() => {
+    const pool = locale === 'pt' ? QUICK_PLAYER_NAMES_PT : QUICK_PLAYER_NAMES_EN;
+    const base = pool[totalPlayers % pool.length] ?? (locale === 'pt' ? 'Jogador' : 'Player');
+    const cycle = Math.floor(totalPlayers / pool.length) + 1;
+    return cycle > 1 ? `${base} ${cycle}` : base;
+  }, [locale, totalPlayers]);
   const panelCopy =
     locale === 'pt'
       ? {
@@ -389,6 +326,21 @@ export default function LobbyScreen() {
           waitingHostStart: 'Waiting host to start',
           countdownStarting: 'Match starting in',
         };
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: t('tabs.lobby'),
+      headerShadowVisible: false,
+      headerStyle: {
+        backgroundColor: '#FFFFFF',
+      },
+      headerTintColor: '#2B2A46',
+      headerTitleStyle: {
+        fontFamily: theme.semantic.typography.titleFamily,
+        fontWeight: theme.semantic.typography.titleWeight,
+      },
+    });
+  }, [navigation, t, theme.semantic.typography.titleFamily, theme.semantic.typography.titleWeight]);
   const leaveLobby = useCallback(() => {
     allowLeaveRef.current = true;
     if (lobby?.mode === 'remote' && isLocalHost) {
@@ -622,53 +574,24 @@ export default function LobbyScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }]}> 
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        pointerEvents="none"
+        colors={['#FFF5D6', '#FFE8F2', '#E9E6FF', '#DDF3FF']}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <View pointerEvents="none" style={styles.lobbyMilkOverlay} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View
-          style={[
-            styles.topHeader,
-            {
-              borderColor: withAlpha(theme.semantic.button.primary.bg, 0.44),
-              backgroundColor: withAlpha(theme.semantic.bg.surface, 0.72),
-            },
-          ]}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={locale === 'pt' ? 'Voltar' : 'Back'}
-            onPress={leaveLobby}
-            style={[
-              styles.topHeaderBack,
-              {
-                borderColor: theme.semantic.border.subtle,
-                backgroundColor: theme.semantic.bg.surface,
-              },
-            ]}>
-            <SymbolView
-              name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
-              size={16}
-              tintColor={theme.semantic.text.primary}
-            />
-          </Pressable>
-          <Text
-            style={[
-              styles.topHeaderTitle,
-              {
-                color: theme.semantic.text.primary,
-                fontFamily: theme.semantic.typography.titleFamily,
-                fontWeight: theme.semantic.typography.titleWeight,
-              },
-            ]}>
-            {t('tabs.lobby')}
-          </Text>
-        </View>
 
         <View
           style={[
             styles.sessionPanel,
             {
-              borderColor: withAlpha(theme.semantic.button.primary.bg, 0.52),
-              backgroundColor: withAlpha(theme.semantic.bg.surface, 0.74),
-              shadowColor: theme.semantic.shadow.neon,
+              borderColor: 'rgba(255,255,255,0.96)',
+              backgroundColor: 'rgba(255,255,255,0.72)',
+              shadowColor: '#90BCEA',
             },
           ]}>
           <View style={styles.sessionHeaderRow}>
@@ -676,7 +599,7 @@ export default function LobbyScreen() {
               style={[
                 styles.sessionTitle,
                 {
-                  color: theme.semantic.text.primary,
+                  color: '#2B2A46',
                   fontFamily: theme.semantic.typography.titleFamily,
                   fontWeight: theme.semantic.typography.titleWeight,
                 },
@@ -690,14 +613,14 @@ export default function LobbyScreen() {
               style={[
                 styles.settingsIconButton,
                 {
-                  borderColor: theme.semantic.border.subtle,
-                  backgroundColor: theme.semantic.bg.surface,
+                  borderColor: 'rgba(0,0,0,0.12)',
+                  backgroundColor: '#FFFFFF',
                 },
               ]}>
               <SymbolView
                 name={{ ios: 'gearshape.fill', android: 'settings', web: 'settings' }}
-                size={17}
-                tintColor={theme.semantic.button.secondary.bg}
+                size={18}
+                tintColor="#2B2A46"
               />
             </Pressable>
           </View>
@@ -715,17 +638,18 @@ export default function LobbyScreen() {
                 style={[
                   styles.countdownLabel,
                   {
-                    color: theme.semantic.text.secondary,
+                    color: '#5A5C79',
                     fontFamily: theme.semantic.typography.bodyFamily,
                     fontWeight: theme.semantic.typography.bodyWeight,
                   },
                 ]}>
+                {panelCopy.countdownStarting}
               </Text>
               <Text
                 style={[
                   styles.countdownValue,
                   {
-                    color: theme.semantic.button.primary.bg,
+                    color: '#3D5AFE',
                     fontFamily: theme.semantic.typography.numberFamily,
                     fontWeight: theme.semantic.typography.numberWeight,
                   },
@@ -750,15 +674,15 @@ export default function LobbyScreen() {
                 style={[
                   styles.roomCodePill,
                   {
-                    borderColor: theme.semantic.border.accent,
-                    backgroundColor: theme.semantic.bg.surface,
+                    borderColor: 'rgba(0,0,0,0.1)',
+                    backgroundColor: '#FFFFFF',
                   },
                 ]}>
                 <Text
                   style={[
                     styles.roomCodeText,
                     {
-                      color: theme.semantic.text.primary,
+                      color: '#2B2A46',
                       fontFamily: theme.semantic.typography.numberFamily,
                       fontWeight: theme.semantic.typography.numberWeight,
                       fontSize: isCompactViewport ? 20 : 24,
@@ -769,7 +693,7 @@ export default function LobbyScreen() {
                 <SymbolView
                   name={{ ios: 'doc.on.doc', android: 'content_copy', web: 'content_copy' }}
                   size={15}
-                  tintColor={theme.semantic.text.secondary}
+                  tintColor="#5B5D7A"
                 />
               </Pressable>
 
@@ -784,8 +708,8 @@ export default function LobbyScreen() {
                 style={[
                   styles.roomCodeMaskButton,
                   {
-                    borderColor: theme.semantic.border.subtle,
-                    backgroundColor: theme.semantic.bg.surface,
+                    borderColor: 'rgba(0,0,0,0.1)',
+                    backgroundColor: '#FFFFFF',
                   },
                 ]}>
                 <SymbolView
@@ -795,7 +719,7 @@ export default function LobbyScreen() {
                     web: isRoomCodeHidden ? 'visibility_off' : 'visibility',
                   }}
                   size={16}
-                  tintColor={theme.semantic.text.secondary}
+                  tintColor="#5B5D7A"
                 />
               </Pressable>
             </View>
@@ -805,7 +729,7 @@ export default function LobbyScreen() {
                 style={[
                   styles.subtitle,
                   {
-                    color: theme.semantic.text.secondary,
+                    color: '#5A5C79',
                     fontFamily: theme.semantic.typography.bodyFamily,
                     fontWeight: theme.semantic.typography.bodyWeight,
                   },
@@ -842,49 +766,6 @@ export default function LobbyScreen() {
           </Text>
         ) : null}
 
-        <View style={styles.addRow}>
-          <Input
-            value={nickname}
-            onChangeText={setNickname}
-            disabled={!canAddPlayer}
-            placeholder={t('lobby.addPersonPlaceholder')}
-            style={styles.addInputWrap}
-          />
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('lobby.addPersonPlaceholder')}
-            accessibilityState={{ disabled: !canAddPlayer }}
-            disabled={!canAddPlayer}
-            onPress={() => {
-              if (!nickname.trim() || !canAddPlayer) {
-                return;
-              }
-
-              addPlayer(nickname);
-              setNickname('');
-              void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            }}
-            style={[
-              styles.addIcon,
-              {
-                backgroundColor: theme.semantic.button.secondary.bg,
-                borderColor: theme.semantic.border.subtle,
-                opacity: canAddPlayer ? 1 : 0.45,
-              },
-            ]}>
-            <Text
-              style={[
-                styles.addIconText,
-                {
-                  color: theme.semantic.button.secondary.text,
-                  fontFamily: theme.semantic.typography.numberFamily,
-                  fontWeight: theme.semantic.typography.numberWeight,
-                },
-              ]}>
-              +
-            </Text>
-          </Pressable>
-        </View>
         <View style={styles.playersList}>
           {visiblePlayers.map(({ player, isLocalDevice }, index) => (
             <Animated.View
@@ -907,6 +788,7 @@ export default function LobbyScreen() {
               <PlayerAvatar
                 player={player}
                 isLocalDevice={isLocalDevice}
+                accentTone={index % 3 === 0 ? 'cyan' : index % 3 === 1 ? 'pink' : 'violet'}
                 onToggleReady={() => {
                   if (!isLocalDevice) {
                     return;
@@ -918,21 +800,57 @@ export default function LobbyScreen() {
               />
             </Animated.View>
           ))}
+          {showAddCard ? (
+            <Animated.View
+              entering={
+                reduceMotion
+                  ? undefined
+                  : FadeInDown.duration(getDuration('medium', reduceMotion)).delay(
+                      visiblePlayers.length * 30
+                    )
+              }
+              style={[
+                styles.playerCell,
+                {
+                  width: playerCellWidth,
+                },
+              ]}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={locale === 'pt' ? 'Adicionar jogador' : 'Add player'}
+                onPress={() => {
+                  addPlayer(nextAutoName);
+                  void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                style={styles.addCardButton}>
+                <Text
+                  style={[
+                    styles.addCardSymbol,
+                    {
+                      fontFamily: theme.semantic.typography.numberFamily,
+                      fontWeight: theme.semantic.typography.numberWeight,
+                    },
+                  ]}>
+                  +
+                </Text>
+              </Pressable>
+            </Animated.View>
+          ) : null}
         </View>
         {!visiblePlayers.length ? (
           <View
             style={[
               styles.emptyPlayersState,
               {
-                borderColor: withAlpha(theme.semantic.border.subtle, 0.9),
-                backgroundColor: withAlpha(theme.semantic.bg.surface, 0.62),
+                borderColor: 'rgba(0,0,0,0.08)',
+                backgroundColor: 'rgba(255,255,255,0.78)',
               },
             ]}>
             <Text
               style={[
                 styles.emptyPlayersText,
                 {
-                  color: theme.semantic.text.secondary,
+                  color: '#5C5F7A',
                   fontFamily: theme.semantic.typography.bodyFamily,
                   fontWeight: theme.semantic.typography.bodyWeight,
                 },
@@ -1319,6 +1237,7 @@ export default function LobbyScreen() {
       </Modal>
 
       <BottomActionDock
+        style={styles.bottomDock}
         primaryAction={{
           label:
             countdownValue !== null
@@ -1337,6 +1256,7 @@ export default function LobbyScreen() {
           },
           disabled: !canStartGame || !canHostStartThisLobby || countdownValue !== null,
           variant: 'primary',
+          style: styles.startButton,
         }}
       />
     </SafeAreaView>
@@ -1352,45 +1272,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
+  lobbyMilkOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.56)',
+  },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 10,
-    paddingBottom: 164,
+    paddingTop: 14,
+    paddingBottom: 176,
+    gap: 12,
     width: '100%',
     maxWidth: 620,
     alignSelf: 'center',
   },
-  topHeader: {
-    borderWidth: 1,
-    borderRadius: 18,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  topHeaderBack: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  topHeaderTitle: {
-    fontSize: 34,
-    lineHeight: 36,
-  },
   sessionPanel: {
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 8,
-    shadowOpacity: 0.24,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 0 },
+    borderWidth: 1.5,
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    gap: 10,
+    shadowOpacity: 0.22,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
     elevation: 7,
   },
   sessionHeaderRow: {
@@ -1400,17 +1303,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sessionTitle: {
-    fontSize: 46,
-    lineHeight: 48,
+    fontSize: 52,
+    lineHeight: 54,
   },
   roomCodeWrap: {
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
   },
   roomCodeActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
   roomCodePill: {
     borderRadius: 999,
@@ -1419,19 +1322,29 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
+    shadowColor: '#93BFEA',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
   roomCodeMaskButton: {
-    width: 38,
-    height: 38,
+    width: 40,
+    height: 40,
     borderRadius: 999,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#93BFEA',
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
   roomCodeText: {
     fontSize: 24,
-    letterSpacing: 2,
+    letterSpacing: 2.2,
   },
   subtitle: {
     fontSize: 12,
@@ -1440,8 +1353,8 @@ const styles = StyleSheet.create({
   headerBadges: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    gap: 7,
+    justifyContent: 'center',
+    gap: 8,
   },
   countdownPill: {
     alignSelf: 'center',
@@ -1452,6 +1365,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    backgroundColor: '#FFFFFF',
   },
   countdownLabel: {
     fontSize: 12,
@@ -1465,12 +1379,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   settingsIconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 999,
+    width: 42,
+    height: 42,
+    borderRadius: 16,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#8CA6DB',
+    shadowOpacity: 0.24,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   settingsBlock: {
     gap: 8,
@@ -1527,13 +1446,16 @@ const styles = StyleSheet.create({
   playersList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    alignContent: 'flex-start',
+    rowGap: 12,
+    columnGap: 10,
   },
   emptyPlayersState: {
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: 14,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 12,
   },
   emptyPlayersText: {
     fontSize: 13,
@@ -1542,87 +1464,121 @@ const styles = StyleSheet.create({
   },
   playerCell: {
     minWidth: 0,
-    marginBottom: 8,
   },
-  playerRow: {
-    width: '100%',
-    minHeight: 118,
-    borderWidth: CARD_BORDER_WIDTH,
-    borderRadius: 16,
-    padding: 10,
+  playerCard: {
+    borderWidth: 1.8,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    minHeight: 128,
+    shadowOpacity: 0.28,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 4,
+    overflow: 'hidden',
+  },
+  playerCardPressable: {
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    minHeight: 126,
+  },
+  avatarShell: {
     position: 'relative',
-    overflow: 'hidden',
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
+    width: 54,
+    height: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  avatarPressable: {
+  avatarOrb: {
+    width: 54,
+    height: 54,
     borderRadius: 999,
-    marginTop: 8,
-  },
-  playerMeta: {
-    width: '100%',
-    marginTop: 6,
+    borderWidth: 2,
     alignItems: 'center',
-  },
-  playerNameRow: {
-    maxWidth: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
+    justifyContent: 'center',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
   playerName: {
-    fontSize: 14,
+    maxWidth: '100%',
+    fontSize: 13,
+    lineHeight: 15,
     textAlign: 'center',
+  },
+  deviceIcon: {
+    marginTop: 1,
   },
   hostBadge: {
     position: 'absolute',
     top: 6,
     right: 6,
     zIndex: 2,
-  },
-  pendingBorder: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 14,
-    borderWidth: CARD_BORDER_WIDTH + 0.4,
-    borderStyle: 'dashed',
-  },
-  readyBorder: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 14,
-    borderWidth: CARD_BORDER_WIDTH + 0.35,
-  },
-  iconAction: {
-    position: 'absolute',
-    top: 5,
-    right: 6,
-    zIndex: 2,
-    paddingHorizontal: 2,
-    paddingVertical: 2,
-  },
-  iconActionLabel: {
-    fontSize: 16,
-    lineHeight: 16,
-  },
-  addRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 6,
-  },
-  addInputWrap: {
-    flex: 1,
-  },
-  addIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: 19,
+    height: 19,
+    borderRadius: 999,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addIconText: {
-    fontSize: 24,
-    lineHeight: 24,
+  iconAction: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    zIndex: 2,
+    width: 19,
+    height: 19,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FF5A81',
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+  },
+  iconActionLabel: {
+    fontSize: 13,
+    lineHeight: 13,
+  },
+  addCardButton: {
+    minHeight: 128,
+    borderRadius: 18,
+    borderWidth: 1.8,
+    borderColor: '#BFD3EC',
+    backgroundColor: 'rgba(255,255,255,0.86)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#90BCEA',
+    shadowOpacity: 0.18,
+    shadowRadius: 9,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  addCardSymbol: {
+    color: '#8E95A9',
+    fontSize: 44,
+    lineHeight: 44,
+  },
+  bottomDock: {
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    borderTopColor: 'rgba(0,0,0,0.08)',
+    borderTopWidth: 1,
+    shadowColor: '#9AAFD6',
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: -3 },
+    elevation: 10,
+  },
+  startButton: {
+    borderRadius: 999,
+    minHeight: 58,
+    shadowColor: '#FF6C6C',
+    shadowOpacity: 0.34,
+    shadowRadius: 13,
+    shadowOffset: { width: 0, height: 7 },
+    elevation: 8,
   },
 });
+

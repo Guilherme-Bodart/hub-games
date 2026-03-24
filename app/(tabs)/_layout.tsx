@@ -16,6 +16,7 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: theme.semantic.bg.surface,
           borderTopColor: theme.semantic.border.subtle,
+          display: 'none',
         },
         headerStyle: {
           backgroundColor: theme.semantic.bg.surface,

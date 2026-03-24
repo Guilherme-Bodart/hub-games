@@ -6,6 +6,7 @@ export { Card } from '@/src/ui/atoms/Card';
 export { ConnectionStatusPill } from '@/src/ui/atoms/ConnectionStatusPill';
 export { GameScreenShell } from '@/src/ui/atoms/GameScreenShell';
 export { GameTopBar } from '@/src/ui/atoms/GameTopBar';
+export { IconCircleButton } from '@/src/ui/atoms/IconCircleButton';
 export { Input } from '@/src/ui/atoms/Input';
 export { Modal } from '@/src/ui/atoms/Modal';
 export { Screen } from '@/src/ui/atoms/Screen';

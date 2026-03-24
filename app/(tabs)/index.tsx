@@ -1,104 +1,155 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Alert,
+  Pressable,
+  Modal as RNModal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { gameCatalog, GameCatalogItem, getGameById } from '@/src/features/catalog';
+import { gameCatalog, GameCatalogItem } from '@/src/features/catalog';
 import { useLobbySessionStore } from '@/src/features/lobby';
 import { useI18n } from '@/src/i18n';
-import { useTheme } from '@/src/theme';
-import { withAlpha } from '@/src/theme/utils';
+import { resolveThemeSystemGradient, useTheme } from '@/src/theme';
 import { triggerGameFeedback } from '@/src/ui/feedback';
-import { createCatalogCardEntering, useReducedMotion } from '@/src/ui/motion';
-import { BottomActionDock, Button, GameTopBar, Input, Modal } from '@/src/ui/atoms';
+import { Button, IconCircleButton } from '@/src/ui/atoms';
 
 const resolveErrorMessage = (error: unknown, fallback: string): string =>
   error instanceof Error && error.message ? error.message : fallback;
 
+const NICKNAME_PREFIXES = ['Neo', 'Turbo', 'Pixel', 'Luna', 'Vibe', 'Ninja', 'Cosmo', 'Candy'];
+const NICKNAME_SUFFIXES = ['Fox', 'Spark', 'Wave', 'Bolt', 'Panda', 'Nova', 'Byte', 'Star'];
+
+const createRandomNickname = (): string => {
+  const prefix = NICKNAME_PREFIXES[Math.floor(Math.random() * NICKNAME_PREFIXES.length)];
+  const suffix = NICKNAME_SUFFIXES[Math.floor(Math.random() * NICKNAME_SUFFIXES.length)];
+  const seed = Math.floor(Math.random() * 90 + 10);
+  return `${prefix}${suffix}${seed}`.slice(0, 20);
+};
+
+const normalizeRoomCode = (value: string): string =>
+  value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 5);
+
+const resolveModeMeta = (mode: GameCatalogItem['mode']) => {
+  if (mode === 'local') {
+    return { icons: ['phone-portrait-outline'] };
+  }
+
+  if (mode === 'remote') {
+    return { icons: ['globe-outline'] };
+  }
+
+  return { icons: ['phone-portrait-outline', 'globe-outline'] };
+};
+
+const ui = {
+  cardPurple: '#7F72E8',
+  cardCyan: '#28C2E0',
+  cardPink: '#F377B6',
+  cardBlue: '#5BAFEF',
+  clayOrange: '#F8A409',
+  clayBlue: '#227DDB',
+};
+
 export default function CatalogScreen() {
   const router = useRouter();
-  const { theme } = useTheme();
   const { t, locale } = useI18n();
-  const { width: viewportWidth } = useWindowDimensions();
-  const reduceMotion = useReducedMotion();
-  const startSession = useLobbySessionStore((state) => state.startSession);
+  const { themeName } = useTheme();
   const createRemoteSession = useLobbySessionStore((state) => state.createRemoteSession);
   const joinRemoteSession = useLobbySessionStore((state) => state.joinRemoteSession);
   const getPreferredNickname = useLobbySessionStore((state) => state.getPreferredNickname);
   const setPreferredNickname = useLobbySessionStore((state) => state.setPreferredNickname);
+  const [bgStart, bgEnd] = resolveThemeSystemGradient(themeName);
 
-  const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
-  const [openRoomVisible, setOpenRoomVisible] = useState(false);
-  const [openRoomCode, setOpenRoomCode] = useState('');
-  const [openRoomError, setOpenRoomError] = useState<string | null>(null);
-  const [remoteNickname, setRemoteNickname] = useState('');
-  const [remoteNicknameError, setRemoteNicknameError] = useState<string | null>(null);
+  const [nickname, setNickname] = useState('');
+  const [nicknameDraft, setNicknameDraft] = useState('');
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isJoiningRoom, setIsJoiningRoom] = useState(false);
+  const [isCodeModalVisible, setIsCodeModalVisible] = useState(false);
+  const [roomCodeInput, setRoomCodeInput] = useState('');
+  const [roomCodeError, setRoomCodeError] = useState<string | null>(null);
 
-  const selectedGame = useMemo(
-    () => (selectedGameId ? getGameById(selectedGameId) : undefined),
-    [selectedGameId]
-  );
-  const gridColumns = viewportWidth >= 780 ? 2 : 1;
-  const gridItemWidth = gridColumns === 1 ? '100%' : '48.8%';
-  const gridItemMaxWidth = gridColumns === 1 ? 560 : 320;
-  const dockHelperText =
-    locale === 'pt'
-      ? 'Ja tem codigo de sala? Entre direto sem criar lobby novo.'
-      : 'Already have a room code? Join directly without creating a new lobby.';
-  const catalogHeaderTitle = locale === 'pt' ? 'Catalogo de Jogos' : 'Game Catalog';
+  const readyGames = useMemo(() => gameCatalog.filter((game) => game.status === 'ready'), []);
 
-  const openGame = (game: GameCatalogItem) => {
-    if (game.status === 'coming') {
-      triggerGameFeedback('warning');
-      return;
+  useEffect(() => {
+    let active = true;
+
+    void getPreferredNickname().then((storedNickname) => {
+      if (!active) {
+        return;
+      }
+
+      const normalized = storedNickname.trim();
+      if (normalized) {
+        const sanitized = normalized.slice(0, 20);
+        setNickname(sanitized);
+        setNicknameDraft(sanitized);
+        return;
+      }
+
+      const generated = createRandomNickname();
+      setNickname(generated);
+      setNicknameDraft(generated);
+      void setPreferredNickname(generated);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [getPreferredNickname, setPreferredNickname]);
+
+  const resolveNickname = (): string => {
+    const normalized = nickname.trim();
+
+    if (normalized) {
+      return normalized.slice(0, 20);
     }
 
+    const generated = createRandomNickname();
+    setNickname(generated);
+    void setPreferredNickname(generated);
+    return generated;
+  };
+
+  const shuffleNickname = () => {
+    const next = createRandomNickname();
+    setIsEditingNickname(false);
+    setNickname(next);
+    setNicknameDraft(next);
+    void setPreferredNickname(next);
     triggerGameFeedback('confirm');
-    setRemoteNicknameError(null);
-    setSelectedGameId(game.id);
   };
 
-  const resolveRemoteNickname = (): string | null => {
-    const normalized = remoteNickname.trim();
-
-    if (!normalized) {
-      setRemoteNicknameError(t('catalog.nicknameRequired'));
-      return null;
-    }
-
-    return normalized;
+  const startNicknameEditing = () => {
+    setNicknameDraft(nickname);
+    setIsEditingNickname(true);
+    triggerGameFeedback('confirm');
   };
 
-  const launchMode = async (mode: 'local' | 'remote') => {
-    if (!selectedGame) {
-      return;
-    }
+  const commitNicknameEdit = () => {
+    const normalized = nicknameDraft.trim().slice(0, 20);
+    const nextNickname = normalized || createRandomNickname();
+    setNickname(nextNickname);
+    setNicknameDraft(nextNickname);
+    setIsEditingNickname(false);
+    void setPreferredNickname(nextNickname);
+  };
 
-    if (mode === 'local') {
-      setRemoteNicknameError(null);
-      startSession(selectedGame.id, mode);
-      triggerGameFeedback('submit');
-      setSelectedGameId(null);
-      router.push('/lobby');
-      return;
-    }
-
-    const nickname = resolveRemoteNickname();
-
-    if (!nickname) {
-      return;
-    }
+  const openGame = async (game: GameCatalogItem) => {
+    const sessionNickname = resolveNickname();
 
     try {
       setIsCreatingRoom(true);
-      setRemoteNicknameError(null);
-      await createRemoteSession(selectedGame.id, { nickname });
+      await createRemoteSession(game.id, { nickname: sessionNickname });
       triggerGameFeedback('submit');
-      setSelectedGameId(null);
       router.push('/lobby');
     } catch (error) {
       triggerGameFeedback('error');
@@ -111,355 +162,288 @@ export default function CatalogScreen() {
     }
   };
 
-  const joinExistingLobby = async () => {
-    const nickname = resolveRemoteNickname();
-    const normalizedCode = openRoomCode.trim().toUpperCase();
+  const openJoinCodeModal = () => {
+    setRoomCodeInput('');
+    setRoomCodeError(null);
+    setIsCodeModalVisible(true);
+    triggerGameFeedback('confirm');
+  };
 
-    if (!nickname) {
-      return;
-    }
+  const joinByCode = async () => {
+    const normalizedCode = normalizeRoomCode(roomCodeInput);
 
     if (!normalizedCode) {
-      setOpenRoomError(t('catalog.openRoomEmpty'));
+      setRoomCodeError(locale === 'pt' ? 'Digite o código da sala.' : 'Enter the room code.');
       return;
     }
+
+    const sessionNickname = resolveNickname();
 
     try {
       setIsJoiningRoom(true);
-      setOpenRoomError(null);
-      setRemoteNicknameError(null);
-      await joinRemoteSession(normalizedCode, { nickname });
+      setRoomCodeError(null);
+      await joinRemoteSession(normalizedCode, { nickname: sessionNickname });
       triggerGameFeedback('submit');
-      setOpenRoomCode('');
-      setOpenRoomVisible(false);
+      setIsCodeModalVisible(false);
       router.push('/lobby');
     } catch (error) {
       triggerGameFeedback('error');
-      setOpenRoomError(resolveErrorMessage(error, t('catalog.openRoomInvalid')));
+      Alert.alert(
+        t('catalog.openRoomTitle'),
+        resolveErrorMessage(error, t('catalog.openRoomInvalid'))
+      );
     } finally {
       setIsJoiningRoom(false);
     }
   };
 
-  const openJoinRoomModal = () => {
-    triggerGameFeedback('confirm');
-    setOpenRoomVisible(true);
-    setOpenRoomCode('');
-    setOpenRoomError(null);
-    setRemoteNicknameError(null);
-  };
-
-  useEffect(() => {
-    let active = true;
-
-    void getPreferredNickname().then((storedNickname) => {
-      if (!active || !storedNickname) {
-        return;
-      }
-
-      setRemoteNickname((currentValue) =>
-        currentValue.trim() ? currentValue : storedNickname.slice(0, 20)
-      );
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [getPreferredNickname]);
-
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }]}> 
-      <ScrollView contentContainerStyle={styles.container}>
-        <GameTopBar
-          title={catalogHeaderTitle}
-          statusTone="success"
-          onPressRight={() => router.push('/modal')}
-          rightSymbolName={{ ios: 'gearshape.fill', android: 'settings', web: 'settings' }}
-          rightAccessibilityLabel={t('settings.title')}
-        />
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        pointerEvents="none"
+        colors={[bgStart, bgEnd]}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <View pointerEvents="none" style={styles.backgroundMilkOverlay} />
 
-        <View style={styles.grid}>
-          {gameCatalog.map((game, index) => (
-            <Animated.View
-              key={game.id}
-              entering={createCatalogCardEntering(index, reduceMotion)}
-              style={[
-                styles.gridItem,
-                {
-                  width: gridItemWidth,
-                  maxWidth: gridItemMaxWidth,
-                },
-              ]}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`${game.title[locale]}. ${
-                  game.status === 'coming'
-                    ? locale === 'pt'
-                      ? 'Em breve'
-                      : 'Coming soon'
-                    : locale === 'pt'
-                      ? 'Abrir jogo'
-                      : 'Open game'
-                }`}
-                accessibilityState={{ disabled: game.status === 'coming' }}
-                onPress={() => openGame(game)}
-                style={({ pressed }) => [
-                  styles.gameCard,
-                  {
-                    opacity: game.status === 'coming' ? 0.55 : pressed ? 0.84 : 1,
-                    backgroundColor: game.coverTone,
-                    borderColor: theme.semantic.border.subtle,
-                  },
-                ]}>
-                <View
-                  style={[
-                    styles.cover,
-                    {
-                      borderColor: theme.semantic.border.subtle,
-                      backgroundColor: withAlpha(theme.semantic.bg.surface, 0.9),
-                    },
-                  ]}>
-                  <View
-                    pointerEvents="none"
-                    style={[
-                      styles.coverGlow,
-                      {
-                        backgroundColor: withAlpha(theme.semantic.button.secondary.bg, 0.16),
-                      },
-                    ]}
+      <View className="flex-1 px-3 pt-2" style={styles.pageFrame}>
+        <View className="gap-[10px] pb-[10px]">
+          <Text className="font-display text-[44px] leading-[44px] tracking-[0.8px] text-catalog-ink">
+            FESTA HUB
+          </Text>
+          <View className="flex-row items-center justify-between">
+            {isEditingNickname ? (
+              <View className="flex-1 pr-[10px]">
+                <View className="flex-row items-center gap-2">
+                  <View className="h-[42px] w-[42px] items-center justify-center rounded-full">
+                    <Ionicons name="person-circle-outline" size={40} color="#2B2A46" />
+                  </View>
+                  <TextInput
+                    value={nicknameDraft}
+                    onChangeText={(value) => setNicknameDraft(value.slice(0, 20))}
+                    onSubmitEditing={commitNicknameEdit}
+                    onBlur={commitNicknameEdit}
+                    autoFocus
+                    maxLength={20}
+                    className="flex-1 bg-transparent px-0 py-0 font-display text-[22px] leading-[24px] tracking-[0.3px] text-catalog-ink"
+                    placeholder={locale === 'pt' ? 'Digite seu apelido' : 'Enter your nickname'}
+                    placeholderTextColor="rgba(43,42,70,0.45)"
                   />
-                  <View
-                    style={[
-                      styles.coverPlaceholder,
-                      {
-                        borderColor: theme.semantic.border.subtle,
-                      },
-                    ]}>
-                    <SymbolView
-                      name={{ ios: 'photo', android: 'image', web: 'image' }}
-                      size={26}
-                      tintColor={theme.semantic.text.muted}
-                    />
-                    <Text
-                      style={[
-                        styles.coverPlaceholderLabel,
-                        {
-                          color: theme.semantic.text.muted,
-                          fontFamily: theme.semantic.typography.bodyFamily,
-                          fontWeight: theme.semantic.typography.bodyWeight,
-                        },
-                      ]}>
-                      {locale === 'pt' ? 'Imagem em breve' : 'Image coming soon'}
-                    </Text>
-                  </View>
                 </View>
-
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    styles.gameTitle,
-                    {
-                      color: theme.semantic.text.primary,
-                      fontFamily: theme.semantic.typography.titleFamily,
-                      fontWeight: theme.semantic.typography.titleWeight,
-                    },
-                  ]}>
-                  {game.title[locale]}
-                </Text>
-
-                <View style={styles.badgeRow}>
-                  <View
-                    style={[
-                      styles.iconBadge,
-                      {
-                        backgroundColor: theme.semantic.badge.successBg,
-                      },
-                    ]}>
-                    <SymbolView
-                      name={{ ios: 'person.2.fill', android: 'groups', web: 'groups' }}
-                      size={12}
-                      tintColor={theme.semantic.badge.neutralText}
-                    />
-                    <Text
-                      style={[
-                        styles.iconBadgeLabel,
-                        {
-                          color: theme.semantic.badge.successText,
-                          fontFamily: theme.semantic.typography.bodyFamily,
-                          fontWeight: theme.semantic.typography.bodyWeight,
-                        },
-                      ]}>
-                      {`${game.players.min}-${game.players.max} ${
-                        locale === 'pt' ? 'jogadores' : 'players'
-                      }`}
-                    </Text>
+              </View>
+            ) : (
+              <Pressable
+                className="flex-1 pr-[10px]"
+                onPress={startNicknameEditing}
+                accessibilityRole="button"
+                accessibilityLabel={locale === 'pt' ? 'Editar apelido' : 'Edit nickname'}>
+                <View className="flex-row items-center gap-2">
+                  <View className="h-[42px] w-[42px] items-center justify-center rounded-full">
+                    <Ionicons name="person-circle-outline" size={40} color="#2B2A46" />
                   </View>
-
-                  <View
-                    style={[
-                      styles.iconBadge,
-                      {
-                        backgroundColor: theme.semantic.badge.infoBg,
-                      },
-                    ]}>
-                    <SymbolView
-                      name={
-                        game.mode === 'local'
-                          ? { ios: 'iphone', android: 'smartphone', web: 'smartphone' }
-                          : game.mode === 'remote'
-                            ? { ios: 'wifi', android: 'wifi', web: 'wifi' }
-                            : { ios: 'arrow.triangle.2.circlepath', android: 'sync', web: 'sync' }
-                      }
-                      size={12}
-                      tintColor={theme.semantic.badge.neutralText}
-                    />
-                    <Text
-                      style={[
-                        styles.iconBadgeLabel,
-                        {
-                          color: theme.semantic.badge.infoText,
-                          fontFamily: theme.semantic.typography.bodyFamily,
-                          fontWeight: theme.semantic.typography.bodyWeight,
-                        },
-                      ]}>
-                      {game.mode === 'local'
-                        ? locale === 'pt'
-                          ? 'Local'
-                          : 'Local'
-                        : game.mode === 'remote'
-                          ? 'Online'
-                          : locale === 'pt'
-                            ? 'Local + Online'
-                            : 'Local + Online'}
-                    </Text>
-                  </View>
+                  <Text
+                    numberOfLines={1}
+                    className="font-display text-[24px] leading-[26px] tracking-[0.4px] text-catalog-ink">
+                    {nickname}
+                  </Text>
                 </View>
               </Pressable>
-            </Animated.View>
-          ))}
+            )}
+
+            <View className="flex-row items-center gap-2">
+              <IconCircleButton
+                icon="shuffle"
+                onPress={shuffleNickname}
+                accessibilityLabel={locale === 'pt' ? 'Trocar apelido' : 'Shuffle nickname'}
+                tone="neutral"
+                iconSize={18}
+              />
+
+              <IconCircleButton
+                icon="settings-sharp"
+                onPress={() => router.push('/modal')}
+                accessibilityLabel={t('settings.title')}
+                tone="neutral"
+                iconSize={19}
+              />
+            </View>
+          </View>
         </View>
-      </ScrollView>
 
-      <Modal
-        visible={Boolean(selectedGame)}
-        title={
-          selectedGame
-            ? t('catalog.chooseModeTitle', { game: selectedGame.title[locale] })
-            : t('catalog.chooseModeTitle', { game: '' })
-        }
-        onClose={() => {
-          setSelectedGameId(null);
-          setRemoteNicknameError(null);
-        }}>
-        <Text
-          style={[
-            styles.modalSubtitle,
-            {
-              color: theme.semantic.text.secondary,
-              fontFamily: theme.semantic.typography.bodyFamily,
-              fontWeight: theme.semantic.typography.bodyWeight,
-            },
-          ]}>
-          {t('catalog.chooseModeSubtitle')}
-        </Text>
+        <ScrollView className="flex-1" contentContainerStyle={styles.cardsContent}>
+          <View className="flex-row flex-wrap justify-between gap-[10px]">
+            {readyGames.slice(0, 4).map((game, index) => {
+              const cardTone =
+                index === 0
+                  ? styles.cardPurple
+                  : index === 1
+                    ? styles.cardCyan
+                    : index === 2
+                      ? styles.cardPink
+                      : styles.cardBlue;
+              const buttonTone = index % 2 === 0 ? styles.buttonOrange : styles.buttonBlue;
+              const modeMeta = resolveModeMeta(game.mode);
 
-        <Input
-          label={t('catalog.nicknameLabel')}
-          errorText={remoteNicknameError ?? undefined}
-          value={remoteNickname}
-          onChangeText={(value) => {
-            const nextNickname = value.slice(0, 20);
-            setRemoteNickname(nextNickname);
-            void setPreferredNickname(nextNickname);
+              return (
+                <View
+                  key={game.id}
+                  className="relative min-h-[220px] w-[48.5%] overflow-hidden rounded-[18px] border px-2 py-[10px]"
+                  style={[styles.gameTile, cardTone]}>
+                  <LinearGradient
+                    pointerEvents="none"
+                    colors={['rgba(255,255,255,0.22)', 'rgba(255,255,255,0.06)', 'rgba(26,20,56,0.16)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.tileTextureOverlay}
+                  />
 
-            if (remoteNicknameError) {
-              setRemoteNicknameError(null);
-            }
-          }}
-          placeholder={t('catalog.nicknamePlaceholder')}
-        />
+                  <View className="flex-1">
+                    <View className="mb-[2px] items-center justify-center py-1">
+                      <Ionicons
+                        name={game.id === 'sintonia' ? 'pulse-outline' : 'help-circle'}
+                        size={54}
+                        color="#2D3757"
+                      />
+                    </View>
 
-        <View style={styles.modeActions}>
+                    <Text
+                      numberOfLines={1}
+                      className="text-center font-display text-[15px] leading-[17px] tracking-[0.7px] text-catalog-milk">
+                      {game.id === 'impostor-neon' ? 'IMPOSTOR' : game.title[locale].toUpperCase()}
+                    </Text>
+
+                    <View className="mt-[6px] flex-row items-center self-center gap-[6px]">
+                      <View className="flex-row items-center gap-1 rounded-full border border-white/30 bg-white/20 px-2 py-1">
+                        <Text className="font-number text-[10px] leading-[12px] tracking-[0.4px] text-catalog-milk">{`${game.players.min}-${game.players.max}`}</Text>
+                        <Ionicons name="people" size={12} color="#F0EEFF" />
+                      </View>
+
+                      <View className="flex-row items-center gap-[6px] rounded-full border border-white/30 bg-white/15 px-2 py-1">
+                        {modeMeta.icons.map((iconName) => (
+                          <Ionicons
+                            key={`${game.id}-${iconName}`}
+                            name={iconName as never}
+                            size={11}
+                            color="#F0EEFF"
+                          />
+                        ))}
+                      </View>
+                    </View>
+
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`${locale === 'pt' ? 'Jogar agora' : 'Play now'} ${game.title[locale]}`}
+                      onPress={() => {
+                        void openGame(game);
+                      }}
+                      disabled={isCreatingRoom || isJoiningRoom}
+                      className="mt-auto min-h-[46px] items-center justify-center rounded-[14px] border"
+                      style={({ pressed }) => [
+                        styles.tileActionButton,
+                        buttonTone,
+                        pressed ? styles.tileActionPressed : null,
+                        isCreatingRoom || isJoiningRoom ? styles.modeButtonDisabled : null,
+                      ]}>
+                      <Text className="text-center font-display text-[14px] leading-[16px] tracking-[0.7px] text-white">
+                        {isCreatingRoom
+                          ? locale === 'pt'
+                            ? 'ABRINDO...'
+                            : 'OPENING...'
+                          : locale === 'pt'
+                            ? 'JOGAR AGORA'
+                            : 'PLAY NOW'}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </ScrollView>
+
+        <View className="absolute bottom-[10px] left-3 right-3">
           <Button
-            label={t('catalog.playOnDevice')}
+            label={locale === 'pt' ? 'CÓDIGO DA SALA' : 'ROOM CODE'}
+            onPress={openJoinCodeModal}
             variant="secondary"
-            onPress={() => launchMode('local')}
-            disabled={selectedGame?.mode === 'remote' || isCreatingRoom}
-          />
-          <Button
-            label={t('catalog.createRemoteRoom')}
-            onPress={() => launchMode('remote')}
-            loading={isCreatingRoom}
-            disabled={selectedGame?.mode === 'local' || isCreatingRoom}
+            size="lg"
+            style={styles.codeButton}
           />
         </View>
-      </Modal>
+      </View>
 
-      <Modal
-        visible={openRoomVisible}
-        title={t('catalog.openRoomTitle')}
-        onClose={() => {
-          setOpenRoomVisible(false);
-          setOpenRoomError(null);
-          setOpenRoomCode('');
-          setRemoteNicknameError(null);
-        }}>
-        <Text
-          style={[
-            styles.modalSubtitle,
-            {
-              color: theme.semantic.text.secondary,
-              fontFamily: theme.semantic.typography.bodyFamily,
-              fontWeight: theme.semantic.typography.bodyWeight,
-            },
-          ]}>
-          {t('catalog.openRoomSubtitle')}
-        </Text>
+      <RNModal
+        visible={isCodeModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsCodeModalVisible(false)}>
+        <View className="flex-1 justify-center bg-[#18122E73] px-5">
+          <View className="gap-[10px] rounded-3xl border border-white/90 bg-white/80 px-[14px] pb-[14px] pt-4">
+            <IconCircleButton
+              icon="close"
+              accessibilityLabel={locale === 'pt' ? 'Fechar modal de código' : 'Close code modal'}
+              onPress={() => setIsCodeModalVisible(false)}
+              tone="neutral"
+              size={34}
+              iconSize={18}
+              style={styles.codeModalCloseButton}
+            />
 
-        <Input
-          label={t('catalog.nicknameLabel')}
-          errorText={remoteNicknameError ?? undefined}
-          value={remoteNickname}
-          onChangeText={(value) => {
-            const nextNickname = value.slice(0, 20);
-            setRemoteNickname(nextNickname);
-            void setPreferredNickname(nextNickname);
+            <Text className="pr-11 font-display text-[30px] leading-[30px] tracking-[0.4px] text-catalog-ink">
+              {locale === 'pt' ? 'Entrar com código' : 'Join with code'}
+            </Text>
+            <Text className="font-body text-[14px] leading-[18px] text-[#4A4A6F]">
+              {locale === 'pt'
+                ? 'Digite o código da sala para entrar direto no lobby.'
+                : 'Type the room code to join the lobby directly.'}
+            </Text>
 
-            if (remoteNicknameError) {
-              setRemoteNicknameError(null);
-            }
-          }}
-          placeholder={t('catalog.nicknamePlaceholder')}
-        />
+            <TextInput
+              value={roomCodeInput}
+              onChangeText={(value) => {
+                setRoomCodeInput(normalizeRoomCode(value));
+                if (roomCodeError) {
+                  setRoomCodeError(null);
+                }
+              }}
+              placeholder={locale === 'pt' ? 'Ex: 7ZP2K' : 'Ex: 7ZP2K'}
+              placeholderTextColor="rgba(43,42,70,0.45)"
+              className="min-h-[52px] rounded-2xl border bg-white/90 px-[14px] text-center font-number text-[22px] tracking-[1.5px] text-catalog-ink"
+              style={[styles.codeModalInput, roomCodeError ? styles.codeModalInputError : null]}
+              autoCorrect={false}
+              autoCapitalize="characters"
+              maxLength={5}
+            />
 
-        <Input
-          errorText={openRoomError ?? undefined}
-          value={openRoomCode}
-          onChangeText={(value) => {
-            setOpenRoomCode(value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 5));
-            if (openRoomError) {
-              setOpenRoomError(null);
-            }
-          }}
-          placeholder={t('catalog.openRoomPlaceholder')}
-        />
+            {roomCodeError ? (
+              <Text className="-mt-[2px] font-body text-[12px] leading-[16px] text-[#C73961]">
+                {roomCodeError}
+              </Text>
+            ) : null}
 
-        <Button
-          label={t('catalog.openRoomConfirm')}
-          onPress={joinExistingLobby}
-          loading={isJoiningRoom}
-          disabled={isJoiningRoom}
-        />
-      </Modal>
-
-      <BottomActionDock
-        helperText={dockHelperText}
-        primaryAction={{
-          label: t('catalog.openRoom'),
-          onPress: openJoinRoomModal,
-          variant: 'secondary',
-        }}
-      />
+            <Button
+              label={
+                isJoiningRoom
+                  ? locale === 'pt'
+                    ? 'ENTRANDO...'
+                    : 'JOINING...'
+                  : locale === 'pt'
+                    ? 'CONFIRMAR'
+                    : 'CONFIRM'
+              }
+              onPress={() => {
+                void joinByCode();
+              }}
+              disabled={isJoiningRoom}
+              variant="primary"
+              size="lg"
+              style={[styles.codeModalConfirmButton, isJoiningRoom ? styles.modeButtonDisabled : null]}
+            />
+          </View>
+        </View>
+      </RNModal>
     </SafeAreaView>
   );
 }
@@ -467,90 +451,74 @@ export default function CatalogScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
-  container: {
-    gap: 16,
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 164,
+  pageFrame: {
+    backgroundColor: 'rgba(255,255,255,0.80)',
   },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    alignSelf: 'center',
-    width: '100%',
-    maxWidth: 560,
-    justifyContent: 'flex-start',
-  },
-  gridItem: {
-  },
-  gameCard: {
-    borderRadius: 20,
-    borderWidth: 1.2,
-    padding: 14,
-    minHeight: 236,
-    gap: 12,
-    shadowOpacity: 0.24,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 8,
-  },
-  cover: {
-    position: 'relative',
-    overflow: 'hidden',
-    borderRadius: 12,
-    borderWidth: 1,
-    width: '100%',
-    aspectRatio: 16 / 7,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-    marginBottom: 2,
-  },
-  coverGlow: {
+  backgroundMilkOverlay: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.38)',
   },
-  coverPlaceholder: {
+  cardsContent: {
+    paddingBottom: 120,
+  },
+  gameTile: {
+    borderColor: 'rgba(255,255,255,0.48)',
+  },
+  tileTextureOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.72,
+  },
+  cardPurple: {
+    backgroundColor: ui.cardPurple,
+  },
+  cardCyan: {
+    backgroundColor: ui.cardCyan,
+  },
+  cardPink: {
+    backgroundColor: ui.cardPink,
+  },
+  cardBlue: {
+    backgroundColor: ui.cardBlue,
+  },
+  tileActionButton: {
+    borderColor: 'rgba(255,255,255,0.5)',
+    shadowColor: '#000000',
+    shadowOpacity: 0.14,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  tileActionPressed: {
+    transform: [{ scale: 0.98 }],
+  },
+  buttonOrange: {
+    backgroundColor: ui.clayOrange,
+  },
+  buttonBlue: {
+    backgroundColor: ui.clayBlue,
+  },
+  codeButton: {
     width: '100%',
-    height: '100%',
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
   },
-  coverPlaceholderLabel: {
-    fontSize: 12,
+  codeModalCloseButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 2,
   },
-  gameTitle: {
-    fontSize: 42,
-    lineHeight: 44,
+  codeModalInput: {
+    borderColor: 'rgba(61,57,100,0.35)',
+    fontFamily: 'Nunito_800ExtraBold',
   },
-  badgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 'auto',
+  codeModalInputError: {
+    borderColor: '#D6456B',
   },
-  iconBadge: {
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    minHeight: 26,
+  codeModalConfirmButton: {
+    borderRadius: 16,
   },
-  iconBadgeLabel: {
-    fontSize: 12,
-    lineHeight: 12,
-  },
-  modalSubtitle: {
-    fontSize: 14,
-  },
-  modeActions: {
-    gap: 10,
+  modeButtonDisabled: {
+    opacity: 0.5,
   },
 });
