@@ -22,6 +22,7 @@ type UseSintoniaGameScreenParams = {
   roundError: boolean;
   locale: string;
   viewportWidth: number;
+  isSecretWaitingOthers: boolean;
   setShellPhase?: (phase: string) => void;
   t: TranslateFn;
 };
@@ -36,6 +37,7 @@ export function useSintoniaGameScreen({
   roundError,
   locale,
   viewportWidth,
+  isSecretWaitingOthers,
   setShellPhase,
   t,
 }: UseSintoniaGameScreenParams) {
@@ -64,9 +66,9 @@ export function useSintoniaGameScreen({
 
   const dockHelperText =
     phase === 'secrets'
-      ? locale === 'pt'
-        ? 'Segure no seu card para revelar seu numero.'
-        : 'Hold your card to reveal your number.'
+      ? isSecretWaitingOthers
+        ? t('sintonia.secretWaitingOthers')
+        : t('sintonia.secretPhaseHint')
       : phase === 'ordering'
         ? dragDirectionHint
         : phase === 'revealing'

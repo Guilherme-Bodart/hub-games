@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+ï»¿import { Text, View } from 'react-native';
 
 import { styles } from '@/src/features/lobby/styles/lobbyStyles';
 import { useTheme } from '@/src/theme';
@@ -59,6 +59,7 @@ export function LobbyHeaderPanel({
   remoteStatusLabel,
 }: LobbyHeaderPanelProps) {
   const { theme } = useTheme();
+  const hiddenCodeMask = '\u2022';
 
   return (
     <View
@@ -128,29 +129,36 @@ export function LobbyHeaderPanel({
         <View style={styles.roomCodeWrap}>
           <View style={styles.roomCodeActions}>
             <View style={[styles.roomCodeTilesWrap, { backgroundColor: 'transparent' }]}>
-              {(isRoomCodeHidden ? '•'.repeat(roomCode.length) : roomCode).split('').map((char, index) => (
-                <View
-                  key={`room-char-${char}-${index}`}
-                  style={[
-                    styles.roomCodeCharTile,
-                    {
-                      shadowColor: theme.semantic.button.primary.bg,
-                      borderColor: withAlpha(theme.semantic.button.primary.bg, 0.22),
-                    },
-                  ]}>
-                  <Text
+              {(isRoomCodeHidden ? hiddenCodeMask.repeat(roomCode.length) : roomCode).split('').map((char, index) => {
+                const usesMaskChar = isRoomCodeHidden;
+                return (
+                  <View
+                    key={`room-char-${char}-${index}`}
                     style={[
-                      styles.roomCodeCharText,
+                      styles.roomCodeCharTile,
                       {
-                        color: '#2B2A46',
-                        fontFamily: theme.semantic.typography.numberFamily,
-                        fontWeight: theme.semantic.typography.numberWeight,
+                        shadowColor: theme.semantic.button.primary.bg,
+                        borderColor: withAlpha(theme.semantic.button.primary.bg, 0.22),
                       },
                     ]}>
-                    {char}
-                  </Text>
-                </View>
-              ))}
+                    <Text
+                      style={[
+                        styles.roomCodeCharText,
+                        {
+                          color: '#2B2A46',
+                          fontFamily: usesMaskChar
+                            ? theme.semantic.typography.titleFamily
+                            : theme.semantic.typography.numberFamily,
+                          fontWeight: usesMaskChar
+                            ? theme.semantic.typography.titleWeight
+                            : theme.semantic.typography.numberWeight,
+                        },
+                      ]}>
+                      {char}
+                    </Text>
+                  </View>
+                );
+              })}
             </View>
 
             <View style={styles.roomCodeButtons}>
@@ -256,3 +264,4 @@ export function LobbyHeaderPanel({
     </View>
   );
 }
+

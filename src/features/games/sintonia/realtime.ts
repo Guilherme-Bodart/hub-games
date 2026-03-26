@@ -2,6 +2,7 @@ import { get, onValue, ref, set, update } from 'firebase/database';
 import { z } from 'zod';
 
 import { SintoniaPhase, SintoniaRevealFeedback, SintoniaRound, SintoniaRoundResult } from '@/src/features/games/sintonia/types';
+import { createDevicesReadyMap } from '@/src/features/games/sintonia/logic';
 import { ensureFirebaseAnonymousAuth, getFirebaseServices } from '@/src/integrations/firebase';
 
 type RemoteSintoniaPlayer = {
@@ -20,6 +21,7 @@ type SintoniaRealtimeState = {
   orderedPlayerIds: string[];
   revealedById: Record<string, SintoniaRevealFeedback>;
   revealedCount: number;
+  devicesReadyById: Record<string, boolean>;
 };
 
 type SubscribeSintoniaParams = {
@@ -53,6 +55,7 @@ const liveSchema = z.object({
   orderedPlayerIds: z.array(z.string().min(1)).min(2),
   revealedById: z.record(z.string(), z.enum(['hidden', 'correct', 'incorrect'])),
   revealedCount: z.number().int().min(0),
+  devicesReadyById: z.record(z.string(), z.boolean()).default({}),
   updatedAt: z.number().optional(),
   updatedByDeviceId: z.string().optional(),
 });
@@ -243,6 +246,7 @@ export const initializeRemoteSintoniaRound = async (
       {}
     ),
     revealedCount: 0,
+    devicesReadyById: createDevicesReadyMap(round.players),
     updatedAt: Date.now(),
     updatedByDeviceId: ownerDeviceId,
   };
@@ -288,6 +292,7 @@ export const subscribeRemoteSintoniaState = ({
       orderedPlayerIds: live.orderedPlayerIds,
       revealedById: live.revealedById,
       revealedCount: live.revealedCount,
+      devicesReadyById: live.devicesReadyById,
     });
   };
 
@@ -393,6 +398,26 @@ export const setRemoteSintoniaOrder = async (
         updatedByDeviceId: deviceId,
       }),
     'Falha ao sincronizar ordem da Sintonia.'
+  );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
+};
+
+export const setRemoteSintoniaDeviceReady = async (
+  roomCode: string,
+  readyDeviceId: string,
+  ready: boolean,
+  actorDeviceId: string
+): Promise<void> => {
+  await ensureFirebaseAnonymousAuth();
+  const database = getDatabaseOrThrow();
+  await runWithRetry(
+    () =>
+      update(ref(database, `rooms/${roomCode}/games/sintonia/live`), {
+        [`devicesReadyById/${readyDeviceId}`]: ready,
+        updatedAt: Date.now(),
+        updatedByDeviceId: actorDeviceId,
+      }),
+    'Falha ao sincronizar prontidao do dispositivo na Sintonia.'
   );
   await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };

@@ -1,6 +1,10 @@
 import { Dispatch, MutableRefObject, SetStateAction, useCallback, useEffect } from 'react';
 
-import { createHiddenRevealMap, createSintoniaRound } from '@/src/features/games/sintonia/logic';
+import {
+  createDevicesReadyMap,
+  createHiddenRevealMap,
+  createSintoniaRound,
+} from '@/src/features/games/sintonia/logic';
 import {
   initializeRemoteSintoniaRound,
   remoteSintoniaStateExists,
@@ -32,6 +36,7 @@ type UseSintoniaRoundLifecycleParams = {
   setOrderedPlayerIds: Dispatch<SetStateAction<string[]>>;
   setRevealedById: Dispatch<SetStateAction<Record<string, SintoniaRevealFeedback>>>;
   setRevealedCount: Dispatch<SetStateAction<number>>;
+  setDevicesReadyById: Dispatch<SetStateAction<Record<string, boolean>>>;
   setActiveSecretPlayerId: Dispatch<SetStateAction<string | null>>;
   setRoundError: Dispatch<SetStateAction<boolean>>;
 };
@@ -53,6 +58,7 @@ export function useSintoniaRoundLifecycle({
   setOrderedPlayerIds,
   setRevealedById,
   setRevealedCount,
+  setDevicesReadyById,
   setActiveSecretPlayerId,
   setRoundError,
 }: UseSintoniaRoundLifecycleParams) {
@@ -71,6 +77,7 @@ export function useSintoniaRoundLifecycle({
       setPhase('secrets');
       setRoundResult('pending');
       setRevealedCount(0);
+      setDevicesReadyById(createDevicesReadyMap(nextRound.players));
       setActiveSecretPlayerId(null);
       setRoundError(false);
     } catch {
@@ -86,6 +93,7 @@ export function useSintoniaRoundLifecycle({
     setPhase,
     setRevealedById,
     setRevealedCount,
+    setDevicesReadyById,
     setRound,
     setRoundError,
     setRoundResult,
@@ -158,6 +166,7 @@ export function useSintoniaRoundLifecycle({
         setOrderedPlayerIds(remoteState.orderedPlayerIds);
         setRevealedById(remoteState.revealedById);
         setRevealedCount(remoteState.revealedCount);
+        setDevicesReadyById(remoteState.devicesReadyById);
         setRoundError(false);
       },
       onError: () => {
@@ -177,6 +186,7 @@ export function useSintoniaRoundLifecycle({
     setPhase,
     setRevealedById,
     setRevealedCount,
+    setDevicesReadyById,
     setRound,
     setRoundError,
     setRoundResult,

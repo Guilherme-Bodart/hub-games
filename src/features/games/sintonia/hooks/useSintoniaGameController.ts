@@ -1,4 +1,3 @@
-import * as Haptics from 'expo-haptics';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { createPlayersMap } from '@/src/features/games/sintonia/logic';
@@ -6,7 +5,7 @@ import { useSintoniaGameScreen } from '@/src/features/games/sintonia/hooks/useSi
 import { useSintoniaOrdering } from '@/src/features/games/sintonia/hooks/useSintoniaOrdering';
 import { useSintoniaRevealFlow } from '@/src/features/games/sintonia/hooks/useSintoniaRevealFlow';
 import { useSintoniaRoundLifecycle } from '@/src/features/games/sintonia/hooks/useSintoniaRoundLifecycle';
-import { setRemoteSintoniaPhase } from '@/src/features/games/sintonia/realtime';
+import { useSintoniaSecretPhase } from '@/src/features/games/sintonia/hooks/useSintoniaSecretPhase';
 import {
   SintoniaPhase,
   SintoniaRevealFeedback,
@@ -78,6 +77,29 @@ export function useSintoniaGameController({
     [isHostDevice, lobby.gameSettings]
   );
 
+  const playersById = useMemo(() => (round ? createPlayersMap(round.players) : {}), [round]);
+
+  const orderedPlayers = useMemo(
+    () => orderedPlayerIds.map((playerId) => playersById[playerId]).filter(Boolean),
+    [orderedPlayerIds, playersById]
+  );
+
+  const isCompactViewport = viewportWidth < 390;
+  const orderingGridColumns = viewportWidth >= 900 ? 4 : viewportWidth >= 520 ? 3 : 2;
+
+  const secretPhase = useSintoniaSecretPhase({
+    round,
+    phase,
+    orderedPlayers,
+    activeSecretPlayerId,
+    setActiveSecretPlayerId,
+    isRemoteRealtime,
+    localDeviceId,
+    roomCode,
+    setPhase,
+    setRoundError,
+  });
+
   const { startNewRound } = useSintoniaRoundLifecycle({
     lobby,
     locale,
@@ -95,29 +117,10 @@ export function useSintoniaGameController({
     setOrderedPlayerIds,
     setRevealedById,
     setRevealedCount,
+    setDevicesReadyById: secretPhase.setDevicesReadyById,
     setActiveSecretPlayerId,
     setRoundError,
   });
-
-  const playersById = useMemo(() => (round ? createPlayersMap(round.players) : {}), [round]);
-
-  const orderedPlayers = useMemo(
-    () => orderedPlayerIds.map((playerId) => playersById[playerId]).filter(Boolean),
-    [orderedPlayerIds, playersById]
-  );
-
-  const activeSecretPlayer = useMemo(
-    () =>
-      activeSecretPlayerId
-        ? orderedPlayers.find((player) => player.id === activeSecretPlayerId) ?? null
-        : null,
-    [activeSecretPlayerId, orderedPlayers]
-  );
-
-  const isCompactViewport = viewportWidth < 390;
-  const secretGridColumns =
-    viewportWidth >= 760 ? 4 : viewportWidth >= 560 ? 3 : isCompactViewport ? 1 : 2;
-  const orderingGridColumns = viewportWidth >= 900 ? 4 : viewportWidth >= 520 ? 3 : 2;
 
   const { handleOrderingCardMeasure, onDropPlayer } = useSintoniaOrdering({
     phase,
@@ -128,19 +131,6 @@ export function useSintoniaGameController({
     orderSyncTimerRef,
     setOrderedPlayerIds,
   });
-
-  const handleSecretPlayerPressIn = useCallback((player: { id: string; isLocalDevice: boolean }) => {
-    if (!player.isLocalDevice) {
-      return;
-    }
-
-    setActiveSecretPlayerId(player.id);
-    void Haptics.selectionAsync();
-  }, []);
-
-  const handleSecretPlayerPressOut = useCallback((playerId: string) => {
-    setActiveSecretPlayerId((currentPlayerId) => (currentPlayerId === playerId ? null : currentPlayerId));
-  }, []);
 
   const { revealOrder } = useSintoniaRevealFlow({
     round,
@@ -165,20 +155,15 @@ export function useSintoniaGameController({
     () =>
       phase === 'secrets'
         ? {
-            label: t('sintonia.goToOrdering'),
-            onPress: () => {
-              triggerGameFeedback('confirm');
-              setActiveSecretPlayerId(null);
-              if (!isRemoteRealtime) {
-                setPhase('ordering');
-                return;
-              }
-
-              void setRemoteSintoniaPhase(roomCode, 'ordering', localDeviceId).catch(() => {
-                setRoundError(true);
-              });
-            },
-            disabled: false,
+            label: secretPhase.isSecretWaitingOthers
+              ? t('sintonia.secretWaitingOthers')
+              : secretPhase.hasMoreLocalSecretPlayers
+                ? t('sintonia.secretNextPlayer')
+                : t('sintonia.secretReadyAction'),
+            onPress: secretPhase.advanceSecretCard,
+            disabled:
+              secretPhase.isLocalDeviceReady ||
+              (Boolean(secretPhase.currentSecretPlayer) && !secretPhase.isCurrentSecretViewed),
           }
         : phase === 'ordering'
           ? {
@@ -209,14 +194,13 @@ export function useSintoniaGameController({
     [
       canControlCriticalActions,
       isRemoteRealtime,
-      localDeviceId,
       orderedPlayerIds.length,
       phase,
       revealOrder,
       revealedCount,
-      roomCode,
       startNewRound,
       t,
+      secretPhase,
     ]
   );
 
@@ -230,6 +214,7 @@ export function useSintoniaGameController({
     roundError,
     locale,
     viewportWidth,
+    isSecretWaitingOthers: secretPhase.isSecretWaitingOthers,
     setShellPhase,
     t,
   });
@@ -245,14 +230,21 @@ export function useSintoniaGameController({
     orderedPlayers,
     revealedById,
     revealedCount,
-    activeSecretPlayer,
+    currentSecretPlayer: secretPhase.currentSecretPlayer,
     activeSecretPlayerId,
+    isCurrentSecretRevealed: secretPhase.isCurrentSecretRevealed,
+    isCurrentSecretViewed: secretPhase.isCurrentSecretViewed,
+    isSecretWaitingOthers: secretPhase.isSecretWaitingOthers,
+    isLocalDeviceReady: secretPhase.isLocalDeviceReady,
+    hasMoreLocalSecretPlayers: secretPhase.hasMoreLocalSecretPlayers,
+    secretReadyDevicesCount: secretPhase.secretReadyDevicesCount,
+    secretTotalDevicesCount: secretPhase.secretTotalDevicesCount,
     isCompactViewport,
-    secretGridColumns,
     orderingGridColumns,
     primaryAction,
-    handleSecretPlayerPressIn,
-    handleSecretPlayerPressOut,
+    handleSecretPlayerPressIn: secretPhase.handleSecretPlayerPressIn,
+    handleSecretPlayerPressOut: secretPhase.handleSecretPlayerPressOut,
+    advanceSecretCard: secretPhase.advanceSecretCard,
     handleOrderingCardMeasure,
     onDropPlayer,
     startNewRound,

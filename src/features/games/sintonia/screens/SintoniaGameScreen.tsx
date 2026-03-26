@@ -5,7 +5,7 @@ import {
   SintoniaBoardSection,
   SintoniaBottomDock,
   SintoniaRulesModal,
-  SintoniaSecretHeroOverlay,
+  SintoniaSecretRevealCard,
   SintoniaThemeStatusSection,
 } from '@/src/features/games/sintonia/components';
 import { useSintoniaGameController } from '@/src/features/games/sintonia/hooks/useSintoniaGameController';
@@ -97,14 +97,6 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
           </View>
         ) : null}
 
-        {game.phase === 'secrets' && game.activeSecretPlayer ? (
-          <SintoniaSecretHeroOverlay
-            activeSecretPlayer={game.activeSecretPlayer}
-            releaseHintLabel={locale === 'pt' ? 'Solte para ocultar' : 'Release to hide'}
-            theme={theme}
-          />
-        ) : null}
-
         <SintoniaThemeStatusSection
           theme={theme}
           roundTheme={game.round.theme}
@@ -117,29 +109,49 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
           canAdvancePhase={game.canAdvancePhase}
         />
 
-        <SintoniaBoardSection
-          orderedPlayers={game.orderedPlayers}
-          phase={game.phase}
-          activeSecretPlayerId={game.activeSecretPlayerId}
-          revealedById={game.revealedById}
-          theme={theme}
-          secretGridColumns={game.secretGridColumns}
-          orderingGridColumns={game.orderingGridColumns}
-          isCompactViewport={game.isCompactViewport}
-          playersSectionLabel={game.playersSectionLabel}
-          playersBadgeLabel={t('sintonia.playersBadge', { count: game.orderedPlayers.length })}
-          emptyCardsLabel={
-            locale === 'pt'
-              ? 'Aguardando jogadores para iniciar esta rodada.'
-              : 'Waiting for players to start this round.'
-          }
-          holdHintLabel={locale === 'pt' ? 'Segure para revelar' : 'Hold to reveal'}
-          hiddenNumberLabel={t('sintonia.hiddenNumber')}
-          onSecretPressIn={game.handleSecretPlayerPressIn}
-          onSecretPressOut={game.handleSecretPlayerPressOut}
-          onOrderingCardMeasure={game.handleOrderingCardMeasure}
-          onDropPlayer={game.onDropPlayer}
-        />
+        {game.phase === 'secrets' ? (
+          <SintoniaSecretRevealCard
+            theme={theme}
+            player={game.currentSecretPlayer}
+            isRevealed={game.isCurrentSecretRevealed}
+            isViewed={game.isCurrentSecretViewed}
+            isLocalReady={game.isLocalDeviceReady}
+            isWaitingOthers={game.isSecretWaitingOthers}
+            hasMoreLocalPlayers={game.hasMoreLocalSecretPlayers}
+            canAdvance={game.primaryAction.disabled === false}
+            holdHintLabel={locale === 'pt' ? 'Toque e segure para revelar o numero.' : 'Press and hold to reveal your number.'}
+            releaseHintLabel={locale === 'pt' ? 'Solte para ocultar.' : 'Release to hide.'}
+            waitingLabel={t('sintonia.secretWaitingOthers')}
+            readyProgressLabel={t('sintonia.secretReadyProgress', {
+              ready: game.secretReadyDevicesCount,
+              total: game.secretTotalDevicesCount,
+            })}
+            nextLabel={t('sintonia.secretNextPlayer')}
+            readyLabel={t('sintonia.secretReadyAction')}
+            onPressIn={game.handleSecretPlayerPressIn}
+            onPressOut={game.handleSecretPlayerPressOut}
+            onAdvance={game.advanceSecretCard}
+          />
+        ) : (
+          <SintoniaBoardSection
+            orderedPlayers={game.orderedPlayers}
+            revealedById={game.revealedById}
+            theme={theme}
+            orderingGridColumns={game.orderingGridColumns}
+            isCompactViewport={game.isCompactViewport}
+            playersSectionLabel={game.playersSectionLabel}
+            playersBadgeLabel={t('sintonia.playersBadge', { count: game.orderedPlayers.length })}
+            emptyCardsLabel={
+              locale === 'pt'
+                ? 'Aguardando jogadores para iniciar esta rodada.'
+                : 'Waiting for players to start this round.'
+            }
+            hiddenNumberLabel={t('sintonia.hiddenNumber')}
+            isDragEnabled={game.phase === 'ordering'}
+            onOrderingCardMeasure={game.handleOrderingCardMeasure}
+            onDropPlayer={game.onDropPlayer}
+          />
+        )}
       </GameScreenShell>
 
       <SintoniaRulesModal

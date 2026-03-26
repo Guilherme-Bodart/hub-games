@@ -90,6 +90,17 @@ export const createHiddenRevealMap = (
     return accumulator;
   }, {});
 
+export const createDevicesReadyMap = (
+  players: SintoniaPlayer[],
+  initialReady = false
+): Record<string, boolean> =>
+  players.reduce<Record<string, boolean>>((accumulator, player) => {
+    if (accumulator[player.deviceId] === undefined) {
+      accumulator[player.deviceId] = initialReady;
+    }
+    return accumulator;
+  }, {});
+
 export const createSintoniaRound = ({
   lobby,
   locale,

@@ -180,8 +180,7 @@ export default function LobbyScreen() {
         : t('connection.error');
 
   const lobbyTitle = selectedGame ? selectedGame.title[locale] : t('tabs.lobby');
-  const playerColumns =
-    viewportWidth >= 980 ? 6 : viewportWidth >= 760 ? 4 : viewportWidth >= 560 ? 3 : 2;
+  const playerColumns = viewportWidth >= 980 ? 6 : viewportWidth >= 760 ? 5 : 4;
   const playerGridHorizontalPadding = 32;
   const playerGridMaxWidth = 620;
   const playerGridGap = 12;
@@ -190,7 +189,7 @@ export default function LobbyScreen() {
     Math.max(0, viewportWidth - playerGridHorizontalPadding)
   );
   const playerCellWidth = Math.max(
-    78,
+    68,
     Math.floor((playerGridWidth - playerGridGap * (playerColumns - 1)) / playerColumns)
   );
 
@@ -701,3 +700,4 @@ export default function LobbyScreen() {
     </SafeAreaView>
   );
 }
+

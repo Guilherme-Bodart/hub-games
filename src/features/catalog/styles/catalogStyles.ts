@@ -88,23 +88,16 @@ export const styles = StyleSheet.create({
   },
   gameGrid: {
     width: '100%',
-  },
-  gameGridRow: {
-    width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'stretch',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
   },
   gameTilePressable: {
-    width: '48%',
     minWidth: 0,
   },
-  gameTilePlaceholder: {
-    width: '48%',
-  },
-  gameTilePressed: {
-    opacity: 0.88,
-    transform: [{ scale: 0.985 }],
+  gameTileSingleRow: {
+    marginRight: 0,
   },
   gameTileSimple: {
     minHeight: 250,

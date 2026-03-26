@@ -3,7 +3,6 @@ import { ComponentProps } from 'react';
 import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { useTheme } from '@/src/theme';
-import { resolveIconButtonTone } from '@/src/ui/atoms/tactile';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 type IconCircleButtonTone = 'neutral' | 'primary' | 'secondary';
@@ -30,8 +29,13 @@ export function IconCircleButton({
   style,
 }: IconCircleButtonProps) {
   const { theme } = useTheme();
-  const palette = resolveIconButtonTone(theme, tone);
   const standardRadius = size / 2;
+  const iconColor =
+    tone === 'primary'
+      ? theme.semantic.button.primary.text
+      : tone === 'secondary'
+        ? theme.semantic.button.accent.bg
+        : '#2B2A46';
 
   return (
     <Pressable
@@ -47,29 +51,29 @@ export function IconCircleButton({
           width: size,
           height: size,
           borderRadius: standardRadius,
-          backgroundColor: palette.backgroundColor,
-          borderColor: palette.borderColor,
+          backgroundColor: '#FFFFFF',
+          borderColor: 'rgba(0,0,0,0.14)',
           opacity: pressed ? theme.semantic.motion.feedback.pressedOpacity : 1,
         },
         style,
       ]}>
-      <Ionicons name={icon} size={iconSize} color={palette.iconColor} />
+      <Ionicons name={icon} size={iconSize} color={iconColor} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   base: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
   iconShadow: {
     shadowColor: '#000000',
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    shadowOffset: { width: 4, height: 4 },
-    elevation: 7,
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    shadowOffset: { width: 2, height: 2 },
+    elevation: 5,
   },
 });
