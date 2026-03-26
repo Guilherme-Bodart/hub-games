@@ -16,11 +16,12 @@ import {
 import type { VisibleLobbyPlayer } from '@/src/features/lobby/lobby.types';
 import { resolveNextAutoPlayerName } from '@/src/features/lobby/lobby.utils';
 import type { Locale } from '@/src/i18n';
+import type { TranslationKey } from '@/src/i18n/types';
 import type { HybridLobbyState } from '@/src/features/lobby/types';
 
 const REMOTE_RECONNECT_STATES = new Set(['connecting', 'reconnecting', 'idle']);
 
-type TranslateFn = (key: string, params?: Record<string, string | number>) => string;
+type TranslateFn = (key: TranslationKey, params?: Record<string, string | number>) => string;
 
 type UseLobbyDerivedStateParams = {
   lobby: HybridLobbyState | null;
@@ -92,7 +93,7 @@ export function useLobbyDerivedState({
   const isSettingsEditable = isLocalHost;
   const isCompactViewport = viewportWidth < 390;
   const playerColumns = viewportWidth >= 980 ? 6 : viewportWidth >= 760 ? 5 : viewportWidth >= 390 ? 4 : 3;
-  const playerCellWidth =
+  const playerCellWidth: `${number}%` =
     playerColumns === 6 ? '15.4%' : playerColumns === 5 ? '18.8%' : playerColumns === 4 ? '23.2%' : '31.2%';
   const nextAutoName = resolveNextAutoPlayerName(locale, totalPlayers);
 
@@ -101,7 +102,7 @@ export function useLobbyDerivedState({
   const impostorLobbyBadgeLabel = getImpostorLobbyBadgeLabel(locale, impostorCount);
   const roomCodeLabels = getRoomCodeVisibilityLabels(locale);
 
-  const remoteStatusTone =
+  const remoteStatusTone: 'success' | 'neutral' | 'error' =
     realtimeStatus === 'connected'
       ? 'success'
       : REMOTE_RECONNECT_STATES.has(realtimeStatus)

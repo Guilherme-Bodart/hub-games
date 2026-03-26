@@ -146,7 +146,7 @@ type LobbyPlayersSectionProps = {
   showAddCard: boolean;
   playersEmptyHint: string;
   reduceMotion: boolean;
-  playerCellWidth: string;
+  playerCellWidth: `${number}%`;
   onToggleReady: (playerId: string, isLocalDevice: boolean) => void;
   onRemovePlayer: (playerId: string) => void;
   onOpenAddPlayerModal: () => void;
