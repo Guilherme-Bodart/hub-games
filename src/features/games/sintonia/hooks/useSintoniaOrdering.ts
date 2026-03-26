@@ -18,7 +18,6 @@ type UseSintoniaOrderingParams = {
   localDeviceId: string;
   orderSyncTimerRef: MutableRefObject<ReturnType<typeof setTimeout> | null>;
   setOrderedPlayerIds: Dispatch<SetStateAction<string[]>>;
-  setRoundError: Dispatch<SetStateAction<boolean>>;
 };
 
 export function useSintoniaOrdering({
@@ -29,7 +28,6 @@ export function useSintoniaOrdering({
   localDeviceId,
   orderSyncTimerRef,
   setOrderedPlayerIds,
-  setRoundError,
 }: UseSintoniaOrderingParams) {
   const [orderingCardMetrics, setOrderingCardMetrics] = useState<{ width: number; height: number } | null>(
     null
@@ -88,9 +86,7 @@ export function useSintoniaOrdering({
           }
 
           orderSyncTimerRef.current = setTimeout(() => {
-            void setRemoteSintoniaOrder(roomCode, nextOrder, localDeviceId).catch(() => {
-              setRoundError(true);
-            });
+            void setRemoteSintoniaOrder(roomCode, nextOrder, localDeviceId).catch(() => undefined);
           }, ORDER_SYNC_DEBOUNCE_MS);
         }
 
@@ -109,7 +105,6 @@ export function useSintoniaOrdering({
       phase,
       roomCode,
       setOrderedPlayerIds,
-      setRoundError,
     ]
   );
 

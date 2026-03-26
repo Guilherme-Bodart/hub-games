@@ -39,6 +39,7 @@ export function SettingsLanguageCard({
             onPress={() => onSelectLanguage(option.locale)}
             variant={option.selected ? 'secondary' : 'ghost'}
             size="lg"
+            style={styles.languageButton}
           />
         ))}
       </View>

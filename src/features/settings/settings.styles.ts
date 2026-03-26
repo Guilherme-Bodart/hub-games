@@ -11,19 +11,6 @@ export const styles = StyleSheet.create({
     paddingBottom: 24,
     gap: 14,
   },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 2,
-  },
-  headerTitle: {
-    color: '#2B2A46',
-    fontSize: 48,
-    lineHeight: 48,
-    fontFamily: 'Baloo2_700Bold',
-    letterSpacing: 0.2,
-  },
   glassCard: {
     borderWidth: 1,
     borderRadius: 24,
@@ -61,5 +48,9 @@ export const styles = StyleSheet.create({
   optionStack: {
     gap: 10,
     marginTop: 6,
+  },
+  languageButton: {
+    width: '100%',
+    alignSelf: 'stretch',
   },
 });

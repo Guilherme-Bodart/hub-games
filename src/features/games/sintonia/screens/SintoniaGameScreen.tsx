@@ -14,7 +14,7 @@ import { GameRuntimeScreenProps } from '@/src/features/games/types';
 import { useI18n } from '@/src/i18n';
 import { useTheme } from '@/src/theme';
 import { withAlpha } from '@/src/theme/utils';
-import { Button, Card, GameScreenShell, GameTopBar } from '@/src/ui/atoms';
+import { Card, GameScreenShell, GameTopBar } from '@/src/ui/atoms';
 import { triggerGameFeedback } from '@/src/ui/feedback';
 
 export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRuntimeScreenProps) {
@@ -38,53 +38,29 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
     locale === 'pt'
       ? 'Nao foi possivel carregar a rodada. Tente iniciar novamente.'
       : 'Could not load the round. Try starting again.';
-  const retryLabel = locale === 'pt' ? 'Tentar novamente' : 'Try again';
 
-  if (game.isRemoteRealtime && !game.round && !game.roundError) {
+  if (game.isRemoteRealtime && !game.round) {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }]}>
         <View style={styles.emptyWrap}>
-          <Card title={t('sintonia.title')} subtitle={syncingSubtitle}>
-            <Button
-              label={t('sintonia.backLobby')}
-              variant="ghost"
-              onPress={() => {
-                triggerGameFeedback('warning');
-                onExitLobby();
-              }}
-            />
-          </Card>
+          <Card title={t('sintonia.title')} subtitle={game.realtimeError || syncingSubtitle} />
         </View>
       </SafeAreaView>
     );
   }
 
-  if (!game.round || game.roundError) {
+  if (!game.isRemoteRealtime && (!game.round || game.roundError)) {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }]}>
         <View style={styles.emptyWrap}>
-          <Card title={t('sintonia.title')} subtitle={unavailableSubtitle}>
-            {game.canControlCriticalActions ? (
-              <Button
-                label={retryLabel}
-                onPress={() => {
-                  triggerGameFeedback('confirm');
-                  void game.startNewRound();
-                }}
-              />
-            ) : null}
-            <Button
-              label={t('sintonia.backLobby')}
-              variant="ghost"
-              onPress={() => {
-                triggerGameFeedback('warning');
-                onExitLobby();
-              }}
-            />
-          </Card>
+          <Card title={t('sintonia.title')} subtitle={unavailableSubtitle} />
         </View>
       </SafeAreaView>
     );
+  }
+
+  if (!game.round) {
+    return null;
   }
 
   return (

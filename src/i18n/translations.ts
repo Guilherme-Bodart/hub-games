@@ -1,4 +1,4 @@
-﻿import { Locale, TranslationKey } from '@/src/i18n/types';
+import { Locale, TranslationKey } from '@/src/i18n/types';
 
 type TranslationMap = Record<TranslationKey, string>;
 

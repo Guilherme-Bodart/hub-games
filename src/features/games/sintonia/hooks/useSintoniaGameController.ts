@@ -127,7 +127,6 @@ export function useSintoniaGameController({
     localDeviceId,
     orderSyncTimerRef,
     setOrderedPlayerIds,
-    setRoundError,
   });
 
   const handleSecretPlayerPressIn = useCallback((player: { id: string; isLocalDevice: boolean }) => {

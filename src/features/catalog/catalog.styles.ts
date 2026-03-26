@@ -18,6 +18,12 @@ export const styles = StyleSheet.create({
   cardsContent: {
     paddingBottom: 120,
   },
+  tilesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 10,
+  },
   gameTile: {
     borderColor: 'rgba(255,255,255,0.48)',
   },

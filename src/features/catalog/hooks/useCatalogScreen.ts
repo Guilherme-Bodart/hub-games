@@ -136,7 +136,7 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
     const normalizedCode = normalizeRoomCode(roomCodeInput);
 
     if (!normalizedCode) {
-      setRoomCodeError(locale === 'pt' ? 'Digite o cÃ³digo da sala.' : 'Enter the room code.');
+      setRoomCodeError(locale === 'pt' ? 'Digite o código da sala.' : 'Enter the room code.');
       return;
     }
 
@@ -193,3 +193,4 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
     },
   };
 };
+

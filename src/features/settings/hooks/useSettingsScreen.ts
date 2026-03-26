@@ -1,9 +1,13 @@
-import { useMemo } from 'react';
+import { useNavigation } from 'expo-router';
+import { useEffect, useMemo } from 'react';
 
 import { useI18n } from '@/src/i18n';
 import { SETTINGS_LANGUAGE_OPTIONS } from '@/src/features/settings/settings.constants';
+import { useTheme } from '@/src/theme';
 
 export const useSettingsScreen = () => {
+  const navigation = useNavigation();
+  const { theme } = useTheme();
   const { locale, setLocale, t } = useI18n();
 
   const options = useMemo(
@@ -15,6 +19,20 @@ export const useSettingsScreen = () => {
       })),
     [locale, t]
   );
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: t('settings.title'),
+      headerShadowVisible: false,
+      headerStyle: { backgroundColor: '#FFFFFF' },
+      headerTintColor: '#2B2A46',
+      headerTitleStyle: {
+        color: '#2B2A46',
+        fontFamily: theme.semantic.typography.titleFamily,
+        fontWeight: theme.semantic.typography.titleWeight,
+      },
+    });
+  }, [navigation, t, theme.semantic.typography.titleFamily, theme.semantic.typography.titleWeight]);
 
   return {
     locale,
