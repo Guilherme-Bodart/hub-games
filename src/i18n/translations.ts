@@ -1,4 +1,4 @@
-﻿import { Locale, TranslationKey } from '@/src/i18n/types';
+import { Locale, TranslationKey } from '@/src/i18n/types';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -50,7 +50,7 @@ export const translations: Record<Locale, TranslationMap> = {
     'lobby.connected': 'Conectado',
     'lobby.tapAvatarHint':
       'Toque no avatar para alternar pronto/pendente. Quando todos estiverem prontos, o jogo libera.',
-    'lobby.needMorePlayers': 'Precisa de pelo menos {min} jogadores',
+    'lobby.needMorePlayers': 'Jogadores insuficientes',
     'lobby.tooManyPlayers': 'Limite deste jogo: {max} jogadores',
     'lobby.leaveConfirmTitle': 'Sair do lobby?',
     'lobby.leaveConfirmMessage':
@@ -179,7 +179,7 @@ export const translations: Record<Locale, TranslationMap> = {
     'lobby.connected': 'Connected',
     'lobby.tapAvatarHint':
       'Tap avatar to toggle ready/pending. When everyone is ready, the game unlocks.',
-    'lobby.needMorePlayers': 'Need at least {min} players',
+    'lobby.needMorePlayers': 'Not enough players',
     'lobby.tooManyPlayers': 'This game limit is {max} players',
     'lobby.leaveConfirmTitle': 'Leave the lobby?',
     'lobby.leaveConfirmMessage':

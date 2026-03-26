@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useSettingsScreen } from '@/src/features/settings/hooks/useSettingsScreen';
 import { SettingsLanguageCard } from '@/src/features/settings/components/SettingsLanguageCard';
@@ -13,7 +13,7 @@ export function SettingsScreen() {
   const [bgStart, bgEnd] = resolveThemeSystemGradient(themeName);
   const subtitle =
     locale === 'pt'
-      ? 'Selecione o idioma preferido para a interface e narracao dos jogos.'
+      ? 'Selecione o idioma preferido para a interface e narração dos jogos.'
       : 'Choose your preferred language for the interface and narration.';
 
   return (
@@ -26,10 +26,6 @@ export function SettingsScreen() {
         style={StyleSheet.absoluteFill}
       />
       <View pointerEvents="none" style={styles.backgroundMilkOverlay} />
-
-      <View style={styles.headerRow}>
-        <Text style={styles.headerTitle}>{t('settings.title').toUpperCase()}</Text>
-      </View>
 
       <SettingsLanguageCard
         title={t('settings.language')}

@@ -34,7 +34,7 @@ export const resolveIconButtonTone = (theme: ThemeTokens, tone: IconButtonTone) 
 
   return {
     backgroundColor: '#FFFFFF',
-    borderColor: withAlpha('#000000', 0.08),
+    borderColor: withAlpha('#000000', 0.14),
     iconColor: theme.semantic.text.primary,
   };
 };

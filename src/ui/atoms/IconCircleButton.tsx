@@ -4,7 +4,7 @@ import { ComponentProps } from 'react';
 import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { useTheme } from '@/src/theme';
-import { resolveIconButtonTone, tactileGlossColors, tactileShadowStyle } from '@/src/ui/atoms/tactile';
+import { resolveIconButtonTone, tactileGlossColors } from '@/src/ui/atoms/tactile';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 type IconCircleButtonTone = 'neutral' | 'primary' | 'secondary';
@@ -42,7 +42,7 @@ export function IconCircleButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
-        tactileShadowStyle,
+        styles.iconShadow,
         {
           width: size,
           height: size,
@@ -71,6 +71,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+  },
+  iconShadow: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOffset: { width: 4, height: 4 },
+    elevation: 4,
   },
 });
 

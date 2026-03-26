@@ -74,7 +74,7 @@ export function BottomActionDock({
           loading={primaryAction.loading}
           variant={primaryAction.variant}
           size="lg"
-          style={primaryAction.style}
+          style={[styles.primaryButton, primaryAction.style]}
         />
         {secondaryAction ? (
           <Button
@@ -101,6 +101,10 @@ const styles = StyleSheet.create({
   },
   inner: {
     gap: 8,
+  },
+  primaryButton: {
+    width: '100%',
+    alignSelf: 'stretch',
   },
   helperText: {
     fontSize: 12,
