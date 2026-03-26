@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Neon design system snapshots Button snapshot [{ name: 'arcadeIce', label: 'Arcade Ice' }] 1`] = `
+exports[`Neon design system snapshots Button snapshot [{ name: 'arcadeIce', label: 'Blue Nebula' }] 1`] = `
 <View
+  accessibilityLabel="Play - Blue Nebula"
   accessibilityRole="button"
   accessibilityState={
     {
@@ -36,53 +37,92 @@ exports[`Neon design system snapshots Button snapshot [{ name: 'arcadeIce', labe
     [
       {
         "alignItems": "center",
-        "borderRadius": 14,
-        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
         "justifyContent": "center",
-        "minHeight": 50,
-        "paddingHorizontal": 14,
-        "paddingVertical": 10,
+        "overflow": "hidden",
+        "paddingHorizontal": 16,
+        "paddingVertical": 11,
       },
       {
-        "backgroundColor": "#4DA3FF",
-        "borderColor": "#4DA3FF5C",
-        "opacity": 1,
-        "shadowColor": "#4DA3FF",
+        "minHeight": 48,
       },
       {
-        "elevation": 9,
+        "elevation": 3,
+        "shadowColor": "#000000",
         "shadowOffset": {
-          "height": 0,
+          "height": 2,
           "width": 0,
         },
-        "shadowOpacity": 0.56,
-        "shadowRadius": 12,
+        "shadowOpacity": 0.14,
+        "shadowRadius": 3,
+      },
+      {
+        "backgroundColor": "#4F9CFF",
+        "borderColor": "#0000001F",
+        "borderRadius": 14,
+        "borderWidth": 1.5,
+        "opacity": 1,
       },
       undefined,
     ]
   }
 >
+  <ViewManagerAdapter_ExpoLinearGradient
+    colors={
+      [
+        1040187391,
+        150994943,
+      ]
+    }
+    endPoint={
+      [
+        0.5,
+        1,
+      ]
+    }
+    pointerEvents="none"
+    startPoint={
+      [
+        0.5,
+        0,
+      ]
+    }
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  />
   <Text
     style={
       [
         {
-          "fontSize": 15,
+          "fontSize": 14,
+          "letterSpacing": 0.8,
         },
         {
-          "color": "#09111F",
-          "fontFamily": "Inter_700Bold",
-          "fontWeight": "700",
+          "color": "#101A31",
+          "fontFamily": "Baloo2_700Bold",
+          "fontWeight": "400",
+          "opacity": 1,
+          "textTransform": "uppercase",
         },
       ]
     }
   >
-    Play - Arcade Ice
+    Play - Blue Nebula
   </Text>
 </View>
 `;
 
-exports[`Neon design system snapshots Button snapshot [{ name: 'neonParty', label: 'Neon Party' }] 1`] = `
+exports[`Neon design system snapshots Button snapshot [{ name: 'neonParty', label: 'Lime Pop' }] 1`] = `
 <View
+  accessibilityLabel="Play - Lime Pop"
   accessibilityRole="button"
   accessibilityState={
     {
@@ -117,53 +157,92 @@ exports[`Neon design system snapshots Button snapshot [{ name: 'neonParty', labe
     [
       {
         "alignItems": "center",
-        "borderRadius": 14,
-        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
         "justifyContent": "center",
-        "minHeight": 50,
-        "paddingHorizontal": 14,
-        "paddingVertical": 10,
+        "overflow": "hidden",
+        "paddingHorizontal": 16,
+        "paddingVertical": 11,
       },
       {
-        "backgroundColor": "#BB86FC",
-        "borderColor": "#BB86FC5C",
-        "opacity": 1,
-        "shadowColor": "#BB86FC",
+        "minHeight": 48,
       },
       {
-        "elevation": 9,
+        "elevation": 3,
+        "shadowColor": "#000000",
         "shadowOffset": {
-          "height": 0,
+          "height": 2,
           "width": 0,
         },
-        "shadowOpacity": 0.56,
-        "shadowRadius": 12,
+        "shadowOpacity": 0.14,
+        "shadowRadius": 3,
+      },
+      {
+        "backgroundColor": "#5DE07D",
+        "borderColor": "#0000001F",
+        "borderRadius": 14,
+        "borderWidth": 1.5,
+        "opacity": 1,
       },
       undefined,
     ]
   }
 >
+  <ViewManagerAdapter_ExpoLinearGradient
+    colors={
+      [
+        1040187391,
+        150994943,
+      ]
+    }
+    endPoint={
+      [
+        0.5,
+        1,
+      ]
+    }
+    pointerEvents="none"
+    startPoint={
+      [
+        0.5,
+        0,
+      ]
+    }
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  />
   <Text
     style={
       [
         {
-          "fontSize": 15,
+          "fontSize": 14,
+          "letterSpacing": 0.8,
         },
         {
-          "color": "#0F0F1A",
-          "fontFamily": "Inter_700Bold",
-          "fontWeight": "700",
+          "color": "#122116",
+          "fontFamily": "Baloo2_700Bold",
+          "fontWeight": "400",
+          "opacity": 1,
+          "textTransform": "uppercase",
         },
       ]
     }
   >
-    Play - Neon Party
+    Play - Lime Pop
   </Text>
 </View>
 `;
 
-exports[`Neon design system snapshots Button snapshot [{ name: 'sunsetPulse', label: 'Sunset Pulse' }] 1`] = `
+exports[`Neon design system snapshots Button snapshot [{ name: 'sunsetPulse', label: 'Sunset Fire' }] 1`] = `
 <View
+  accessibilityLabel="Play - Sunset Fire"
   accessibilityRole="button"
   accessibilityState={
     {
@@ -198,222 +277,379 @@ exports[`Neon design system snapshots Button snapshot [{ name: 'sunsetPulse', la
     [
       {
         "alignItems": "center",
-        "borderRadius": 14,
-        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
         "justifyContent": "center",
-        "minHeight": 50,
-        "paddingHorizontal": 14,
-        "paddingVertical": 10,
+        "overflow": "hidden",
+        "paddingHorizontal": 16,
+        "paddingVertical": 11,
       },
       {
-        "backgroundColor": "#FF7EDB",
-        "borderColor": "#FF7EDB5C",
+        "minHeight": 48,
+      },
+      {
+        "elevation": 3,
+        "shadowColor": "#000000",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.14,
+        "shadowRadius": 3,
+      },
+      {
+        "backgroundColor": "#FF5F5F",
+        "borderColor": "#0000001F",
+        "borderRadius": 14,
+        "borderWidth": 1.5,
         "opacity": 1,
-        "shadowColor": "#FF7EDB",
+      },
+      undefined,
+    ]
+  }
+>
+  <ViewManagerAdapter_ExpoLinearGradient
+    colors={
+      [
+        1040187391,
+        150994943,
+      ]
+    }
+    endPoint={
+      [
+        0.5,
+        1,
+      ]
+    }
+    pointerEvents="none"
+    startPoint={
+      [
+        0.5,
+        0,
+      ]
+    }
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  />
+  <Text
+    style={
+      [
+        {
+          "fontSize": 14,
+          "letterSpacing": 0.8,
+        },
+        {
+          "color": "#241017",
+          "fontFamily": "Baloo2_700Bold",
+          "fontWeight": "400",
+          "opacity": 1,
+          "textTransform": "uppercase",
+        },
+      ]
+    }
+  >
+    Play - Sunset Fire
+  </Text>
+</View>
+`;
+
+exports[`Neon design system snapshots Card snapshot [{ name: 'arcadeIce', label: 'Blue Nebula' }] 1`] = `
+<View
+  style={
+    [
+      {
+        "overflow": "hidden",
+        "position": "relative",
       },
       {
-        "elevation": 9,
+        "backgroundColor": "#1C2B4A",
+        "borderColor": "#4F9CFF61",
+        "borderRadius": 20,
+        "borderWidth": 1,
+        "elevation": 6,
+        "gap": 8,
+        "opacity": 1,
+        "padding": 16,
+        "shadowColor": "#4F9CFF",
         "shadowOffset": {
           "height": 0,
           "width": 0,
         },
-        "shadowOpacity": 0.56,
+        "shadowOpacity": 0.22,
         "shadowRadius": 12,
       },
       undefined,
     ]
   }
 >
-  <Text
+  <View
+    pointerEvents="none"
     style={
       [
         {
-          "fontSize": 15,
+          "height": 42,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
         },
         {
-          "color": "#1A1018",
-          "fontFamily": "Inter_700Bold",
-          "fontWeight": "700",
+          "backgroundColor": "#4F9CFF1c",
         },
       ]
     }
+  />
+  <View
+    style={
+      {
+        "gap": 4,
+      }
+    }
   >
-    Play - Sunset Pulse
-  </Text>
+    <Text
+      style={
+        [
+          {
+            "fontSize": 20,
+            "letterSpacing": 0.3,
+            "lineHeight": 24,
+          },
+          {
+            "color": "#F4F3FF",
+            "fontFamily": "Baloo2_700Bold",
+            "fontWeight": "400",
+          },
+        ]
+      }
+    >
+      Impostor Neon
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "fontSize": 13,
+            "lineHeight": 18,
+          },
+          {
+            "color": "#F4F3FFD1",
+            "fontFamily": "Nunito_700Bold",
+            "fontWeight": "400",
+          },
+        ]
+      }
+    >
+      Round checkpoint UI tokenized.
+    </Text>
+  </View>
 </View>
 `;
 
-exports[`Neon design system snapshots Card snapshot [{ name: 'arcadeIce', label: 'Arcade Ice' }] 1`] = `
+exports[`Neon design system snapshots Card snapshot [{ name: 'neonParty', label: 'Lime Pop' }] 1`] = `
 <View
   style={
     [
       {
-        "gap": 8,
-        "padding": 16,
+        "overflow": "hidden",
+        "position": "relative",
       },
       {
-        "backgroundColor": "#132039",
-        "borderColor": "#4DA3FF75",
-        "borderRadius": 16,
+        "backgroundColor": "#1D3123",
+        "borderColor": "#5DE07D61",
+        "borderRadius": 20,
         "borderWidth": 1,
+        "elevation": 6,
+        "gap": 8,
+        "opacity": 1,
+        "padding": 16,
+        "shadowColor": "#5DE07D",
+        "shadowOffset": {
+          "height": 0,
+          "width": 0,
+        },
+        "shadowOpacity": 0.22,
+        "shadowRadius": 12,
       },
       undefined,
     ]
   }
 >
-  <Text
+  <View
+    pointerEvents="none"
     style={
       [
         {
-          "fontSize": 18,
+          "height": 42,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
         },
         {
-          "color": "#F4F3FF",
-          "fontFamily": "Inter_700Bold",
-          "fontWeight": "700",
+          "backgroundColor": "#5DE07D1c",
         },
       ]
     }
-  >
-    Impostor Neon
-  </Text>
-  <Text
+  />
+  <View
     style={
-      [
-        {
-          "fontSize": 14,
-        },
-        {
-          "color": "#F4F3FFD1",
-          "fontFamily": "Inter_400Regular",
-          "fontWeight": "400",
-        },
-      ]
+      {
+        "gap": 4,
+      }
     }
   >
-    Round checkpoint UI tokenized.
-  </Text>
+    <Text
+      style={
+        [
+          {
+            "fontSize": 20,
+            "letterSpacing": 0.3,
+            "lineHeight": 24,
+          },
+          {
+            "color": "#F4F3FF",
+            "fontFamily": "Baloo2_700Bold",
+            "fontWeight": "400",
+          },
+        ]
+      }
+    >
+      Impostor Neon
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "fontSize": 13,
+            "lineHeight": 18,
+          },
+          {
+            "color": "#F4F3FFD1",
+            "fontFamily": "Nunito_700Bold",
+            "fontWeight": "400",
+          },
+        ]
+      }
+    >
+      Round checkpoint UI tokenized.
+    </Text>
+  </View>
 </View>
 `;
 
-exports[`Neon design system snapshots Card snapshot [{ name: 'neonParty', label: 'Neon Party' }] 1`] = `
+exports[`Neon design system snapshots Card snapshot [{ name: 'sunsetPulse', label: 'Sunset Fire' }] 1`] = `
 <View
   style={
     [
       {
-        "gap": 8,
-        "padding": 16,
+        "overflow": "hidden",
+        "position": "relative",
       },
       {
-        "backgroundColor": "#1E1E2E",
-        "borderColor": "#BB86FC75",
-        "borderRadius": 16,
+        "backgroundColor": "#38202A",
+        "borderColor": "#FF5F5F61",
+        "borderRadius": 20,
         "borderWidth": 1,
+        "elevation": 6,
+        "gap": 8,
+        "opacity": 1,
+        "padding": 16,
+        "shadowColor": "#FF5F5F",
+        "shadowOffset": {
+          "height": 0,
+          "width": 0,
+        },
+        "shadowOpacity": 0.22,
+        "shadowRadius": 12,
       },
       undefined,
     ]
   }
 >
-  <Text
+  <View
+    pointerEvents="none"
     style={
       [
         {
-          "fontSize": 18,
+          "height": 42,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
         },
         {
-          "color": "#F4F3FF",
-          "fontFamily": "Inter_700Bold",
-          "fontWeight": "700",
+          "backgroundColor": "#FF5F5F1c",
         },
       ]
     }
-  >
-    Impostor Neon
-  </Text>
-  <Text
+  />
+  <View
     style={
-      [
-        {
-          "fontSize": 14,
-        },
-        {
-          "color": "#F4F3FFD1",
-          "fontFamily": "Inter_400Regular",
-          "fontWeight": "400",
-        },
-      ]
+      {
+        "gap": 4,
+      }
     }
   >
-    Round checkpoint UI tokenized.
-  </Text>
+    <Text
+      style={
+        [
+          {
+            "fontSize": 20,
+            "letterSpacing": 0.3,
+            "lineHeight": 24,
+          },
+          {
+            "color": "#F4F3FF",
+            "fontFamily": "Baloo2_700Bold",
+            "fontWeight": "400",
+          },
+        ]
+      }
+    >
+      Impostor Neon
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "fontSize": 13,
+            "lineHeight": 18,
+          },
+          {
+            "color": "#F4F3FFD1",
+            "fontFamily": "Nunito_700Bold",
+            "fontWeight": "400",
+          },
+        ]
+      }
+    >
+      Round checkpoint UI tokenized.
+    </Text>
+  </View>
 </View>
 `;
 
-exports[`Neon design system snapshots Card snapshot [{ name: 'sunsetPulse', label: 'Sunset Pulse' }] 1`] = `
-<View
-  style={
-    [
-      {
-        "gap": 8,
-        "padding": 16,
-      },
-      {
-        "backgroundColor": "#2B1A2F",
-        "borderColor": "#FF7EDB75",
-        "borderRadius": 16,
-        "borderWidth": 1,
-      },
-      undefined,
-    ]
-  }
->
-  <Text
-    style={
-      [
-        {
-          "fontSize": 18,
-        },
-        {
-          "color": "#F4F3FF",
-          "fontFamily": "Inter_700Bold",
-          "fontWeight": "700",
-        },
-      ]
-    }
-  >
-    Impostor Neon
-  </Text>
-  <Text
-    style={
-      [
-        {
-          "fontSize": 14,
-        },
-        {
-          "color": "#F4F3FFD1",
-          "fontFamily": "Inter_400Regular",
-          "fontWeight": "400",
-        },
-      ]
-    }
-  >
-    Round checkpoint UI tokenized.
-  </Text>
-</View>
-`;
-
-exports[`Neon design system snapshots Input snapshot [{ name: 'arcadeIce', label: 'Arcade Ice' }] 1`] = `
+exports[`Neon design system snapshots Input snapshot [{ name: 'arcadeIce', label: 'Blue Nebula' }] 1`] = `
 <View>
   <Text
     style={
       [
         {
           "fontSize": 12,
-          "marginBottom": 6,
+          "letterSpacing": 0.5,
+          "marginBottom": 8,
+          "textTransform": "uppercase",
         },
         {
           "color": "#F4F3FFD1",
-          "fontFamily": "Inter_400Regular",
+          "fontFamily": "Nunito_700Bold",
           "fontWeight": "400",
         },
       ]
@@ -422,28 +658,33 @@ exports[`Neon design system snapshots Input snapshot [{ name: 'arcadeIce', label
     Nickname
   </Text>
   <TextInput
+    accessibilityLabel="Nickname"
     autoCapitalize="none"
     autoCorrect={false}
+    editable={true}
+    onBlur={[Function]}
     onChangeText={[Function]}
+    onFocus={[Function]}
     placeholder="Type your name"
     placeholderTextColor="#F4F3FF8A"
     spellCheck={false}
     style={
       [
         {
-          "borderRadius": 14,
-          "borderWidth": 1,
           "fontSize": 16,
-          "minHeight": 48,
           "paddingHorizontal": 14,
-          "paddingVertical": 10,
+          "paddingVertical": 12,
         },
         {
-          "backgroundColor": "#132039E6",
-          "borderColor": "#4DA3FF6B",
+          "backgroundColor": "#1C2B4AE6",
+          "borderColor": "#4F9CFF6B",
+          "borderRadius": 14,
+          "borderWidth": 1,
           "color": "#F4F3FF",
-          "fontFamily": "Inter_400Regular",
+          "fontFamily": "Nunito_700Bold",
           "fontWeight": "400",
+          "minHeight": 44,
+          "opacity": 1,
         },
       ]
     }
@@ -452,18 +693,20 @@ exports[`Neon design system snapshots Input snapshot [{ name: 'arcadeIce', label
 </View>
 `;
 
-exports[`Neon design system snapshots Input snapshot [{ name: 'neonParty', label: 'Neon Party' }] 1`] = `
+exports[`Neon design system snapshots Input snapshot [{ name: 'neonParty', label: 'Lime Pop' }] 1`] = `
 <View>
   <Text
     style={
       [
         {
           "fontSize": 12,
-          "marginBottom": 6,
+          "letterSpacing": 0.5,
+          "marginBottom": 8,
+          "textTransform": "uppercase",
         },
         {
           "color": "#F4F3FFD1",
-          "fontFamily": "Inter_400Regular",
+          "fontFamily": "Nunito_700Bold",
           "fontWeight": "400",
         },
       ]
@@ -472,28 +715,33 @@ exports[`Neon design system snapshots Input snapshot [{ name: 'neonParty', label
     Nickname
   </Text>
   <TextInput
+    accessibilityLabel="Nickname"
     autoCapitalize="none"
     autoCorrect={false}
+    editable={true}
+    onBlur={[Function]}
     onChangeText={[Function]}
+    onFocus={[Function]}
     placeholder="Type your name"
     placeholderTextColor="#F4F3FF8A"
     spellCheck={false}
     style={
       [
         {
-          "borderRadius": 14,
-          "borderWidth": 1,
           "fontSize": 16,
-          "minHeight": 48,
           "paddingHorizontal": 14,
-          "paddingVertical": 10,
+          "paddingVertical": 12,
         },
         {
-          "backgroundColor": "#1E1E2EE6",
-          "borderColor": "#BB86FC6B",
+          "backgroundColor": "#1D3123E6",
+          "borderColor": "#5DE07D6B",
+          "borderRadius": 14,
+          "borderWidth": 1,
           "color": "#F4F3FF",
-          "fontFamily": "Inter_400Regular",
+          "fontFamily": "Nunito_700Bold",
           "fontWeight": "400",
+          "minHeight": 44,
+          "opacity": 1,
         },
       ]
     }
@@ -502,18 +750,20 @@ exports[`Neon design system snapshots Input snapshot [{ name: 'neonParty', label
 </View>
 `;
 
-exports[`Neon design system snapshots Input snapshot [{ name: 'sunsetPulse', label: 'Sunset Pulse' }] 1`] = `
+exports[`Neon design system snapshots Input snapshot [{ name: 'sunsetPulse', label: 'Sunset Fire' }] 1`] = `
 <View>
   <Text
     style={
       [
         {
           "fontSize": 12,
-          "marginBottom": 6,
+          "letterSpacing": 0.5,
+          "marginBottom": 8,
+          "textTransform": "uppercase",
         },
         {
           "color": "#F4F3FFD1",
-          "fontFamily": "Inter_400Regular",
+          "fontFamily": "Nunito_700Bold",
           "fontWeight": "400",
         },
       ]
@@ -522,28 +772,33 @@ exports[`Neon design system snapshots Input snapshot [{ name: 'sunsetPulse', lab
     Nickname
   </Text>
   <TextInput
+    accessibilityLabel="Nickname"
     autoCapitalize="none"
     autoCorrect={false}
+    editable={true}
+    onBlur={[Function]}
     onChangeText={[Function]}
+    onFocus={[Function]}
     placeholder="Type your name"
     placeholderTextColor="#F4F3FF8A"
     spellCheck={false}
     style={
       [
         {
-          "borderRadius": 14,
-          "borderWidth": 1,
           "fontSize": 16,
-          "minHeight": 48,
           "paddingHorizontal": 14,
-          "paddingVertical": 10,
+          "paddingVertical": 12,
         },
         {
-          "backgroundColor": "#2B1A2FE6",
-          "borderColor": "#FF7EDB6B",
+          "backgroundColor": "#38202AE6",
+          "borderColor": "#FF5F5F6B",
+          "borderRadius": 14,
+          "borderWidth": 1,
           "color": "#F4F3FF",
-          "fontFamily": "Inter_400Regular",
+          "fontFamily": "Nunito_700Bold",
           "fontWeight": "400",
+          "minHeight": 44,
+          "opacity": 1,
         },
       ]
     }
