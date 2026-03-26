@@ -1,5 +1,5 @@
-﻿import { GamePlugin } from '@/src/features/games/types';
-import { SintoniaGameScreen } from '@/src/features/games/sintonia/SintoniaGameScreen';
+import { GamePlugin } from '@/src/features/games/types';
+import { SintoniaGameScreen } from '@/src/features/games/sintonia/screens/SintoniaGameScreen';
 
 export const sintoniaGamePlugin: GamePlugin = {
   manifest: {
