@@ -1,5 +1,5 @@
 import { GamePlugin } from '@/src/features/games/types';
-import { ImpostorGameScreen } from '@/src/features/games/impostor/ImpostorGameScreen';
+import { ImpostorGameScreen } from '@/src/features/games/impostor/screens/ImpostorGameScreen';
 
 export const impostorGamePlugin: GamePlugin = {
   manifest: {
@@ -23,4 +23,3 @@ export const impostorGamePlugin: GamePlugin = {
   },
   Screen: ImpostorGameScreen,
 };
-
