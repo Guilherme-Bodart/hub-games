@@ -126,7 +126,6 @@ export function useSintoniaRoundLifecycle({
       await initializeRemoteSintoniaRound(roomCode, nextRound, localDeviceId);
     } catch {
       hasBootstrappedRemoteRoundRef.current = false;
-      setRoundError(true);
     }
   }, [
     canControlCriticalActions,
@@ -162,7 +161,7 @@ export function useSintoniaRoundLifecycle({
         setRoundError(false);
       },
       onError: () => {
-        setRoundError(true);
+        // Keep remote flow alive; realtime errors are surfaced in UI without forcing fallback state.
       },
     });
 
@@ -200,9 +199,7 @@ export function useSintoniaRoundLifecycle({
       });
 
       await initializeRemoteSintoniaRound(roomCode, nextRound, localDeviceId);
-    } catch {
-      setRoundError(true);
-    }
+    } catch {}
   }, [
     canControlCriticalActions,
     initializeRound,
@@ -211,7 +208,6 @@ export function useSintoniaRoundLifecycle({
     locale,
     localDeviceId,
     roomCode,
-    setRoundError,
   ]);
 
   return {

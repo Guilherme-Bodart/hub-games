@@ -197,7 +197,9 @@ export function useSintoniaRevealFlow({
           : Haptics.NotificationFeedbackType.Success
       );
     } catch {
-      setRoundError(true);
+      if (!isRemoteRealtime) {
+        setRoundError(true);
+      }
     }
   }, [
     canControlCriticalActions,
