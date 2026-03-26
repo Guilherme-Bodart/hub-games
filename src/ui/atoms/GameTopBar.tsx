@@ -2,6 +2,7 @@ import { SymbolView } from 'expo-symbols';
 import { ComponentProps, useEffect } from 'react';
 import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { useTheme } from '@/src/theme';
 import { withAlpha } from '@/src/theme/utils';
@@ -58,28 +59,35 @@ export function GameTopBar({
       style={[
         styles.container,
         {
-          borderRadius: theme.semantic.layout.radius.xl,
+          borderRadius: 24,
           borderWidth: theme.semantic.layout.borderWidth.subtle,
-          borderColor: theme.semantic.border.subtle,
-          backgroundColor: withAlpha(theme.semantic.bg.overlay, 0.74),
+          borderColor: '#D9E2EF',
+          backgroundColor: '#FFFFFF',
           paddingHorizontal: theme.semantic.layout.spacing.md,
           paddingVertical: theme.semantic.layout.spacing.md,
           gap: theme.semantic.layout.spacing.sm,
-          shadowColor: theme.semantic.shadow.neon,
-          shadowOpacity: theme.semantic.elevation.low.shadowOpacity,
-          shadowRadius: theme.semantic.elevation.low.shadowRadius,
-          shadowOffset: { width: 0, height: 0 },
-          elevation: theme.semantic.elevation.low.elevation,
+          shadowColor: '#000000',
+          shadowOpacity: 0.08,
+          shadowRadius: 10,
+          shadowOffset: { width: 0, height: 4 },
+          elevation: 4,
         },
         style,
       ]}>
+      <LinearGradient
+        pointerEvents="none"
+        colors={['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.04)']}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={styles.topGloss}
+      />
       <View style={styles.titleWrap}>
         <Text
           numberOfLines={1}
           style={[
             styles.title,
             {
-              color: theme.semantic.text.primary,
+              color: '#23254D',
               fontFamily: theme.semantic.typography.titleFamily,
               fontWeight: theme.semantic.typography.titleWeight,
             },
@@ -92,7 +100,7 @@ export function GameTopBar({
             style={[
               styles.subtitle,
               {
-                color: theme.semantic.text.secondary,
+                color: '#5B6585',
                 fontFamily: theme.semantic.typography.bodyFamily,
                 fontWeight: theme.semantic.typography.bodyWeight,
               },
@@ -108,8 +116,8 @@ export function GameTopBar({
             style={[
               styles.statusPill,
               {
-                borderColor: withAlpha(toneColor, 0.46),
-                backgroundColor: withAlpha(toneColor, 0.16),
+                borderColor: withAlpha(toneColor, 0.3),
+                backgroundColor: withAlpha(toneColor, 0.14),
                 borderWidth: theme.semantic.layout.borderWidth.subtle,
                 borderRadius: theme.semantic.layout.radius.full,
                 paddingHorizontal: theme.semantic.layout.spacing.sm,
@@ -130,7 +138,7 @@ export function GameTopBar({
               style={[
                 styles.statusPillLabel,
                 {
-                  color: theme.semantic.text.primary,
+                  color: '#2B2A46',
                   fontFamily: theme.semantic.typography.bodyFamily,
                   fontWeight: theme.semantic.typography.bodyWeight,
                 },
@@ -162,8 +170,13 @@ export function GameTopBar({
                 height: theme.semantic.layout.minTouchTarget,
                 borderRadius: theme.semantic.layout.radius.full,
                 borderWidth: theme.semantic.layout.borderWidth.subtle,
-                borderColor: theme.semantic.border.subtle,
-                backgroundColor: theme.semantic.bg.elevated,
+                borderColor: 'rgba(0,0,0,0.12)',
+                backgroundColor: '#FFFFFF',
+                shadowColor: '#000000',
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+                shadowOffset: { width: 4, height: 4 },
+                elevation: 7,
                 opacity: pressed ? theme.semantic.motion.feedback.pressedOpacity : 1,
               },
             ]}>
@@ -171,14 +184,14 @@ export function GameTopBar({
               <SymbolView
                 name={rightSymbolName}
                 size={18}
-                tintColor={theme.semantic.button.secondary.bg}
+                tintColor="#2B2A46"
               />
             ) : (
               <Text
                 style={[
                   styles.iconLabel,
                   {
-                    color: theme.semantic.button.secondary.bg,
+                    color: '#2B2A46',
                     fontFamily: theme.semantic.typography.numberFamily,
                     fontWeight: theme.semantic.typography.numberWeight,
                   },
@@ -195,9 +208,14 @@ export function GameTopBar({
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
+    overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  topGloss: {
+    ...StyleSheet.absoluteFillObject,
   },
   titleWrap: {
     flex: 1,
@@ -227,10 +245,10 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 999,
-    shadowOpacity: 0.76,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 8,
+    shadowOpacity: 0.26,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
   statusPillLabel: {
     fontSize: 12,

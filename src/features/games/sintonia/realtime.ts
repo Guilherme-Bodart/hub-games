@@ -185,6 +185,13 @@ const getDatabaseOrThrow = () => {
   return services.database;
 };
 
+const touchRoomActivity = async (roomCode: string): Promise<void> => {
+  const database = getDatabaseOrThrow();
+  await update(ref(database, `rooms/${roomCode}/lobby`), {
+    lastActivityAt: Date.now(),
+  });
+};
+
 const mapRoundToSession = (round: SintoniaRound) => ({
   roundId: round.id,
   theme: round.theme,
@@ -248,6 +255,7 @@ export const initializeRemoteSintoniaRound = async (
       }),
     'Falha ao iniciar rodada remota da Sintonia.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
 
 export const subscribeRemoteSintoniaState = ({
@@ -367,6 +375,7 @@ export const setRemoteSintoniaPhase = async (
       }),
     'Falha ao sincronizar fase da Sintonia.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
 
 export const setRemoteSintoniaOrder = async (
@@ -385,6 +394,7 @@ export const setRemoteSintoniaOrder = async (
       }),
     'Falha ao sincronizar ordem da Sintonia.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
 
 export const startRemoteSintoniaReveal = async (
@@ -406,6 +416,7 @@ export const startRemoteSintoniaReveal = async (
       }),
     'Falha ao iniciar revelacao remota na Sintonia.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
 
 export const applyRemoteSintoniaRevealStep = async (
@@ -427,6 +438,7 @@ export const applyRemoteSintoniaRevealStep = async (
       }),
     'Falha ao sincronizar etapa de revelacao da Sintonia.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
 
 export const finishRemoteSintoniaRound = async (
@@ -446,6 +458,7 @@ export const finishRemoteSintoniaRound = async (
       }),
     'Falha ao finalizar rodada remota da Sintonia.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
 
 export const clearRemoteSintoniaState = async (roomCode: string): Promise<void> => {
@@ -455,4 +468,5 @@ export const clearRemoteSintoniaState = async (roomCode: string): Promise<void> 
     () => set(ref(database, `rooms/${roomCode}/games/sintonia`), null),
     'Falha ao limpar estado remoto da Sintonia.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };

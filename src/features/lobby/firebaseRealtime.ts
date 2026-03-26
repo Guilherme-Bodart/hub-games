@@ -51,6 +51,7 @@ const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const ROOM_CODE_LENGTH = 5;
 const MAX_ROOM_CODE_ATTEMPTS = 28;
 const MAX_DEVICE_PLAYERS = 12;
+const ROOM_IDLE_TTL_MS = 30 * 60 * 1000;
 
 const remotePlayerSchema = z.object({
   id: z.string().min(1),
@@ -104,6 +105,10 @@ const mapFirebaseMessage = (message: string, fallbackMessage: string): string =>
     return 'Conexao instavel com a sala. Tente novamente em instantes.';
   }
 
+  if (lowered.includes('expired') || lowered.includes('inactivity') || lowered.includes('inativa')) {
+    return 'Sala encerrada por inatividade.';
+  }
+
   if (lowered.includes('invalid') || lowered.includes('payload')) {
     return 'A sala enviou dados incompletos. Aguarde a proxima sincronizacao.';
   }
@@ -142,6 +147,8 @@ const createRoomCode = (): string =>
 
 const createId = (prefix: string): string =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
+
+const getRoomIdleCutoff = (): number => Date.now() - ROOM_IDLE_TTL_MS;
 
 const pickAvatarId = (
   usedAvatarIds: Set<number>,
@@ -377,13 +384,35 @@ const parseRemoteLobbySnapshot = (
   return parsedLobby.data;
 };
 
+const extractPlayerOrder = (playerId: string): number => {
+  const segments = playerId.split('-');
+
+  if (segments.length >= 3) {
+    const encodedTimestamp = segments[1];
+    const parsedTimestamp = Number.parseInt(encodedTimestamp, 36);
+
+    if (Number.isFinite(parsedTimestamp)) {
+      return parsedTimestamp;
+    }
+  }
+
+  return Number.MAX_SAFE_INTEGER;
+};
+
 const sortPlayers = (players: LobbyPlayer[]): LobbyPlayer[] =>
   [...players].sort((leftPlayer, rightPlayer) => {
     if (leftPlayer.isHost !== rightPlayer.isHost) {
       return leftPlayer.isHost ? -1 : 1;
     }
 
-    return leftPlayer.name.localeCompare(rightPlayer.name);
+    const leftOrder = extractPlayerOrder(leftPlayer.id);
+    const rightOrder = extractPlayerOrder(rightPlayer.id);
+
+    if (leftOrder !== rightOrder) {
+      return leftOrder - rightOrder;
+    }
+
+    return leftPlayer.id.localeCompare(rightPlayer.id);
   });
 
 const mapSnapshotToLobbyState = (
@@ -485,6 +514,7 @@ export const createRemoteRoom = async (
         mode: 'remote' as const,
         settings: resolveInitialRoomSettings(params.gameId),
         startAt: null,
+        lastActivityAt: Date.now(),
         members: {
           [ownerUid]: deviceId,
         },
@@ -563,6 +593,15 @@ export const joinRemoteRoom = async (
   }
 
   const lobby = parseRemoteLobbySnapshot(preflightSnapshot, { fallbackRoomCode: roomCode });
+  const lobbyLastActivityAt =
+    typeof preflightSnapshot.child('lastActivityAt').val() === 'number'
+      ? Number(preflightSnapshot.child('lastActivityAt').val())
+      : 0;
+
+  if (lobbyLastActivityAt > 0 && lobbyLastActivityAt < getRoomIdleCutoff()) {
+    throw new Error('Room expired due to inactivity.');
+  }
+
   const existingDeviceIdFromMembers = lobby.members[ownerUid];
   const existingDevice =
     (existingDeviceIdFromMembers && lobby.devices[existingDeviceIdFromMembers]) ||
@@ -580,6 +619,7 @@ export const joinRemoteRoom = async (
       [`devices/${existingDevice.id}/isConnected`]: true,
       [`devices/${existingDevice.id}/lastSeenAt`]: Date.now(),
       [`devices/${existingDevice.id}/ownerUid`]: ownerUid,
+      lastActivityAt: Date.now(),
     };
 
     const firstPlayerId = Object.keys(existingDevice.players)[0];
@@ -628,6 +668,7 @@ export const joinRemoteRoom = async (
     ...baseUpdates,
     [`members/${ownerUid}`]: deviceId,
     [`devices/${deviceId}`]: devicePayload,
+    lastActivityAt: Date.now(),
   };
 
   try {
@@ -667,6 +708,7 @@ export const setDevicePresence = (roomCode: string, deviceId: string): (() => vo
   const deviceBaseRef = ref(database, `rooms/${roomCode}/lobby/devices/${deviceId}`);
   const deviceConnectedRef = ref(database, `rooms/${roomCode}/lobby/devices/${deviceId}/isConnected`);
   const lastSeenAtRef = ref(database, `rooms/${roomCode}/lobby/devices/${deviceId}/lastSeenAt`);
+  const lobbyRef = ref(database, `rooms/${roomCode}/lobby`);
 
   const unsubscribe = onValue(connectedRef, (snapshot) => {
     if (snapshot.val() !== true) {
@@ -679,11 +721,17 @@ export const setDevicePresence = (roomCode: string, deviceId: string): (() => vo
       isConnected: true,
       lastSeenAt: Date.now(),
     });
+    void update(lobbyRef, {
+      lastActivityAt: Date.now(),
+    });
   });
 
   return () => {
     unsubscribe();
     void update(deviceBaseRef, { isConnected: false, lastSeenAt: Date.now() });
+    void update(lobbyRef, {
+      lastActivityAt: Date.now(),
+    });
   };
 };
 
@@ -735,7 +783,10 @@ export const updateRemoteLobbySettings = async (
 ): Promise<void> => {
   await ensureFirebaseAnonymousAuth();
   const database = getDatabaseOrThrow();
-  await set(ref(database, `rooms/${roomCode}/lobby/settings`), settings);
+  await update(ref(database, `rooms/${roomCode}/lobby`), {
+    settings,
+    lastActivityAt: Date.now(),
+  });
 };
 
 export const setRemoteLobbyStartAt = async (
@@ -744,7 +795,10 @@ export const setRemoteLobbyStartAt = async (
 ): Promise<void> => {
   await ensureFirebaseAnonymousAuth();
   const database = getDatabaseOrThrow();
-  await set(ref(database, `rooms/${roomCode}/lobby/startAt`), startAt);
+  await update(ref(database, `rooms/${roomCode}/lobby`), {
+    startAt,
+    lastActivityAt: Date.now(),
+  });
 };
 
 export const addRemotePlayer = async (
@@ -784,6 +838,7 @@ export const addRemotePlayer = async (
   const playerId = createId('player');
 
   await update(lobbyRef, {
+    lastActivityAt: Date.now(),
     [`devices/${deviceId}/players/${playerId}`]: {
       id: playerId,
       name: playerName.trim(),
@@ -803,6 +858,7 @@ export const toggleRemotePlayerReady = async (
   await ensureFirebaseAnonymousAuth();
   const database = getDatabaseOrThrow();
   const playerRef = ref(database, `rooms/${roomCode}/lobby/devices/${deviceId}/players/${playerId}`);
+  const lobbyRef = ref(database, `rooms/${roomCode}/lobby`);
 
   await runTransaction(playerRef, (currentPlayer) => {
     if (!currentPlayer || typeof currentPlayer !== 'object') {
@@ -819,6 +875,10 @@ export const toggleRemotePlayerReady = async (
       ...parsedPlayer.data,
       isReady: !parsedPlayer.data.isReady,
     };
+  });
+
+  await update(lobbyRef, {
+    lastActivityAt: Date.now(),
   });
 };
 
@@ -847,4 +907,7 @@ export const removeRemotePlayer = async (
   }
 
   await set(playerRef, null);
+  await update(ref(database, `rooms/${roomCode}/lobby`), {
+    lastActivityAt: Date.now(),
+  });
 };

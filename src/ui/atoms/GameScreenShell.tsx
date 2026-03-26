@@ -1,6 +1,7 @@
 import { PropsWithChildren, ReactNode } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { useTheme } from '@/src/theme';
 import { withAlpha } from '@/src/theme/utils';
@@ -27,48 +28,30 @@ export function GameScreenShell({
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }, style]}>
       {showBackdrop ? (
         <View pointerEvents="none" style={styles.backdropLayer}>
-          <View
-            style={[
-              styles.backdropBase,
-              { backgroundColor: withAlpha(theme.semantic.bg.app, 0.86) },
-            ]}
+          <LinearGradient
+            colors={['#FFF4F6', '#F0F7FF', '#F3F0FF']}
+            start={{ x: 0, y: 0.3 }}
+            end={{ x: 1, y: 0.7 }}
+            style={styles.backdropBase}
           />
           <View
             style={[
               styles.backdropOrbTop,
-              { backgroundColor: withAlpha(theme.semantic.status.error, 0.14) },
-            ]}
-          />
-          <View
-            style={[
-              styles.backdropOrbBottom,
-              { backgroundColor: withAlpha(theme.semantic.button.accent.bg, 0.16) },
-            ]}
-          />
-          <View
-            style={[
-              styles.backdropOrbCenter,
               { backgroundColor: withAlpha(theme.semantic.button.primary.bg, 0.12) },
             ]}
           />
           <View
             style={[
-              styles.backdropOrbSecondary,
-              { backgroundColor: withAlpha(theme.semantic.button.secondary.bg, 0.1) },
+              styles.backdropOrbBottom,
+              { backgroundColor: withAlpha(theme.semantic.button.accent.bg, 0.1) },
             ]}
           />
-          {[0, 1, 2, 3, 4].map((line) => (
-            <View
-              key={`scanline-${line}`}
-              style={[
-                styles.scanline,
-                {
-                  top: 90 + line * 110,
-                  backgroundColor: withAlpha(theme.semantic.text.primary, 0.05),
-                },
-              ]}
-            />
-          ))}
+          <View
+            style={[
+              styles.backdropOrbCenter,
+              { backgroundColor: withAlpha(theme.semantic.button.secondary.bg, 0.12) },
+            ]}
+          />
         </View>
       ) : null}
       <View
@@ -123,20 +106,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     top: '27%',
     alignSelf: 'center',
-  },
-  backdropOrbSecondary: {
-    position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 999,
-    top: '40%',
-    right: -80,
-  },
-  scanline: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height: 1,
   },
   content: {
     flex: 1,

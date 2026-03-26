@@ -1,7 +1,10 @@
 import { RawColors, ThemeName, ThemeTokens } from '@/src/theme/types';
 import { withAlpha } from '@/src/theme/utils';
 
-const textPrimary = '#F4F3FF';
+const textPrimary = '#23254D';
+const textSecondary = '#556082';
+const textMuted = '#8792AF';
+const textInverse = '#FFFFFF';
 
 const themePresets: Record<
   ThemeName,
@@ -11,44 +14,49 @@ const themePresets: Record<
     systemGradient: [string, string];
   }
 > = {
-  neonParty: {
-    label: 'Lime Pop',
+  coralPop: {
+    label: 'Coral Pop',
     raw: {
-      background: '#122116',
-      primary: '#5DE07D',
-      secondary: '#F3D14A',
-      accent: '#8AF16A',
-      surface: '#1D3123',
+      background: '#DDE4EE',
+      primary: '#F47D74',
+      secondary: '#F2D365',
+      accent: '#35B8D4',
+      surface: '#F8FAFF',
     },
-    systemGradient: ['#5DE07D', '#F3D14A'],
+    systemGradient: ['#FFF4F5', '#EAF4FF'],
   },
-  sunsetPulse: {
-    label: 'Sunset Fire',
+  mintJam: {
+    label: 'Mint Jam',
     raw: {
-      background: '#241017',
-      primary: '#FF5F5F',
-      secondary: '#FF9A45',
-      accent: '#FF66B3',
-      surface: '#38202A',
+      background: '#DFE8F2',
+      primary: '#27C4A8',
+      secondary: '#F3D774',
+      accent: '#7C72E4',
+      surface: '#F7FBFF',
     },
-    systemGradient: ['#FF5F5F', '#FF9A45'],
+    systemGradient: ['#EEFFF8', '#F0EEFF'],
   },
-  arcadeIce: {
-    label: 'Blue Nebula',
+  blueberrySky: {
+    label: 'Blueberry Sky',
     raw: {
-      background: '#101A31',
-      primary: '#4F9CFF',
-      secondary: '#8B78FF',
-      accent: '#B48BFF',
-      surface: '#1C2B4A',
+      background: '#DEE7F5',
+      primary: '#5C84FF',
+      secondary: '#8EDBFF',
+      accent: '#A187FF',
+      surface: '#F7FAFF',
     },
-    systemGradient: ['#4F9CFF', '#8B78FF'],
+    systemGradient: ['#EFF6FF', '#F2EFFF'],
   },
 };
 
 const buildTheme = (name: ThemeName): ThemeTokens => {
   const { raw, label } = themePresets[name];
-  const warningColor = '#FFB547';
+  const warningColor = '#F4B647';
+  const errorColor = '#FF6B8A';
+  const successColor = '#2EBE97';
+  const infoColor = '#4E8FFF';
+  const borderSubtle = '#D5DEEC';
+  const borderAccent = withAlpha(raw.primary, 0.42);
 
   return {
     name,
@@ -58,77 +66,77 @@ const buildTheme = (name: ThemeName): ThemeTokens => {
       bg: {
         app: raw.background,
         surface: raw.surface,
-        elevated: withAlpha(raw.primary, 0.14),
-        overlay: withAlpha(raw.background, 0.9),
+        elevated: withAlpha('#FFFFFF', 0.82),
+        overlay: withAlpha('#FFFFFF', 0.9),
       },
       text: {
         primary: textPrimary,
-        secondary: withAlpha(textPrimary, 0.82),
-        muted: withAlpha(textPrimary, 0.62),
-        inverse: raw.background,
+        secondary: textSecondary,
+        muted: textMuted,
+        inverse: textInverse,
       },
       border: {
-        subtle: withAlpha(raw.primary, 0.33),
-        accent: withAlpha(raw.secondary, 0.62),
-        focus: raw.secondary,
+        subtle: borderSubtle,
+        accent: borderAccent,
+        focus: raw.primary,
       },
       button: {
         primary: {
           bg: raw.primary,
-          text: raw.background,
+          text: '#20255C',
           glow: raw.primary,
         },
         secondary: {
           bg: raw.secondary,
-          text: raw.background,
+          text: '#20255C',
         },
         accent: {
           bg: raw.accent,
-          text: textPrimary,
+          text: '#FFFFFF',
         },
         destructive: {
-          bg: raw.accent,
-          text: textPrimary,
+          bg: errorColor,
+          text: '#FFFFFF',
         },
         ghost: {
-          bg: withAlpha(raw.surface, 0.62),
-          text: textPrimary,
+          bg: '#FFFFFF',
+          text: '#2B2A46',
         },
       },
       card: {
-        bg: raw.surface,
-        border: withAlpha(raw.primary, 0.38),
-        radius: 16,
+        bg: '#FFFFFF',
+        border: '#DCE3EF',
+        radius: 24,
         borderWidth: 1,
       },
       input: {
-        bg: withAlpha(raw.surface, 0.9),
-        border: withAlpha(raw.primary, 0.42),
+        bg: '#FFFFFF',
+        border: '#D4DDEB',
         text: textPrimary,
-        placeholder: withAlpha(textPrimary, 0.54),
+        placeholder: '#98A3BF',
       },
       badge: {
-        successBg: withAlpha(raw.secondary, 0.24),
-        successText: raw.secondary,
-        errorBg: withAlpha(raw.accent, 0.24),
-        errorText: raw.accent,
-        warningBg: withAlpha(warningColor, 0.24),
+        successBg: withAlpha(successColor, 0.18),
+        successText: '#1F8E70',
+        errorBg: withAlpha(errorColor, 0.18),
+        errorText: '#B84A66',
+        warningBg: withAlpha(warningColor, 0.2),
         warningText: warningColor,
-        infoBg: withAlpha(raw.primary, 0.24),
-        infoText: raw.primary,
-        hostBg: withAlpha(raw.accent, 0.24),
-        hostText: raw.accent,
-        neutralBg: withAlpha(raw.primary, 0.24),
-        neutralText: raw.primary,
+        infoBg: withAlpha(infoColor, 0.16),
+        infoText: '#3B73D2',
+        hostBg: withAlpha('#F7B85D', 0.2),
+        hostText: '#C17A17',
+        neutralBg: withAlpha('#8E9CBC', 0.2),
+        neutralText: '#5E6B89',
       },
       status: {
-        success: raw.secondary,
-        error: raw.accent,
+        success: successColor,
+        error: errorColor,
         warning: warningColor,
-        info: raw.primary,
+        info: infoColor,
       },
       shadow: {
-        neon: raw.primary,
+        base: '#000000',
       },
       layout: {
         spacing: {
@@ -140,10 +148,10 @@ const buildTheme = (name: ThemeName): ThemeTokens => {
           xxl: 48,
         },
         radius: {
-          sm: 6,
-          md: 10,
-          lg: 14,
-          xl: 20,
+          sm: 8,
+          md: 12,
+          lg: 16,
+          xl: 24,
           full: 999,
         },
         borderWidth: {
@@ -155,19 +163,19 @@ const buildTheme = (name: ThemeName): ThemeTokens => {
       },
       elevation: {
         low: {
-          shadowOpacity: 0.14,
-          shadowRadius: 5,
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
           elevation: 2,
         },
         medium: {
-          shadowOpacity: 0.22,
-          shadowRadius: 12,
-          elevation: 6,
+          shadowOpacity: 0.12,
+          shadowRadius: 14,
+          elevation: 5,
         },
         high: {
-          shadowOpacity: 0.34,
-          shadowRadius: 20,
-          elevation: 10,
+          shadowOpacity: 0.18,
+          shadowRadius: 22,
+          elevation: 8,
         },
       },
       motion: {
@@ -178,34 +186,34 @@ const buildTheme = (name: ThemeName): ThemeTokens => {
           slow: 500,
         },
         feedback: {
-          pressedOpacity: 0.82,
-          disabledOpacity: 0.45,
+          pressedOpacity: 0.9,
+          disabledOpacity: 0.56,
         },
       },
       game: {
         phase: {
-          waiting: withAlpha(textPrimary, 0.64),
-          secrets: raw.primary,
-          ordering: raw.secondary,
-          revealing: raw.accent,
-          finished: raw.secondary,
-          reveal: raw.accent,
-          clues: raw.secondary,
-          roundDecision: raw.primary,
+          waiting: '#9AA6C2',
+          secrets: '#7C72E4',
+          ordering: '#35B8D4',
+          revealing: '#F47D74',
+          finished: '#2EBE97',
+          reveal: '#F47D74',
+          clues: '#35B8D4',
+          roundDecision: '#5C84FF',
           voting: warningColor,
-          guessing: raw.accent,
-          result: raw.secondary,
+          guessing: '#A187FF',
+          result: '#2EBE97',
         },
         connection: {
-          connected: raw.secondary,
+          connected: successColor,
           reconnecting: warningColor,
-          error: raw.accent,
-          offline: withAlpha(textPrimary, 0.55),
+          error: errorColor,
+          offline: '#9AA6C2',
         },
         result: {
-          success: raw.secondary,
-          failure: raw.accent,
-          pending: raw.primary,
+          success: successColor,
+          failure: errorColor,
+          pending: infoColor,
         },
       },
       zIndex: {
@@ -242,9 +250,28 @@ const themes = (Object.keys(themePresets) as ThemeName[]).reduce<Record<ThemeNam
 export const isThemeName = (value: string): value is ThemeName =>
   Object.prototype.hasOwnProperty.call(themePresets, value);
 
+const legacyThemeAliasMap: Record<string, ThemeName> = {
+  // TODO_REMOVE_NEON: remove aliases after users migrate persisted theme names.
+  neonParty: 'coralPop',
+  sunsetPulse: 'mintJam',
+  arcadeIce: 'blueberrySky',
+};
+
+export const resolveThemeName = (value: string): ThemeName | null => {
+  if (isThemeName(value)) {
+    return value;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(legacyThemeAliasMap, value)) {
+    return legacyThemeAliasMap[value];
+  }
+
+  return null;
+};
+
 export const getTheme = (name: ThemeName): ThemeTokens => themes[name];
 
 export const resolveThemeSystemGradient = (name: ThemeName): [string, string] =>
   themePresets[name].systemGradient;
 
-export const defaultThemeName: ThemeName = 'neonParty';
+export const defaultThemeName: ThemeName = 'coralPop';

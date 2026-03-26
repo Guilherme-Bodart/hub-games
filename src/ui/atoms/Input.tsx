@@ -78,6 +78,11 @@ export function Input({
             borderWidth: theme.semantic.layout.borderWidth.subtle,
             minHeight: theme.semantic.layout.minTouchTarget,
             opacity: disabled ? theme.semantic.motion.feedback.disabledOpacity : 1,
+            shadowColor: '#000000',
+            shadowOpacity: 0.06,
+            shadowRadius: 6,
+            shadowOffset: { width: 0, height: 2 },
+            elevation: 2,
           },
         ]}
       />

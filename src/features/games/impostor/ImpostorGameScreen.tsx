@@ -1234,7 +1234,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                                 : theme.semantic.border.subtle,
                               borderWidth: selected ? 1.8 : 1.25,
                               backgroundColor: theme.semantic.bg.surface,
-                              shadowColor: theme.semantic.shadow.neon,
+                              shadowColor: theme.semantic.shadow.base,
                               transform: [{ scale: selected ? 1.04 : 1 }],
                               opacity:
                                 activeVotingPlayerId && votingRevealDone && !isVoteSelectionLocked

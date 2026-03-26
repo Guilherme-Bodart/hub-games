@@ -189,7 +189,7 @@ function RootLayoutNav({ connectionState }: { connectionState: FirebaseConnectio
           />
           <Stack.Screen
             name="modal"
-            options={{ presentation: 'modal', title: t('settings.title') }}
+            options={{ presentation: 'card', headerShown: true, title: t('settings.title') }}
           />
         </Stack>
       </View>

@@ -11,6 +11,8 @@ type DockAction = {
   disabled?: boolean;
   loading?: boolean;
   variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'destructive';
+  color?: string;
+  textColor?: string;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -35,13 +37,18 @@ export function BottomActionDock({
       style={[
         styles.root,
         {
-          backgroundColor: withAlpha(theme.semantic.bg.overlay, 0.78),
-          borderTopColor: theme.semantic.border.subtle,
+          backgroundColor: withAlpha('#FFFFFF', 0.9),
+          borderTopColor: withAlpha('#000000', 0.08),
           borderTopWidth: theme.semantic.layout.borderWidth.subtle,
           paddingHorizontal: theme.semantic.layout.spacing.md,
           paddingTop: theme.semantic.layout.spacing.sm,
           paddingBottom: Math.max(theme.semantic.layout.spacing.md, insets.bottom + 6),
           gap: theme.semantic.layout.spacing.sm,
+          shadowColor: '#000000',
+          shadowOpacity: 0.08,
+          shadowRadius: 10,
+          shadowOffset: { width: 0, height: -3 },
+          elevation: 8,
         },
         style,
       ]}>
@@ -73,8 +80,10 @@ export function BottomActionDock({
           disabled={primaryAction.disabled}
           loading={primaryAction.loading}
           variant={primaryAction.variant}
+          color={primaryAction.color}
+          textColor={primaryAction.textColor}
           size="lg"
-          style={primaryAction.style}
+          style={[styles.primaryButton, primaryAction.style]}
         />
         {secondaryAction ? (
           <Button
@@ -83,6 +92,8 @@ export function BottomActionDock({
             disabled={secondaryAction.disabled}
             loading={secondaryAction.loading}
             variant={secondaryAction.variant ?? 'ghost'}
+            color={secondaryAction.color}
+            textColor={secondaryAction.textColor}
             size="md"
             style={secondaryAction.style}
           />
@@ -101,6 +112,10 @@ const styles = StyleSheet.create({
   },
   inner: {
     gap: 8,
+  },
+  primaryButton: {
+    width: '100%',
+    alignSelf: 'stretch',
   },
   helperText: {
     fontSize: 12,

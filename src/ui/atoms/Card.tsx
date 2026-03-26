@@ -39,10 +39,10 @@ export function Card({
           borderWidth: selected
             ? theme.semantic.layout.borderWidth.medium
             : theme.semantic.layout.borderWidth.subtle,
-          shadowColor: theme.semantic.shadow.neon,
+          shadowColor: '#000000',
           shadowOpacity: isElevated ? theme.semantic.elevation.medium.shadowOpacity : 0,
           shadowRadius: isElevated ? theme.semantic.elevation.medium.shadowRadius : 0,
-          shadowOffset: { width: 0, height: 0 },
+          shadowOffset: { width: 0, height: 6 },
           elevation: isElevated ? theme.semantic.elevation.medium.elevation : 0,
           opacity: disabled ? theme.semantic.motion.feedback.disabledOpacity : 1,
           padding: theme.semantic.layout.spacing.md,
@@ -50,13 +50,6 @@ export function Card({
         },
         style,
       ]}>
-      <View
-        pointerEvents="none"
-        style={[
-          styles.topSheen,
-          { backgroundColor: `${theme.semantic.button.primary.bg}1c` },
-        ]}
-      />
       {showHeader ? (
         <View style={styles.header}>
           {title ? (
@@ -95,14 +88,7 @@ export function Card({
 const styles = StyleSheet.create({
   card: {
     position: 'relative',
-    overflow: 'hidden',
-  },
-  topSheen: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 42,
+    overflow: 'visible',
   },
   header: {
     gap: 4,

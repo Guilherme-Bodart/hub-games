@@ -1,4 +1,4 @@
-export type ThemeName = 'neonParty' | 'sunsetPulse' | 'arcadeIce';
+export type ThemeName = 'coralPop' | 'mintJam' | 'blueberrySky';
 
 export type RawColors = {
   background: string;
@@ -82,7 +82,7 @@ export type ThemeSemanticTokens = {
     info: string;
   };
   shadow: {
-    neon: string;
+    base: string;
   };
   layout: {
     spacing: {

@@ -1,4 +1,4 @@
-import { get, onValue, ref, set } from 'firebase/database';
+import { get, onValue, ref, set, update } from 'firebase/database';
 import { z } from 'zod';
 
 import { ImpostorRound } from '@/src/features/games/impostor/types';
@@ -276,6 +276,11 @@ const getDatabaseOrThrow = () => {
 };
 
 const getLiveRef = (roomCode: string) => ref(getDatabaseOrThrow(), `rooms/${roomCode}/games/impostor-neon/live`);
+const touchRoomActivity = async (roomCode: string): Promise<void> => {
+  await update(ref(getDatabaseOrThrow(), `rooms/${roomCode}/lobby`), {
+    lastActivityAt: Date.now(),
+  });
+};
 
 export const remoteImpostorStateExists = async (roomCode: string): Promise<boolean> => {
   await ensureFirebaseAnonymousAuth();
@@ -301,6 +306,7 @@ export const initializeRemoteImpostorRound = async (
       }),
     'Falha ao iniciar rodada remota de Impostor.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
 
 export const updateRemoteImpostorRound = async (
@@ -318,6 +324,7 @@ export const updateRemoteImpostorRound = async (
       }),
     'Falha ao sincronizar rodada remota de Impostor.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
 
 export const resetRemoteImpostorRound = async (roomCode: string): Promise<void> => {
@@ -326,6 +333,7 @@ export const resetRemoteImpostorRound = async (roomCode: string): Promise<void> 
     () => set(getLiveRef(roomCode), null),
     'Falha ao limpar rodada remota de Impostor.'
   );
+  await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
 
 export const subscribeRemoteImpostorState = ({

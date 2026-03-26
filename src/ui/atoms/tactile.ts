@@ -1,16 +1,15 @@
 import { ViewStyle } from 'react-native';
 
 import { ThemeTokens } from '@/src/theme';
-import { withAlpha } from '@/src/theme/utils';
 
-export const tactileGlossColors = ['rgba(255,255,255,0.24)', 'rgba(255,255,255,0.03)'] as const;
+export const tactileGlossColors = ['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.02)'] as const;
 
 export const tactileShadowStyle: ViewStyle = {
   shadowColor: '#000000',
   shadowOpacity: 0.14,
-  shadowRadius: 3,
-  shadowOffset: { width: 0, height: 2 },
-  elevation: 3,
+  shadowRadius: 10,
+  shadowOffset: { width: 0, height: 4 },
+  elevation: 6,
 };
 
 type IconButtonTone = 'neutral' | 'primary' | 'secondary';
@@ -18,24 +17,23 @@ type IconButtonTone = 'neutral' | 'primary' | 'secondary';
 export const resolveIconButtonTone = (theme: ThemeTokens, tone: IconButtonTone) => {
   if (tone === 'primary') {
     return {
-      backgroundColor: theme.semantic.button.primary.bg,
-      borderColor: withAlpha('#000000', 0.14),
+      backgroundColor: '#FFFFFF',
+      borderColor: 'rgba(0,0,0,0.12)',
       iconColor: theme.semantic.button.primary.text,
     };
   }
 
   if (tone === 'secondary') {
     return {
-      backgroundColor: theme.semantic.button.secondary.bg,
-      borderColor: withAlpha('#000000', 0.12),
-      iconColor: theme.semantic.button.secondary.text,
+      backgroundColor: '#FFFFFF',
+      borderColor: 'rgba(0,0,0,0.12)',
+      iconColor: theme.semantic.button.accent.bg,
     };
   }
 
   return {
     backgroundColor: '#FFFFFF',
-    borderColor: withAlpha('#000000', 0.08),
-    iconColor: theme.semantic.text.primary,
+    borderColor: 'rgba(0,0,0,0.12)',
+    iconColor: '#2B2A46',
   };
 };
-

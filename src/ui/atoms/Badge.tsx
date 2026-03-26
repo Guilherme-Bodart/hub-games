@@ -50,7 +50,9 @@ export function Badge({ label, variant = 'neutral', style }: BadgeProps) {
         styles.badge,
         {
           backgroundColor: palette.backgroundColor,
+          borderColor: 'rgba(0,0,0,0.08)',
           borderRadius: theme.semantic.layout.radius.full,
+          borderWidth: 1,
           paddingHorizontal: theme.semantic.layout.spacing.sm,
           paddingVertical: theme.semantic.layout.spacing.xs,
         },
@@ -74,7 +76,7 @@ export function Badge({ label, variant = 'neutral', style }: BadgeProps) {
 const styles = StyleSheet.create({
   badge: { alignSelf: 'flex-start' },
   label: {
-    fontSize: 11,
+    fontSize: 10,
     letterSpacing: 0.6,
     textTransform: 'uppercase',
   },

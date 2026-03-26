@@ -5,6 +5,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        textPrimary: '#2B2A46',
+        gameCyan: '#28C2E0',
+        gamePink: '#F377B6',
+        coralAction: '#FF7D67',
         catalog: {
           milk: '#FFFFFF',
           ink: '#2B2A46',

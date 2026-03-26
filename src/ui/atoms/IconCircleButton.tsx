@@ -1,10 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { ComponentProps } from 'react';
 import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { useTheme } from '@/src/theme';
-import { resolveIconButtonTone, tactileGlossColors, tactileShadowStyle } from '@/src/ui/atoms/tactile';
+import { resolveIconButtonTone } from '@/src/ui/atoms/tactile';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 type IconCircleButtonTone = 'neutral' | 'primary' | 'secondary';
@@ -32,6 +31,7 @@ export function IconCircleButton({
 }: IconCircleButtonProps) {
   const { theme } = useTheme();
   const palette = resolveIconButtonTone(theme, tone);
+  const standardRadius = size / 2;
 
   return (
     <Pressable
@@ -42,24 +42,17 @@ export function IconCircleButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
-        tactileShadowStyle,
+        styles.iconShadow,
         {
           width: size,
           height: size,
-          borderRadius: size / 2,
+          borderRadius: standardRadius,
           backgroundColor: palette.backgroundColor,
           borderColor: palette.borderColor,
           opacity: pressed ? theme.semantic.motion.feedback.pressedOpacity : 1,
         },
         style,
       ]}>
-      <LinearGradient
-        pointerEvents="none"
-        colors={tactileGlossColors}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
       <Ionicons name={icon} size={iconSize} color={palette.iconColor} />
     </Pressable>
   );
@@ -67,10 +60,16 @@ export function IconCircleButton({
 
 const styles = StyleSheet.create({
   base: {
-    borderWidth: 1.5,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
+  iconShadow: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOffset: { width: 4, height: 4 },
+    elevation: 7,
+  },
 });
-

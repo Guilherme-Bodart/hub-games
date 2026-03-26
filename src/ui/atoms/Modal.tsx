@@ -17,6 +17,7 @@ type ModalProps = PropsWithChildren<{
   title?: string;
   onClose: () => void;
   variant?: 'alert' | 'fullscreen';
+  closeStyle?: 'solid' | 'ghost';
   style?: StyleProp<ViewStyle>;
 }>;
 
@@ -25,6 +26,7 @@ export function Modal({
   title,
   onClose,
   variant = 'alert',
+  closeStyle = 'solid',
   children,
   style,
 }: ModalProps) {
@@ -37,7 +39,7 @@ export function Modal({
         style={[
           styles.overlay,
           {
-            backgroundColor: theme.semantic.bg.overlay,
+            backgroundColor: 'rgba(27,33,63,0.24)',
             padding: isFullscreen ? 0 : theme.semantic.layout.spacing.lg,
           },
         ]}>
@@ -45,19 +47,19 @@ export function Modal({
           style={[
             styles.content,
             {
-              backgroundColor: theme.semantic.bg.surface,
-              borderColor: theme.semantic.border.subtle,
+              backgroundColor: '#F8FBFF',
+              borderColor: '#D8E1EF',
               borderRadius: isFullscreen
                 ? 0
                 : theme.semantic.layout.radius.xl,
               borderWidth: theme.semantic.layout.borderWidth.subtle,
               padding: theme.semantic.layout.spacing.md,
               gap: theme.semantic.layout.spacing.sm,
-              shadowColor: theme.semantic.shadow.neon,
-              shadowOpacity: theme.semantic.elevation.high.shadowOpacity,
-              shadowRadius: theme.semantic.elevation.high.shadowRadius,
-              shadowOffset: { width: 0, height: 0 },
-              elevation: theme.semantic.elevation.high.elevation,
+              shadowColor: '#000000',
+              shadowOpacity: 0.18,
+              shadowRadius: 18,
+              shadowOffset: { width: 0, height: 8 },
+              elevation: 10,
               flex: isFullscreen ? 1 : undefined,
               width: '100%',
               maxWidth: isFullscreen ? undefined : 560,
@@ -65,32 +67,43 @@ export function Modal({
             },
             style,
           ]}>
-          <View
-            pointerEvents="none"
-            style={[
-              styles.topSheen,
-              { backgroundColor: `${theme.semantic.button.primary.bg}22` },
-            ]}
-          />
           <Pressable
             onPress={onClose}
             accessibilityRole="button"
             accessibilityLabel="Fechar modal"
             style={[
               styles.closeArea,
-              {
-                borderColor: theme.semantic.border.subtle,
-                backgroundColor: theme.semantic.bg.elevated,
-                borderRadius: theme.semantic.layout.radius.full,
-                borderWidth: theme.semantic.layout.borderWidth.subtle,
-                width: theme.semantic.layout.minTouchTarget,
-                height: theme.semantic.layout.minTouchTarget,
-              },
+              closeStyle === 'ghost'
+                ? {
+                    borderColor: 'transparent',
+                    backgroundColor: 'transparent',
+                    borderRadius: theme.semantic.layout.radius.full,
+                    borderWidth: 0,
+                    width: theme.semantic.layout.minTouchTarget,
+                    height: theme.semantic.layout.minTouchTarget,
+                    shadowOpacity: 0,
+                    shadowRadius: 0,
+                    shadowOffset: { width: 0, height: 0 },
+                    elevation: 0,
+                  }
+                : {
+                    borderColor: 'rgba(0,0,0,0.12)',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: 17,
+                    borderWidth: theme.semantic.layout.borderWidth.subtle,
+                    width: 34,
+                    height: 34,
+                    shadowColor: '#000000',
+                    shadowOpacity: 0.3,
+                    shadowRadius: 6,
+                    shadowOffset: { width: 4, height: 4 },
+                    elevation: 7,
+                  },
             ]}>
             <SymbolView
               name={{ ios: 'xmark', android: 'close', web: 'close' }}
               size={16}
-              tintColor={theme.semantic.text.secondary}
+              tintColor="#2B2A46"
             />
           </Pressable>
           {title ? (
@@ -98,7 +111,7 @@ export function Modal({
               style={[
                 styles.title,
                 {
-                  color: theme.semantic.text.primary,
+                  color: '#23254D',
                   fontFamily: theme.semantic.typography.titleFamily,
                   fontWeight: theme.semantic.typography.titleWeight,
                 },
@@ -120,7 +133,7 @@ const styles = StyleSheet.create({
   },
   content: {
     position: 'relative',
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   closeArea: {
     position: 'absolute',
@@ -129,13 +142,6 @@ const styles = StyleSheet.create({
     zIndex: 2,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  topSheen: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 42,
   },
   title: {
     fontSize: 22,

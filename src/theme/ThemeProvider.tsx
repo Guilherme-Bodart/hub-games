@@ -12,7 +12,7 @@ import { useThemeStore } from '@/src/theme/store';
 import {
   defaultThemeName,
   getTheme,
-  isThemeName,
+  resolveThemeName,
   themeOptions,
 } from '@/src/theme/themes';
 import { ThemeName, ThemeTokens } from '@/src/theme/types';
@@ -41,8 +41,10 @@ export function ThemeProvider({ children }: PropsWithChildren) {
       try {
         const storedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
 
-        if (isActive && storedTheme && isThemeName(storedTheme)) {
-          updateTheme(storedTheme);
+        const resolvedThemeName = storedTheme ? resolveThemeName(storedTheme) : null;
+
+        if (isActive && resolvedThemeName) {
+          updateTheme(resolvedThemeName);
         }
       } finally {
         if (isActive) {

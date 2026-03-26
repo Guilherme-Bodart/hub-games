@@ -102,6 +102,10 @@ const mapRealtimeMessage = (message: string, fallbackMessage: string): string =>
     return 'Conexao instavel. Tente novamente em alguns segundos.';
   }
 
+  if (lowered.includes('expired') || lowered.includes('inactivity') || lowered.includes('inativa')) {
+    return 'Sala encerrada por inatividade.';
+  }
+
   if (
     lowered.includes('invalid lobby structure') ||
     lowered.includes('dados incompletos') ||

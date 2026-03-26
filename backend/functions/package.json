@@ -1,0 +1,15 @@
+{
+  "name": "hub-games-room-cleanup",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "deploy": "firebase deploy --only functions:cleanupInactiveRooms"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.1",
+    "firebase-functions": "^6.0.1"
+  }
+}

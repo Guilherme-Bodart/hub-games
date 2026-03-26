@@ -1,0 +1,206 @@
+import { StyleSheet } from 'react-native';
+
+export const catalogUi = {
+  cardPurple: '#7C72E4',
+  cardCyan: '#35B8D4',
+  roomButton: '#F47D74',
+};
+
+export const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#DDE4EE',
+  },
+  pageFrame: {
+    width: '100%',
+    backgroundColor: 'transparent',
+  },
+  pageContent: {
+    flex: 1,
+    width: '100%',
+  },
+  headerSection: {
+    width: '100%',
+    paddingHorizontal: 28,
+    paddingTop: 24,
+  },
+  cardsScroll: {
+    flex: 1,
+    width: '100%',
+  },
+  backgroundMilkOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  cardsContent: {
+    width: '100%',
+    paddingHorizontal: 28,
+    paddingBottom: 24,
+    paddingTop: 22,
+  },
+  profileCardShell: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: '#DCE2EC',
+    backgroundColor: '#F6F8FC',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    shadowColor: '#000000',
+    shadowOpacity: 0.09,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 4,
+  },
+  profileIdentityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  profileAvatarWrap: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#EEF2F8',
+    borderWidth: 1,
+    borderColor: '#D7DFEB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  profileNameText: {
+    marginTop: 1,
+    fontSize: 20,
+    lineHeight: 22,
+    color: '#23254D',
+    fontFamily: 'Baloo2_700Bold',
+    flexShrink: 1,
+  },
+  catalogTitle: {
+    fontFamily: 'Baloo2_700Bold',
+    fontStyle: 'italic',
+    fontSize: 48,
+    lineHeight: 48,
+    letterSpacing: 0.8,
+    color: '#23254D',
+  },
+  gameGrid: {
+    width: '100%',
+  },
+  gameGridRow: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+  },
+  gameTilePressable: {
+    width: '48%',
+    minWidth: 0,
+  },
+  gameTilePlaceholder: {
+    width: '48%',
+  },
+  gameTilePressed: {
+    opacity: 0.88,
+    transform: [{ scale: 0.985 }],
+  },
+  gameTileSimple: {
+    minHeight: 250,
+    width: '100%',
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.45)',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 20,
+    paddingBottom: 18,
+    shadowColor: '#000000',
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
+  },
+  cardPurple: {
+    backgroundColor: catalogUi.cardPurple,
+  },
+  cardCyan: {
+    backgroundColor: catalogUi.cardCyan,
+  },
+  gameTileSimpleLabel: {
+    color: '#FFFFFF',
+    fontFamily: 'Baloo2_700Bold',
+    fontSize: 18,
+    lineHeight: 21,
+    letterSpacing: 0.6,
+  },
+  gameTilePlayersTag: {
+    marginTop: 6,
+    color: 'rgba(255,255,255,0.84)',
+    fontFamily: 'Nunito_800ExtraBold',
+    fontSize: 10,
+    lineHeight: 14,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+  },
+  codeButtonDock: {
+    width: '100%',
+    paddingHorizontal: 28,
+    paddingTop: 16,
+    alignItems: 'center',
+  },
+  codeButtonAtom: {
+    width: '100%',
+    alignSelf: 'center',
+  },
+  codeModal: {
+    borderRadius: 24,
+  },
+  codeModalTitle: {
+    color: '#23254D',
+    fontFamily: 'Baloo2_700Bold',
+    fontSize: 28,
+    lineHeight: 30,
+    letterSpacing: 0.4,
+  },
+  codeModalSubtitle: {
+    color: '#4A4A6F',
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  codeModalInputWrap: {
+    marginTop: 2,
+  },
+  codeModalInput: {
+    minHeight: 52,
+    borderRadius: 16,
+    borderWidth: 1,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal: 14,
+    textAlign: 'center',
+    color: '#23254D',
+    fontSize: 22,
+    letterSpacing: 1.5,
+    lineHeight: 24,
+    borderColor: 'rgba(61,57,100,0.35)',
+    fontFamily: 'Nunito_800ExtraBold',
+  },
+  codeModalInputError: {
+    borderColor: '#D6456B',
+  },
+  codeModalError: {
+    marginTop: -2,
+    color: '#C73961',
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  codeModalConfirmButton: {
+    borderRadius: 16,
+    marginTop: 4,
+  },
+  modeButtonDisabled: {
+    opacity: 0.5,
+  },
+});
