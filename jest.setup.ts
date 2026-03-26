@@ -10,7 +10,3 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
     clear: jest.fn(() => Promise.resolve()),
   },
 }));
-
-jest.mock('react-native-reanimated', () => {
-  return require('./__mocks__/react-native-reanimated');
-});

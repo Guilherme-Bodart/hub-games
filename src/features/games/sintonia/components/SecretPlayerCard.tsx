@@ -98,7 +98,7 @@ export const SecretPlayerCard = memo(function SecretPlayerCard({
               ? theme.semantic.button.primary.bg
               : theme.semantic.border.subtle,
           borderWidth: isRevealed ? 1.7 : 1.3,
-          shadowColor: isRevealed ? theme.semantic.button.primary.bg : theme.semantic.shadow.neon,
+          shadowColor: isRevealed ? theme.semantic.button.primary.bg : theme.semantic.shadow.base,
           shadowOpacity: isRevealed ? 0.54 : 0.34,
           shadowRadius: isRevealed ? 14 : 8,
           elevation: isRevealed ? 10 : 4,

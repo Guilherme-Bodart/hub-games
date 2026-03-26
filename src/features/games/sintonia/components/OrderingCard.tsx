@@ -188,7 +188,7 @@ export const OrderingCard = memo(function OrderingCard({
           minHeight: compact ? 82 : 74,
           shadowColor:
             innerBorderColor === theme.semantic.border.subtle
-              ? theme.semantic.shadow.neon
+              ? theme.semantic.shadow.base
               : innerBorderColor,
         },
         dragStyle,

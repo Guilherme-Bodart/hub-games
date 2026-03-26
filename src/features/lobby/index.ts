@@ -9,7 +9,7 @@ export {
   resolveLobbyActionAuthorityMode,
 } from '@/src/features/lobby/gameSettings';
 export { countPlayers, useLobbySessionStore } from '@/src/features/lobby/store';
-export { LobbyScreen } from '@/src/features/lobby/screens/LobbyScreen';
+export { default as LobbyScreen } from '@/src/features/lobby/screens/LobbyScreen';
 export type {
   HybridLobbyState,
   LobbyDeviceGroup,
