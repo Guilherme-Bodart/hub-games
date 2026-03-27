@@ -43,6 +43,8 @@ const remotePlayerSchema = z.object({
 const sessionSchema = z.object({
   roundId: z.string().min(1),
   theme: z.string().min(1),
+  themeScaleLow: z.string().min(1).optional(),
+  themeScaleHigh: z.string().min(1).optional(),
   mode: z.literal('remote'),
   players: z.array(remotePlayerSchema).min(2).max(10),
   initialOrder: z.array(z.string().min(1)).min(2),
@@ -198,6 +200,8 @@ const touchRoomActivity = async (roomCode: string): Promise<void> => {
 const mapRoundToSession = (round: SintoniaRound) => ({
   roundId: round.id,
   theme: round.theme,
+  themeScaleLow: round.themeScaleLow,
+  themeScaleHigh: round.themeScaleHigh,
   mode: 'remote' as const,
   players: round.players.map<RemoteSintoniaPlayer>((player) => ({
     id: player.id,
@@ -216,6 +220,8 @@ const mapSessionToRound = (
 ): SintoniaRound => ({
   id: session.roundId,
   theme: session.theme,
+  themeScaleLow: session.themeScaleLow || 'menos',
+  themeScaleHigh: session.themeScaleHigh || 'mais',
   mode: 'remote',
   initialOrder: session.initialOrder,
   players: session.players.map((player) => ({

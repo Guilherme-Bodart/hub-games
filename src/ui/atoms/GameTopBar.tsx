@@ -13,6 +13,7 @@ type GameTopBarSymbolName = ComponentProps<typeof SymbolView>['name'];
 type GameTopBarProps = {
   title: string;
   subtitle?: string;
+  showStatus?: boolean;
   statusTone?: GameTopBarTone;
   statusLabel?: string;
   onPressRight?: () => void;
@@ -33,6 +34,7 @@ const resolveToneColor = (tone: GameTopBarTone, fallback: string, themeStatus: R
 export function GameTopBar({
   title,
   subtitle,
+  showStatus = true,
   statusTone = 'success',
   statusLabel,
   onPressRight,
@@ -111,53 +113,55 @@ export function GameTopBar({
       </View>
 
       <View style={styles.rightActions}>
-        {statusLabel ? (
-          <View
-            style={[
-              styles.statusPill,
-              {
-                borderColor: withAlpha(toneColor, 0.3),
-                backgroundColor: withAlpha(toneColor, 0.14),
-                borderWidth: theme.semantic.layout.borderWidth.subtle,
-                borderRadius: theme.semantic.layout.radius.full,
-                paddingHorizontal: theme.semantic.layout.spacing.sm,
-                paddingVertical: theme.semantic.layout.spacing.xs,
-              },
-            ]}>
-            <Animated.View
-              style={[
-                styles.statusDot,
-                pulseStyle,
-                {
-                  backgroundColor: toneColor,
-                  shadowColor: toneColor,
-                },
-              ]}
-            />
-            <Text
-              style={[
-                styles.statusPillLabel,
-                {
-                  color: '#2B2A46',
-                  fontFamily: theme.semantic.typography.bodyFamily,
-                  fontWeight: theme.semantic.typography.bodyWeight,
-                },
-              ]}>
-              {statusLabel}
-            </Text>
-          </View>
-        ) : (
-          <Animated.View
-            style={[
-              styles.statusDot,
-              pulseStyle,
-              {
-                backgroundColor: toneColor,
-                shadowColor: toneColor,
-              },
-            ]}
-          />
-        )}
+        {showStatus
+          ? statusLabel ? (
+              <View
+                style={[
+                  styles.statusPill,
+                  {
+                    borderColor: withAlpha(toneColor, 0.3),
+                    backgroundColor: withAlpha(toneColor, 0.14),
+                    borderWidth: theme.semantic.layout.borderWidth.subtle,
+                    borderRadius: theme.semantic.layout.radius.full,
+                    paddingHorizontal: theme.semantic.layout.spacing.sm,
+                    paddingVertical: theme.semantic.layout.spacing.xs,
+                  },
+                ]}>
+                <Animated.View
+                  style={[
+                    styles.statusDot,
+                    pulseStyle,
+                    {
+                      backgroundColor: toneColor,
+                      shadowColor: toneColor,
+                    },
+                  ]}
+                />
+                <Text
+                  style={[
+                    styles.statusPillLabel,
+                    {
+                      color: '#2B2A46',
+                      fontFamily: theme.semantic.typography.bodyFamily,
+                      fontWeight: theme.semantic.typography.bodyWeight,
+                    },
+                  ]}>
+                  {statusLabel}
+                </Text>
+              </View>
+            ) : (
+              <Animated.View
+                style={[
+                  styles.statusDot,
+                  pulseStyle,
+                  {
+                    backgroundColor: toneColor,
+                    shadowColor: toneColor,
+                  },
+                ]}
+              />
+            )
+          : null}
         {onPressRight ? (
           <Pressable
             accessibilityRole="button"

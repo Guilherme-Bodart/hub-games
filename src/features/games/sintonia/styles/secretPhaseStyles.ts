@@ -1,0 +1,115 @@
+import { StyleSheet } from 'react-native';
+
+export const secretPhaseStyles = StyleSheet.create({
+  screenBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  phaseHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  phaseHeaderLeft: {
+    flex: 1,
+    gap: 2,
+  },
+  roundLabel: {
+    fontSize: 11,
+    lineHeight: 13,
+    textTransform: 'uppercase',
+    letterSpacing: 1.7,
+  },
+  gameTitle: {
+    fontSize: 40,
+    lineHeight: 42,
+    letterSpacing: -0.8,
+    textTransform: 'uppercase',
+  },
+  phaseHeaderRight: {
+    alignItems: 'flex-end',
+    gap: 7,
+  },
+  playerStack: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  playerBubble: {
+    width: 28,
+    height: 28,
+    borderRadius: 999,
+    borderWidth: 2,
+    marginLeft: -8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  plusBubbleLabel: {
+    fontSize: 12,
+    lineHeight: 12,
+  },
+  playersCountLabel: {
+    fontSize: 10,
+    lineHeight: 12,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  infoButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scaleCard: {
+    borderWidth: 1,
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    gap: 10,
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 5,
+  },
+  scaleTitle: {
+    fontSize: 11,
+    lineHeight: 13,
+    textAlign: 'center',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  scaleAxisRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  scaleEdgeLabel: {
+    fontSize: 17,
+    lineHeight: 20,
+    flexShrink: 0,
+    textTransform: 'uppercase',
+  },
+  scaleTrack: {
+    flex: 1,
+    height: 1,
+    position: 'relative',
+  },
+  scaleDot: {
+    position: 'absolute',
+    width: 6,
+    height: 6,
+    borderRadius: 999,
+    top: -2.5,
+    left: '50%',
+    marginLeft: -3,
+  },
+  scaleThemeText: {
+    fontSize: 24,
+    lineHeight: 30,
+    textAlign: 'center',
+    letterSpacing: -0.2,
+  },
+});

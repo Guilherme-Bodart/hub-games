@@ -15,6 +15,8 @@ type SintoniaThemeStatusSectionProps = {
   hostHintLabel: string;
   realtimeError: string | null;
   canAdvancePhase: boolean;
+  compact?: boolean;
+  showVoiceNotice?: boolean;
 };
 
 export function SintoniaThemeStatusSection({
@@ -27,12 +29,15 @@ export function SintoniaThemeStatusSection({
   hostHintLabel,
   realtimeError,
   canAdvancePhase,
+  compact = false,
+  showVoiceNotice = true,
 }: SintoniaThemeStatusSectionProps) {
   return (
     <>
       <Animated.View
         style={[
           styles.themeWrap,
+          compact ? styles.themeWrapCompact : null,
           {
             borderColor: withAlpha(theme.semantic.button.primary.bg, 0.78),
             backgroundColor: withAlpha(theme.semantic.bg.surface, 0.62),
@@ -40,18 +45,21 @@ export function SintoniaThemeStatusSection({
           },
           themeGlowStyle,
         ]}>
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            styles.themeShineSweep,
-            themeShineStyle,
-            { backgroundColor: withAlpha(theme.semantic.text.primary, 0.12) },
-          ]}
-        />
+        {!compact ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.themeShineSweep,
+              themeShineStyle,
+              { backgroundColor: withAlpha(theme.semantic.text.primary, 0.12) },
+            ]}
+          />
+        ) : null}
         <Animated.Text
           style={[
             styles.themeText,
-            titleFlickerStyle,
+            compact ? styles.themeTextCompact : null,
+            !compact ? titleFlickerStyle : null,
             {
               color: theme.semantic.text.primary,
               textShadowColor: withAlpha(theme.semantic.button.primary.bg, 0.58),
@@ -63,26 +71,30 @@ export function SintoniaThemeStatusSection({
         </Animated.Text>
       </Animated.View>
 
-      <View
-        style={[
-          styles.voiceNotice,
-          {
-            borderColor: theme.semantic.border.subtle,
-            backgroundColor: withAlpha(theme.semantic.bg.surface, 0.7),
-          },
-        ]}>
-        <Text
+      {showVoiceNotice ? (
+        <View
           style={[
-            styles.voiceNoticeText,
+            styles.voiceNotice,
+            compact ? styles.voiceNoticeCompact : null,
             {
-              color: theme.semantic.text.secondary,
-              fontFamily: theme.semantic.typography.bodyFamily,
-              fontWeight: theme.semantic.typography.bodyWeight,
+              borderColor: theme.semantic.border.subtle,
+              backgroundColor: withAlpha(theme.semantic.bg.surface, 0.7),
             },
           ]}>
-          {voiceNoticeLabel}
-        </Text>
-      </View>
+          <Text
+            style={[
+              styles.voiceNoticeText,
+              compact ? styles.voiceNoticeTextCompact : null,
+              {
+                color: theme.semantic.text.secondary,
+                fontFamily: theme.semantic.typography.bodyFamily,
+                fontWeight: theme.semantic.typography.bodyWeight,
+              },
+            ]}>
+            {voiceNoticeLabel}
+          </Text>
+        </View>
+      ) : null}
 
       {!canAdvancePhase ? (
         <Text
