@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Pressable, Text, View, useWindowDimensions } from 'react-native';
 
 import { type GameCatalogItem } from '@/src/features/catalog';
@@ -16,17 +15,12 @@ const resolveCardTone = (index: number) => (index % 2 === 0 ? styles.cardPurple 
 export function CatalogGameGrid({ games, isBusy, onOpenGame }: CatalogGameGridProps) {
   const { locale, t } = useI18n();
   const { width: viewportWidth } = useWindowDimensions();
-
-  const tileWidth = useMemo(() => {
-    const horizontalPadding = 56; // cardsContent: 28 each side
-    const gap = 16;
-    return Math.max(140, Math.floor((viewportWidth - horizontalPadding - gap) / 2));
-  }, [viewportWidth]);
+  const isNarrowViewport = viewportWidth <= 375;
+  const tileWidthPercent = isNarrowViewport ? '48.3%' : '48.7%';
 
   return (
     <View style={styles.gameGrid}>
       {games.map((game, index) => {
-        const isLeftColumn = index % 2 === 0;
         const isLastRowSingle = games.length % 2 === 1 && index === games.length - 1;
 
         return (
@@ -39,15 +33,13 @@ export function CatalogGameGrid({ games, isBusy, onOpenGame }: CatalogGameGridPr
             style={({ pressed }) => [
               styles.gameTilePressable,
               {
-                width: tileWidth,
-                marginRight: isLeftColumn ? 16 : 0,
+                width: tileWidthPercent,
                 marginBottom: 16,
                 opacity: pressed ? 0.88 : 1,
                 transform: [{ scale: pressed ? 0.985 : 1 }],
               },
               isLastRowSingle ? styles.gameTileSingleRow : null,
-            ]}
-          >
+            ]}>
             <View style={[styles.gameTileSimple, resolveCardTone(index)]}>
               <Text style={styles.gameTileSimpleLabel}>
                 {game.id === 'impostor-neon' ? 'IMPOSTOR' : game.title[locale].toUpperCase()}

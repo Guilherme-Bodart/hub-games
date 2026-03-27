@@ -45,6 +45,7 @@ export function LobbyPlayersSection({
 }: LobbyPlayersSectionProps) {
   const { t } = useI18n();
   const { theme } = useTheme();
+  const usesPercentageCellWidth = typeof playerCellWidth === 'string';
 
   return (
     <View style={styles.playersStage}>
@@ -62,7 +63,11 @@ export function LobbyPlayersSection({
         </Text>
       ) : null}
 
-      <View style={styles.playersList}>
+      <View
+        style={[
+          styles.playersList,
+          usesPercentageCellWidth ? styles.playersListPercentage : null,
+        ]}>
         {visiblePlayers.map(({ player, isLocalDevice }, index) => (
           <Animated.View
             key={player.id}
@@ -77,7 +82,11 @@ export function LobbyPlayersSection({
               styles.playerCell,
               {
                 width: playerCellWidth,
-                marginRight: (index + 1) % playerColumns === 0 ? 0 : playerGap,
+                marginRight: usesPercentageCellWidth
+                  ? 0
+                  : (index + 1) % playerColumns === 0
+                    ? 0
+                    : playerGap,
                 marginBottom: playerGap,
               },
             ]}>
@@ -96,7 +105,11 @@ export function LobbyPlayersSection({
               styles.playerCell,
               {
                 width: playerCellWidth,
-                marginRight: (visiblePlayers.length + 1) % playerColumns === 0 ? 0 : playerGap,
+                marginRight: usesPercentageCellWidth
+                  ? 0
+                  : (visiblePlayers.length + 1) % playerColumns === 0
+                    ? 0
+                    : playerGap,
                 marginBottom: playerGap,
               },
             ]}>

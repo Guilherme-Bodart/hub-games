@@ -92,9 +92,9 @@ export function useLobbyDerivedState({
   const canHostStartThisLobby = lobby?.mode === 'remote' ? isLocalHost : true;
   const isSettingsEditable = isLocalHost;
   const isCompactViewport = viewportWidth < 390;
-  const playerColumns = viewportWidth >= 980 ? 6 : viewportWidth >= 760 ? 4 : 2;
+  const playerColumns = viewportWidth >= 980 ? 6 : viewportWidth >= 760 ? 5 : 4;
   const playerCellWidth: `${number}%` =
-    playerColumns === 6 ? '15.5%' : playerColumns === 4 ? '23.5%' : '48.5%';
+    playerColumns === 6 ? '15.5%' : playerColumns === 5 ? '18.8%' : '23.5%';
   const nextAutoName = resolveNextAutoPlayerName(locale, totalPlayers);
 
   const panelCopy = buildLobbyPanelCopy(locale);

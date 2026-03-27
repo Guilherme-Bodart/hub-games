@@ -265,6 +265,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignContent: 'flex-start',
   },
+  playersListPercentage: {
+    justifyContent: 'space-between',
+  },
   playersStage: {
     marginTop: 2,
     paddingHorizontal: 0,

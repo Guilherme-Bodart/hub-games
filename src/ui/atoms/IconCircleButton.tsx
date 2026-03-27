@@ -36,6 +36,8 @@ export function IconCircleButton({
       : tone === 'secondary'
         ? theme.semantic.button.accent.bg
         : '#2B2A46';
+  const borderColor = 'rgba(0,0,0,0.14)';
+  const backgroundColor = '#FFFFFF';
 
   return (
     <Pressable
@@ -51,8 +53,8 @@ export function IconCircleButton({
           width: size,
           height: size,
           borderRadius: standardRadius,
-          backgroundColor: '#FFFFFF',
-          borderColor: 'rgba(0,0,0,0.14)',
+          backgroundColor,
+          borderColor,
           opacity: pressed ? theme.semantic.motion.feedback.pressedOpacity : 1,
         },
         style,
@@ -71,9 +73,9 @@ const styles = StyleSheet.create({
   },
   iconShadow: {
     shadowColor: '#000000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    shadowOffset: { width: 2, height: 2 },
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOffset: { width: 4, height: 4 },
+    elevation: 7,
   },
 });
