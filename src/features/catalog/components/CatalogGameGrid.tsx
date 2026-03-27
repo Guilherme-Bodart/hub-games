@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Pressable, Text, View, useWindowDimensions } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 import { type GameCatalogItem } from '@/src/features/catalog';
 import { styles } from '@/src/features/catalog/styles/catalogStyles';
@@ -15,16 +15,23 @@ const resolveCardTone = (index: number) => (index % 2 === 0 ? styles.cardPurple 
 
 export function CatalogGameGrid({ games, isBusy, onOpenGame }: CatalogGameGridProps) {
   const { locale, t } = useI18n();
-  const { width: viewportWidth } = useWindowDimensions();
+  const [gridWidth, setGridWidth] = useState(0);
 
   const tileWidth = useMemo(() => {
-    const horizontalPadding = 56; // cardsContent: 28 each side
     const gap = 16;
-    return Math.max(140, Math.floor((viewportWidth - horizontalPadding - gap) / 2));
-  }, [viewportWidth]);
+    if (gridWidth <= 0) {
+      return 0;
+    }
+
+    return Math.max(140, Math.floor((gridWidth - gap) / 2));
+  }, [gridWidth]);
 
   return (
-    <View style={styles.gameGrid}>
+    <View
+      style={styles.gameGrid}
+      onLayout={(event) => {
+        setGridWidth(Math.floor(event.nativeEvent.layout.width));
+      }}>
       {games.map((game, index) => {
         const isLeftColumn = index % 2 === 0;
         const isLastRowSingle = games.length % 2 === 1 && index === games.length - 1;
@@ -39,7 +46,7 @@ export function CatalogGameGrid({ games, isBusy, onOpenGame }: CatalogGameGridPr
             style={({ pressed }) => [
               styles.gameTilePressable,
               {
-                width: tileWidth,
+                width: tileWidth || '48.4%',
                 marginRight: isLeftColumn ? 16 : 0,
                 marginBottom: 16,
                 opacity: pressed ? 0.88 : 1,

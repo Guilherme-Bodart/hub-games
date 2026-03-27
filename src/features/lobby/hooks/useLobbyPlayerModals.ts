@@ -20,7 +20,6 @@ export function useLobbyPlayerModals({
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [addPlayerName, setAddPlayerName] = useState('');
   const [addPlayerError, setAddPlayerError] = useState<string | null>(null);
-  const [leaveModalVisible, setLeaveModalVisible] = useState(false);
 
   const openAddPlayerModal = useCallback(() => {
     if (!canAddPlayer) {
@@ -59,24 +58,13 @@ export function useLobbyPlayerModals({
     [addPlayerError]
   );
 
-  const openLeaveModal = useCallback(() => {
-    setLeaveModalVisible(true);
-  }, []);
-
-  const closeLeaveModal = useCallback(() => {
-    setLeaveModalVisible(false);
-  }, []);
-
   return {
     addModalVisible,
     addPlayerName,
     addPlayerError,
-    leaveModalVisible,
     openAddPlayerModal,
     closeAddPlayerModal,
     confirmAddPlayer,
     onAddPlayerNameChange,
-    openLeaveModal,
-    closeLeaveModal,
   };
 }

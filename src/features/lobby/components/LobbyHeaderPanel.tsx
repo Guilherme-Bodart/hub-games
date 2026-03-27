@@ -59,7 +59,7 @@ export function LobbyHeaderPanel({
   remoteStatusLabel,
 }: LobbyHeaderPanelProps) {
   const { theme } = useTheme();
-  const hiddenCodeMask = '\u2022';
+  const hiddenCodeMask = '●';
 
   return (
     <View
@@ -147,10 +147,10 @@ export function LobbyHeaderPanel({
                         {
                           color: '#2B2A46',
                           fontFamily: usesMaskChar
-                            ? theme.semantic.typography.titleFamily
+                            ? theme.semantic.typography.bodyFamily
                             : theme.semantic.typography.numberFamily,
                           fontWeight: usesMaskChar
-                            ? theme.semantic.typography.titleWeight
+                            ? theme.semantic.typography.bodyWeight
                             : theme.semantic.typography.numberWeight,
                         },
                       ]}>

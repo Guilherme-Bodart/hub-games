@@ -1,23 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, PropsWithChildren, useContext, useMemo } from 'react';
 
-import { useThemeStore } from '@/src/theme/store';
-import {
-  defaultThemeName,
-  getTheme,
-  resolveThemeName,
-  themeOptions,
-} from '@/src/theme/themes';
+import { defaultThemeName, getTheme, themeOptions } from '@/src/theme/themes';
 import { ThemeName, ThemeTokens } from '@/src/theme/types';
-
-const THEME_STORAGE_KEY = 'hub-games:theme-name';
 
 type ThemeContextValue = {
   themeName: ThemeName;
@@ -30,53 +14,15 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export function ThemeProvider({ children }: PropsWithChildren) {
-  const themeName = useThemeStore((state) => state.themeName);
-  const updateTheme = useThemeStore((state) => state.setTheme);
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  useEffect(() => {
-    let isActive = true;
-
-    const restoreTheme = async () => {
-      try {
-        const storedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-
-        const resolvedThemeName = storedTheme ? resolveThemeName(storedTheme) : null;
-
-        if (isActive && resolvedThemeName) {
-          updateTheme(resolvedThemeName);
-        }
-      } finally {
-        if (isActive) {
-          setIsHydrated(true);
-        }
-      }
-    };
-
-    restoreTheme();
-
-    return () => {
-      isActive = false;
-    };
-  }, [updateTheme]);
-
-  useEffect(() => {
-    if (!isHydrated) {
-      return;
-    }
-
-    AsyncStorage.setItem(THEME_STORAGE_KEY, themeName).catch(() => undefined);
-  }, [isHydrated, themeName]);
-
   const value = useMemo<ThemeContextValue>(
     () => ({
-      themeName,
-      theme: getTheme(themeName),
+      themeName: defaultThemeName,
+      theme: getTheme(defaultThemeName),
       options: themeOptions,
-      isHydrated,
-      setTheme: updateTheme,
+      isHydrated: true,
+      setTheme: () => undefined,
     }),
-    [isHydrated, themeName, updateTheme]
+    []
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

@@ -37,14 +37,14 @@ export function BottomActionDock({
       style={[
         styles.root,
         {
-          backgroundColor: withAlpha('#FFFFFF', 0.9),
-          borderTopColor: withAlpha('#000000', 0.08),
+          backgroundColor: withAlpha(theme.semantic.bg.surface, 0.92),
+          borderTopColor: withAlpha(theme.semantic.shadow.base, 0.08),
           borderTopWidth: theme.semantic.layout.borderWidth.subtle,
           paddingHorizontal: theme.semantic.layout.spacing.md,
           paddingTop: theme.semantic.layout.spacing.sm,
           paddingBottom: Math.max(theme.semantic.layout.spacing.md, insets.bottom + 6),
           gap: theme.semantic.layout.spacing.sm,
-          shadowColor: '#000000',
+          shadowColor: theme.semantic.shadow.base,
           shadowOpacity: 0.08,
           shadowRadius: 10,
           shadowOffset: { width: 0, height: -3 },

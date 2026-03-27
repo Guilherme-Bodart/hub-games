@@ -10,7 +10,9 @@ import {
 } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
+import { useI18n } from '@/src/i18n';
 import { useTheme } from '@/src/theme';
+import { withAlpha } from '@/src/theme/utils';
 
 type ModalProps = PropsWithChildren<{
   visible: boolean;
@@ -31,6 +33,7 @@ export function Modal({
   style,
 }: ModalProps) {
   const { theme } = useTheme();
+  const { t } = useI18n();
   const isFullscreen = variant === 'fullscreen';
 
   return (
@@ -39,7 +42,7 @@ export function Modal({
         style={[
           styles.overlay,
           {
-            backgroundColor: 'rgba(27,33,63,0.24)',
+            backgroundColor: withAlpha(theme.semantic.text.primary, 0.24),
             padding: isFullscreen ? 0 : theme.semantic.layout.spacing.lg,
           },
         ]}>
@@ -47,15 +50,15 @@ export function Modal({
           style={[
             styles.content,
             {
-              backgroundColor: '#F8FBFF',
-              borderColor: '#D8E1EF',
+              backgroundColor: theme.semantic.bg.overlay,
+              borderColor: theme.semantic.border.subtle,
               borderRadius: isFullscreen
                 ? 0
                 : theme.semantic.layout.radius.xl,
               borderWidth: theme.semantic.layout.borderWidth.subtle,
               padding: theme.semantic.layout.spacing.md,
               gap: theme.semantic.layout.spacing.sm,
-              shadowColor: '#000000',
+              shadowColor: theme.semantic.shadow.base,
               shadowOpacity: 0.18,
               shadowRadius: 18,
               shadowOffset: { width: 0, height: 8 },
@@ -70,7 +73,7 @@ export function Modal({
           <Pressable
             onPress={onClose}
             accessibilityRole="button"
-            accessibilityLabel="Fechar modal"
+            accessibilityLabel={t('settings.close')}
             style={[
               styles.closeArea,
               closeStyle === 'ghost'
@@ -87,13 +90,13 @@ export function Modal({
                     elevation: 0,
                   }
                 : {
-                    borderColor: 'rgba(0,0,0,0.12)',
-                    backgroundColor: '#FFFFFF',
+                    borderColor: withAlpha(theme.semantic.shadow.base, 0.12),
+                    backgroundColor: theme.semantic.bg.surface,
                     borderRadius: 17,
                     borderWidth: theme.semantic.layout.borderWidth.subtle,
                     width: 34,
                     height: 34,
-                    shadowColor: '#000000',
+                    shadowColor: theme.semantic.shadow.base,
                     shadowOpacity: 0.3,
                     shadowRadius: 6,
                     shadowOffset: { width: 4, height: 4 },
@@ -103,7 +106,7 @@ export function Modal({
             <SymbolView
               name={{ ios: 'xmark', android: 'close', web: 'close' }}
               size={16}
-              tintColor="#2B2A46"
+              tintColor={theme.semantic.text.primary}
             />
           </Pressable>
           {title ? (
@@ -111,7 +114,7 @@ export function Modal({
               style={[
                 styles.title,
                 {
-                  color: '#23254D',
+                  color: theme.semantic.text.primary,
                   fontFamily: theme.semantic.typography.titleFamily,
                   fontWeight: theme.semantic.typography.titleWeight,
                 },

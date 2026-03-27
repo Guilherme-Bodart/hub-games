@@ -1,5 +1,6 @@
 import { type DimensionValue, Text, View } from 'react-native';
 import Animated, { FadeInDown, FadeOutUp, Layout } from 'react-native-reanimated';
+import { useMemo, useState } from 'react';
 
 import { LobbyPlayer } from '@/src/features/lobby';
 import { LobbyAddPlayerCard } from '@/src/features/lobby/components/LobbyAddPlayerCard';
@@ -17,7 +18,6 @@ type VisibleLobbyPlayer = {
 type LobbyPlayersSectionProps = {
   visiblePlayers: VisibleLobbyPlayer[];
   reduceMotion: boolean;
-  playerCellWidth: DimensionValue;
   playerColumns: number;
   playerGap: number;
   showAddCard: boolean;
@@ -32,7 +32,6 @@ type LobbyPlayersSectionProps = {
 export function LobbyPlayersSection({
   visiblePlayers,
   reduceMotion,
-  playerCellWidth,
   playerColumns,
   playerGap,
   showAddCard,
@@ -45,6 +44,17 @@ export function LobbyPlayersSection({
 }: LobbyPlayersSectionProps) {
   const { t } = useI18n();
   const { theme } = useTheme();
+  const [playersListWidth, setPlayersListWidth] = useState(0);
+
+  const playerCellWidth = useMemo<DimensionValue>(() => {
+    if (playersListWidth <= 0) {
+      return '48.4%';
+    }
+
+    const gapTotal = playerGap * (playerColumns - 1);
+    const measured = Math.floor((playersListWidth - gapTotal) / playerColumns);
+    return Math.max(68, measured);
+  }, [playerColumns, playerGap, playersListWidth]);
 
   return (
     <View style={styles.playersStage}>
@@ -62,7 +72,11 @@ export function LobbyPlayersSection({
         </Text>
       ) : null}
 
-      <View style={styles.playersList}>
+      <View
+        style={styles.playersList}
+        onLayout={(event) => {
+          setPlayersListWidth(Math.floor(event.nativeEvent.layout.width));
+        }}>
         {visiblePlayers.map(({ player, isLocalDevice }, index) => (
           <Animated.View
             key={player.id}

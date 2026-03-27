@@ -24,15 +24,21 @@ export const useSettingsScreen = () => {
     navigation.setOptions({
       title: t('settings.title'),
       headerShadowVisible: false,
-      headerStyle: { backgroundColor: '#FFFFFF' },
-      headerTintColor: '#2B2A46',
+      headerStyle: { backgroundColor: theme.semantic.bg.surface },
+      headerTintColor: theme.semantic.text.primary,
       headerTitleStyle: {
-        color: '#2B2A46',
         fontFamily: theme.semantic.typography.titleFamily,
         fontWeight: theme.semantic.typography.titleWeight,
       },
     });
-  }, [navigation, t, theme.semantic.typography.titleFamily, theme.semantic.typography.titleWeight]);
+  }, [
+    navigation,
+    t,
+    theme.semantic.bg.surface,
+    theme.semantic.text.primary,
+    theme.semantic.typography.titleFamily,
+    theme.semantic.typography.titleWeight,
+  ]);
 
   return {
     locale,

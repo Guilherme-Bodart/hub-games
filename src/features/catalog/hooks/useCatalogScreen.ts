@@ -1,24 +1,28 @@
-import { useRouter } from 'expo-router';
+﻿import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 
 import { gameCatalog, type GameCatalogItem } from '@/src/features/catalog/games';
-import { createRandomNickname, normalizeRoomCode, resolveErrorMessage } from '@/src/features/catalog/catalog.utils';
+import {
+  createRandomNickname,
+  normalizeRoomCode,
+  resolveErrorMessage,
+} from '@/src/features/catalog/catalog.utils';
 import type { UseCatalogScreenResult } from '@/src/features/catalog/catalog.types';
 import { useLobbySessionStore } from '@/src/features/lobby';
 import { useI18n } from '@/src/i18n';
-import { resolveThemeSystemGradient, useTheme } from '@/src/theme';
 import { triggerGameFeedback } from '@/src/ui/feedback';
+
+const CATALOG_BG_START = '#EFF4FA';
+const CATALOG_BG_END = '#DDE6F1';
 
 export const useCatalogScreen = (): UseCatalogScreenResult => {
   const router = useRouter();
   const { t, locale } = useI18n();
-  const { themeName } = useTheme();
   const createRemoteSession = useLobbySessionStore((state) => state.createRemoteSession);
   const joinRemoteSession = useLobbySessionStore((state) => state.joinRemoteSession);
   const getPreferredNickname = useLobbySessionStore((state) => state.getPreferredNickname);
   const setPreferredNickname = useLobbySessionStore((state) => state.setPreferredNickname);
-  const [bgStart, bgEnd] = resolveThemeSystemGradient(themeName);
 
   const [nickname, setNickname] = useState('');
   const [nicknameDraft, setNicknameDraft] = useState('');
@@ -136,7 +140,7 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
     const normalizedCode = normalizeRoomCode(roomCodeInput);
 
     if (!normalizedCode) {
-      setRoomCodeError(locale === 'pt' ? 'Digite o c�digo da sala.' : 'Enter the room code.');
+      setRoomCodeError(locale === 'pt' ? 'Digite o código da sala.' : 'Enter the room code.');
       return;
     }
 
@@ -176,8 +180,8 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
       roomCodeInput,
       roomCodeError,
       readyGames,
-      bgStart,
-      bgEnd,
+      bgStart: CATALOG_BG_START,
+      bgEnd: CATALOG_BG_END,
     },
     handlers: {
       openSettings,
@@ -193,4 +197,3 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
     },
   };
 };
-

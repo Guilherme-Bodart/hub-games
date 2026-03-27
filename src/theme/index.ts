@@ -1,5 +1,4 @@
 export { ThemePreviewProvider, ThemeProvider, useTheme } from '@/src/theme/ThemeProvider';
-export { setTheme } from '@/src/theme/store';
 export {
   defaultThemeName,
   getTheme,

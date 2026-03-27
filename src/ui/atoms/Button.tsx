@@ -54,12 +54,12 @@ export function Button({
   const borderColor = isDisabled
     ? shiftHexColor(baseColor, 0.06)
     : variant === 'ghost'
-      ? '#D5DEEC'
+      ? theme.semantic.border.subtle
       : shiftHexColor(baseColor, -0.1);
   const bottomDepthColor = isDisabled
     ? shiftHexColor(baseColor, -0.02)
     : variant === 'ghost'
-      ? '#CAD5E8'
+      ? shiftHexColor(theme.semantic.border.subtle, -0.06)
       : shiftHexColor(baseColor, -0.13);
 
   return (
@@ -81,7 +81,7 @@ export function Button({
           borderWidth: 1.2,
           borderBottomWidth: isDisabled ? 2 : 4,
           borderBottomColor: bottomDepthColor,
-          shadowColor: '#000000',
+          shadowColor: theme.semantic.shadow.base,
           shadowOpacity: isDisabled ? 0.08 : 0.12,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 3 },
