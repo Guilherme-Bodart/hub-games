@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { HybridLobbyState } from '@/src/features/lobby';
 import { Locale } from '@/src/i18n';
-import { getSintoniaThemes } from '@/src/features/games/sintonia/categories';
+import { getSintoniaThemes, SintoniaThemeCategory } from '@/src/features/games/sintonia/categories';
 import {
   OrderingEvaluation,
   SintoniaPlayer,
@@ -30,7 +30,15 @@ const playerSeedSchema = z.object({
 const roundInputSchema = z.object({
   mode: z.enum(['local', 'remote']),
   players: z.array(playerSeedSchema).min(2).max(10),
-  themes: z.array(z.string().min(4)).min(1),
+  themes: z
+    .array(
+      z.object({
+        prompt: z.string().min(4),
+        lowLabel: z.string().min(1),
+        highLabel: z.string().min(1),
+      })
+    )
+    .min(1),
 });
 
 const normalizeRandom = (random: () => number): number =>
@@ -71,7 +79,10 @@ export const drawUniqueNumbers = (amount: number, random: () => number): number[
   return shuffledPool.slice(0, amount);
 };
 
-const pickTheme = (themes: readonly string[], random: () => number): string =>
+const pickTheme = (
+  themes: readonly SintoniaThemeCategory[],
+  random: () => number
+): SintoniaThemeCategory =>
   themes[Math.floor(normalizeRandom(random) * themes.length)];
 
 export const createPlayersMap = (
@@ -117,10 +128,13 @@ export const createSintoniaRound = ({
     ...player,
     secretNumber: secretNumbers[index],
   }));
+  const selectedTheme = pickTheme(parsedInput.themes, random);
 
   return {
     id: `sintonia-${Date.now()}`,
-    theme: pickTheme(parsedInput.themes, random),
+    theme: selectedTheme.prompt,
+    themeScaleLow: selectedTheme.lowLabel,
+    themeScaleHigh: selectedTheme.highLabel,
     mode: parsedInput.mode,
     players,
     initialOrder: shuffle(

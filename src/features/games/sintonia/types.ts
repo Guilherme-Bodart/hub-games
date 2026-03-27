@@ -15,6 +15,8 @@ export type SintoniaPlayer = {
 export type SintoniaRound = {
   id: string;
   theme: string;
+  themeScaleLow: string;
+  themeScaleHigh: string;
   mode: RoomMode;
   players: SintoniaPlayer[];
   initialOrder: string[];

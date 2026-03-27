@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 
-import { getGameById } from '@/src/features/catalog';
 import {
   resolveImpostorContentMode,
   resolveImpostorCount,
   resolveImpostorRoundTargetPlayers,
   resolveLobbyActionAuthorityMode,
 } from '@/src/features/lobby/gameSettings';
+import { getLobbyGameMeta } from '@/src/features/lobby/lobbyGameMeta';
 import {
   buildLobbyPanelCopy,
   getImpostorLobbyBadgeLabel,
@@ -66,7 +66,7 @@ export function useLobbyDerivedState({
     [visibleDevices]
   );
 
-  const selectedGame = lobby ? getGameById(lobby.gameId) : undefined;
+  const selectedGame = lobby ? getLobbyGameMeta(lobby.gameId) : undefined;
   const minimumPlayers = selectedGame?.players.min ?? 1;
   const maximumPlayers = selectedGame?.players.max ?? Number.MAX_SAFE_INTEGER;
   const lobbyTitle = selectedGame ? selectedGame.title[locale] : t('tabs.lobby');

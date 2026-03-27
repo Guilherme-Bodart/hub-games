@@ -1,25 +1,27 @@
-import { SymbolView } from 'expo-symbols';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { SecretRevealInteractiveCard } from '@/src/features/games/sintonia/components/SecretRevealInteractiveCard';
 import { SintoniaPlayer } from '@/src/features/games/sintonia/types';
 import { styles } from '@/src/features/games/sintonia/styles/sintoniaStyles';
 import { ThemeTokens } from '@/src/theme/types';
 import { withAlpha } from '@/src/theme/utils';
-import { AvatarSprite, Button } from '@/src/ui/atoms';
+import { Button } from '@/src/ui/atoms';
 
 type SintoniaSecretRevealCardProps = {
   theme: ThemeTokens;
   player: SintoniaPlayer | null;
   isRevealed: boolean;
-  isViewed: boolean;
   isLocalReady: boolean;
   isWaitingOthers: boolean;
   hasMoreLocalPlayers: boolean;
   canAdvance: boolean;
+  phaseSubtitle: string;
   holdHintLabel: string;
+  chargingLabel: string;
   releaseHintLabel: string;
   waitingLabel: string;
   readyProgressLabel: string;
+  revealedLabel: string;
   nextLabel: string;
   readyLabel: string;
   onPressIn: () => void;
@@ -31,15 +33,17 @@ export function SintoniaSecretRevealCard({
   theme,
   player,
   isRevealed,
-  isViewed,
   isLocalReady,
   isWaitingOthers,
   hasMoreLocalPlayers,
   canAdvance,
+  phaseSubtitle,
   holdHintLabel,
+  chargingLabel,
   releaseHintLabel,
   waitingLabel,
   readyProgressLabel,
+  revealedLabel,
   nextLabel,
   readyLabel,
   onPressIn,
@@ -47,163 +51,86 @@ export function SintoniaSecretRevealCard({
   onAdvance,
 }: SintoniaSecretRevealCardProps) {
   const actionLabel = hasMoreLocalPlayers ? nextLabel : readyLabel;
+
   return (
     <View
       style={[
-        styles.secretCardStage,
+        styles.secretStage,
         {
-          borderColor: withAlpha(theme.semantic.border.subtle, 0.75),
-          backgroundColor: withAlpha(theme.semantic.bg.surface, 0.5),
+          backgroundColor: 'transparent',
         },
       ]}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ disabled: !player || isLocalReady }}
-        accessibilityLabel={player ? `Carta secreta de ${player.name}` : waitingLabel}
-        disabled={!player || isLocalReady}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        style={[
-          styles.secretRevealCard,
-          {
-            borderColor: withAlpha(theme.semantic.button.primary.bg, 0.88),
-            backgroundColor: withAlpha(theme.semantic.bg.surface, 0.88),
-            shadowColor: theme.semantic.button.primary.bg,
-          },
-        ]}>
+      <View style={styles.secretStageHeader}>
         <View
-          pointerEvents="none"
           style={[
-            styles.secretRevealFrame,
-            { borderColor: withAlpha(theme.semantic.text.primary, 0.13) },
-          ]}
-        />
-        <View
-          pointerEvents="none"
-          style={[
-            styles.secretRevealFrameInner,
-            { borderColor: withAlpha(theme.semantic.text.primary, 0.08) },
-          ]}
-        />
-
-        {player ? (
-          <>
-            {player.isHost ? (
-              <View style={styles.secretRevealHostBadge}>
-                <SymbolView
-                  name={{ ios: 'crown.fill', android: 'crown', web: 'crown' }}
-                  size={13}
-                  tintColor="#D7A63D"
-                />
-              </View>
-            ) : null}
-
-            <AvatarSprite avatarId={player.avatarId} size={84} />
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.secretRevealPlayerName,
-                {
-                  color: theme.semantic.text.primary,
-                  fontFamily: theme.semantic.typography.titleFamily,
-                  fontWeight: theme.semantic.typography.titleWeight,
-                },
-              ]}>
-              {player.name}
-            </Text>
-
-            <Text
-              style={[
-                styles.secretRevealHint,
-                {
-                  color: theme.semantic.text.secondary,
-                  fontFamily: theme.semantic.typography.bodyFamily,
-                  fontWeight: theme.semantic.typography.bodyWeight,
-                },
-              ]}>
-              {isRevealed ? releaseHintLabel : holdHintLabel}
-            </Text>
-
-            <View
-              style={[
-                styles.secretRevealNumberWrap,
-                {
-                  borderColor: withAlpha(theme.semantic.border.subtle, 0.95),
-                  backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.86),
-                },
-              ]}>
-              <Text
-                style={[
-                  styles.secretRevealNumber,
-                  {
-                    color: isRevealed ? theme.semantic.button.primary.bg : theme.semantic.text.muted,
-                    fontFamily: theme.semantic.typography.numberFamily,
-                    fontWeight: theme.semantic.typography.numberWeight,
-                  },
-                ]}>
-                {isRevealed ? player.secretNumber : '??'}
-              </Text>
-            </View>
-          </>
-        ) : (
+            styles.secretStageProgressBadge,
+            {
+              borderColor: withAlpha(theme.semantic.border.subtle, 0.76),
+              backgroundColor: withAlpha(theme.semantic.bg.surface, 0.9),
+            },
+          ]}>
           <Text
             style={[
-              styles.secretRevealHint,
+              styles.secretStageProgressText,
               {
                 color: theme.semantic.text.secondary,
                 fontFamily: theme.semantic.typography.bodyFamily,
                 fontWeight: theme.semantic.typography.bodyWeight,
               },
             ]}>
-            {waitingLabel}
-          </Text>
-        )}
-      </Pressable>
-
-      <View
-        style={[
-          styles.secretRevealStatus,
-          {
-            borderColor: withAlpha(theme.semantic.border.subtle, 0.9),
-            backgroundColor: withAlpha(theme.semantic.bg.surface, 0.72),
-          },
-        ]}>
-        <Text
-          style={[
-            styles.secretRevealStatusText,
-            {
-              color: theme.semantic.text.secondary,
-              fontFamily: theme.semantic.typography.bodyFamily,
-              fontWeight: theme.semantic.typography.bodyWeight,
-            },
-          ]}>
             {readyProgressLabel}
           </Text>
+        </View>
       </View>
 
-      {isWaitingOthers ? (
-        <Text
-          style={[
-            styles.secretRevealWaitingLabel,
-            {
-              color: theme.semantic.status.warning,
-              fontFamily: theme.semantic.typography.bodyFamily,
-              fontWeight: theme.semantic.typography.bodyWeight,
-            },
-          ]}>
-          {waitingLabel}
-        </Text>
-      ) : null}
-
-      <Button
-        label={actionLabel}
-        onPress={onAdvance}
-        disabled={!canAdvance || isWaitingOthers}
-        size="lg"
-        style={styles.secretRevealActionButton}
+      <SecretRevealInteractiveCard
+        theme={theme}
+        player={player}
+        isRevealed={isRevealed}
+        isLocalReady={isLocalReady}
+        waitingLabel={waitingLabel}
+        holdHintLabel={holdHintLabel}
+        chargingLabel={chargingLabel}
+        releaseHintLabel={releaseHintLabel}
+        revealedLabel={revealedLabel}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
       />
 
-      {!isViewed && !isLocalReady ? (
+      {isWaitingOthers ? (
+        <View
+          style={[
+            styles.secretWaitingWrap,
+            {
+              borderColor: withAlpha(theme.semantic.status.warning, 0.44),
+              backgroundColor: withAlpha(theme.semantic.status.warning, 0.11),
+            },
+          ]}>
+          <Text
+            style={[
+              styles.secretWaitingText,
+              {
+                color: theme.semantic.status.warning,
+                fontFamily: theme.semantic.typography.bodyFamily,
+                fontWeight: theme.semantic.typography.bodyWeight,
+              },
+            ]}>
+            {waitingLabel}
+          </Text>
+        </View>
+      ) : null}
+
+      {!isWaitingOthers ? (
+        <Button
+          label={actionLabel}
+          onPress={onAdvance}
+          disabled={!canAdvance}
+          size="lg"
+          style={styles.secretPrimaryButton}
+        />
+      ) : null}
+
+      {!isWaitingOthers ? (
         <Text
           style={[
             styles.secretRevealSubHint,
@@ -213,7 +140,7 @@ export function SintoniaSecretRevealCard({
               fontWeight: theme.semantic.typography.bodyWeight,
             },
           ]}>
-          {holdHintLabel}
+          {phaseSubtitle}
         </Text>
       ) : null}
     </View>

@@ -8,6 +8,8 @@ import {
 } from '@/src/features/games/sintonia/realtime';
 import { triggerGameFeedback } from '@/src/ui/feedback';
 
+const HOLD_TO_REVEAL_MS = 1000;
+
 type UseSintoniaSecretPhaseParams = {
   round: SintoniaRound | null;
   phase: SintoniaPhase;
@@ -37,6 +39,16 @@ export function useSintoniaSecretPhase({
   const [viewedSecretByPlayerId, setViewedSecretByPlayerId] = useState<Record<string, boolean>>({});
   const [devicesReadyById, setDevicesReadyById] = useState<Record<string, boolean>>({});
   const didRequestOrderingRef = useRef(false);
+  const revealHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearRevealHoldTimer = useCallback(() => {
+    if (!revealHoldTimerRef.current) {
+      return;
+    }
+
+    clearTimeout(revealHoldTimerRef.current);
+    revealHoldTimerRef.current = null;
+  }, []);
 
   const localSecretPlayers = useMemo(
     () => orderedPlayers.filter((player) => player.isLocalDevice),
@@ -55,6 +67,11 @@ export function useSintoniaSecretPhase({
     () => Array.from(new Set(round?.players.map((player) => player.deviceId) ?? [])),
     [round]
   );
+  const secretTotalPlayersCount = round?.players.length ?? 0;
+  const secretReadyPlayersCount = useMemo(
+    () => (round?.players.filter((player) => devicesReadyById[player.deviceId]).length ?? 0),
+    [devicesReadyById, round]
+  );
   const secretTotalDevicesCount = roundDeviceIds.length;
   const secretReadyDevicesCount = roundDeviceIds.filter((deviceId) => devicesReadyById[deviceId]).length;
   const isLocalDeviceReady = Boolean(devicesReadyById[localDeviceId]);
@@ -67,11 +84,12 @@ export function useSintoniaSecretPhase({
       return;
     }
 
+    setDevicesReadyById((current) => ({
+      ...current,
+      [localDeviceId]: true,
+    }));
+
     if (!isRemoteRealtime) {
-      setDevicesReadyById((current) => ({
-        ...current,
-        [localDeviceId]: true,
-      }));
       setPhase('ordering');
       return;
     }
@@ -79,20 +97,44 @@ export function useSintoniaSecretPhase({
     try {
       await setRemoteSintoniaDeviceReady(roomCode, localDeviceId, true, localDeviceId);
     } catch {
+      setDevicesReadyById((current) => ({
+        ...current,
+        [localDeviceId]: false,
+      }));
       setRoundError(true);
     }
   }, [isRemoteRealtime, localDeviceId, roomCode, round, setPhase, setRoundError]);
 
   const handleSecretPlayerPressIn = useCallback(() => {
-    if (!currentSecretPlayer || isLocalDeviceReady) {
+    if (!currentSecretPlayer || isLocalDeviceReady || isCurrentSecretRevealed) {
       return;
     }
 
-    setActiveSecretPlayerId(currentSecretPlayer.id);
+    clearRevealHoldTimer();
+
+    const targetPlayerId = currentSecretPlayer.id;
+    revealHoldTimerRef.current = setTimeout(() => {
+      setActiveSecretPlayerId(targetPlayerId);
+      setViewedSecretByPlayerId((current) => ({
+        ...current,
+        [targetPlayerId]: true,
+      }));
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      revealHoldTimerRef.current = null;
+    }, HOLD_TO_REVEAL_MS);
+
     void Haptics.selectionAsync();
-  }, [currentSecretPlayer, isLocalDeviceReady, setActiveSecretPlayerId]);
+  }, [
+    clearRevealHoldTimer,
+    currentSecretPlayer,
+    isCurrentSecretRevealed,
+    isLocalDeviceReady,
+    setActiveSecretPlayerId,
+  ]);
 
   const handleSecretPlayerPressOut = useCallback(() => {
+    clearRevealHoldTimer();
+
     if (!currentSecretPlayer) {
       return;
     }
@@ -100,11 +142,7 @@ export function useSintoniaSecretPhase({
     setActiveSecretPlayerId((currentPlayerId) =>
       currentPlayerId === currentSecretPlayer.id ? null : currentPlayerId
     );
-    setViewedSecretByPlayerId((current) => ({
-      ...current,
-      [currentSecretPlayer.id]: true,
-    }));
-  }, [currentSecretPlayer, setActiveSecretPlayerId]);
+  }, [clearRevealHoldTimer, currentSecretPlayer, setActiveSecretPlayerId]);
 
   const advanceSecretCard = useCallback(() => {
     if (phase !== 'secrets' || isLocalDeviceReady) {
@@ -145,17 +183,19 @@ export function useSintoniaSecretPhase({
       return;
     }
 
+    clearRevealHoldTimer();
     setLocalSecretIndex(0);
     setViewedSecretByPlayerId({});
     setActiveSecretPlayerId(null);
     didRequestOrderingRef.current = false;
-  }, [round?.id, setActiveSecretPlayerId]);
+  }, [clearRevealHoldTimer, round?.id, setActiveSecretPlayerId]);
 
   useEffect(() => {
     if (phase !== 'secrets') {
+      clearRevealHoldTimer();
       didRequestOrderingRef.current = false;
     }
-  }, [phase]);
+  }, [clearRevealHoldTimer, phase]);
 
   useEffect(() => {
     if (phase !== 'secrets' || !isRemoteRealtime || isLocalDeviceReady || localSecretPlayers.length > 0) {
@@ -193,6 +233,8 @@ export function useSintoniaSecretPhase({
     setRoundError,
   ]);
 
+  useEffect(() => () => clearRevealHoldTimer(), [clearRevealHoldTimer]);
+
   return {
     currentSecretPlayer,
     isCurrentSecretRevealed,
@@ -200,8 +242,8 @@ export function useSintoniaSecretPhase({
     isSecretWaitingOthers,
     isLocalDeviceReady,
     hasMoreLocalSecretPlayers,
-    secretReadyDevicesCount,
-    secretTotalDevicesCount,
+    secretReadyPlayersCount,
+    secretTotalPlayersCount,
     setDevicesReadyById,
     handleSecretPlayerPressIn,
     handleSecretPlayerPressOut,

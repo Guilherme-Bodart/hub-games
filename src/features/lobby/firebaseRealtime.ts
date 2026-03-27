@@ -12,13 +12,13 @@ import {
 } from 'firebase/database';
 import { z } from 'zod';
 
-import { getGameById } from '@/src/features/catalog';
 import { AVATAR_SPRITE_TOTAL } from '@/src/features/lobby/avatarPool';
 import {
   getDefaultLobbyGameSettings,
   normalizeLobbyGameSettings,
   resolveImpostorRoundTargetPlayers,
 } from '@/src/features/lobby/gameSettings';
+import { getLobbyGamePlayerLimits } from '@/src/features/lobby/lobbyGameMeta';
 import { HybridLobbyState, LobbyDeviceGroup, LobbyGameSettings, LobbyPlayer } from '@/src/features/lobby/types';
 import { ensureFirebaseAnonymousAuth, getFirebaseServices } from '@/src/integrations/firebase';
 
@@ -188,8 +188,7 @@ const countLobbyPlayers = (lobby: RemoteLobbySnapshot): number =>
     0
   );
 
-const getGameMaxPlayers = (gameId: string): number =>
-  getGameById(gameId)?.players.max ?? Number.MAX_SAFE_INTEGER;
+const getGameMaxPlayers = (gameId: string): number => getLobbyGamePlayerLimits(gameId).max;
 
 const getLobbyMaxPlayers = (lobby: RemoteLobbySnapshot): number => {
   const gameMaxPlayers = getGameMaxPlayers(lobby.gameId);

@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
-import { getGameById } from '@/src/features/catalog';
 import { assignUniqueAvatarIds, pickAvailableAvatarId } from '@/src/features/lobby/avatarPool';
 import {
   addRemotePlayer,
@@ -15,6 +14,7 @@ import {
   updateRemoteLobbySettings,
 } from '@/src/features/lobby/firebaseRealtime';
 import { normalizeLobbyGameSettings, resolveImpostorRoundTargetPlayers } from '@/src/features/lobby/gameSettings';
+import { getLobbyGamePlayerLimits } from '@/src/features/lobby/lobbyGameMeta';
 import { buildInitialHybridLobby } from '@/src/features/lobby/mockState';
 import { HybridLobbyState, LobbyGameSettings, RoomMode } from '@/src/features/lobby/types';
 
@@ -266,9 +266,9 @@ const getMaxPlayersForLobby = (lobby: HybridLobbyState): number =>
   lobby.gameId === 'impostor-neon'
     ? Math.min(
         resolveImpostorRoundTargetPlayers(lobby.gameSettings),
-        getGameById(lobby.gameId)?.players.max ?? Number.MAX_SAFE_INTEGER
+        getLobbyGamePlayerLimits(lobby.gameId).max
       )
-    : getGameById(lobby.gameId)?.players.max ?? Number.MAX_SAFE_INTEGER;
+    : getLobbyGamePlayerLimits(lobby.gameId).max;
 
 const isLocalDeviceHost = (lobby: HybridLobbyState): boolean =>
   lobby.devices
