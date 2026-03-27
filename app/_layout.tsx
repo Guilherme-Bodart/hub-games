@@ -14,6 +14,7 @@ import { View } from 'react-native';
 import 'react-native-reanimated';
 import '../global.css';
 
+import { AppStartupLoadingScreen } from '@/src/bootstrap/AppStartupLoadingScreen';
 import { preloadWarmBootAssets } from '@/src/bootstrap/warmBoot';
 import { ensureFirebaseAnonymousAuth, subscribeFirebaseConnection } from '@/src/integrations/firebase';
 import { useLobbySessionStore } from '@/src/features/lobby';
@@ -72,12 +73,12 @@ export default function RootLayout() {
   }, [loaded]);
 
   useEffect(() => {
-    if (!loaded || !bootReady) {
+    if (!loaded) {
       return;
     }
 
     SplashScreen.hideAsync();
-  }, [bootReady, loaded]);
+  }, [loaded]);
 
   useEffect(() => {
     const unsubscribe = subscribeFirebaseConnection((status) => {
@@ -130,8 +131,12 @@ export default function RootLayout() {
     void restoreRemoteSessionIfAny().catch(() => undefined);
   }, [restoreRemoteSessionIfAny]);
 
-  if (!loaded || !bootReady) {
+  if (!loaded) {
     return null;
+  }
+
+  if (!bootReady) {
+    return <AppStartupLoadingScreen />;
   }
 
   return (
