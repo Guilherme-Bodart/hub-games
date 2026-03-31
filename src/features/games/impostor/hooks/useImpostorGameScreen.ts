@@ -14,9 +14,24 @@ export function useImpostorGameScreen({ locale, round, error, setShellPhase }: U
 
   const copy = useMemo(
     () => ({
-      title: isPt ? 'Impostor Neon' : 'Neon Impostor',
+      title: 'Impostor',
       noPlayers: isPt ? 'Minimo de 4 jogadores prontos.' : 'Minimum of 4 ready players.',
       waiting: isPt ? 'Aguardando rodada...' : 'Waiting for round...',
+      roundLiveLabel: isPt ? 'Rodada ativa' : 'Round live',
+      playersCountCompact: isPt ? 'jogadores' : 'players',
+      rulesTitle: isPt ? 'Como funciona' : 'How it works',
+      rulesObjective: isPt
+        ? 'Cada rodada tem civis e impostor. Os civis recebem a palavra real; o impostor tenta se misturar sem conhecer a resposta.'
+        : 'Each round has civilians and an impostor. Civilians get the real word; the impostor tries to blend in without knowing it.',
+      rulesStepOne: isPt
+        ? 'Revelem o papel em segredo e passem o celular para o proximo jogador.'
+        : 'Reveal each role in secret and pass the phone to the next player.',
+      rulesStepTwo: isPt
+        ? 'Na fase de pistas, cada jogador envia uma palavra curta sem entregar demais.'
+        : 'During clues, each player sends one short clue without giving too much away.',
+      rulesStepThree: isPt
+        ? 'Depois, o grupo decide se continua, vota em suspeitos e tenta identificar o impostor.'
+        : 'Then the group decides whether to continue, vote on suspects, and identify the impostor.',
       reveal: isPt ? 'Revelacao' : 'Reveal',
       clues: isPt ? 'Pistas' : 'Clues',
       roundDecision: isPt ? 'Decisao da rodada' : 'Round decision',

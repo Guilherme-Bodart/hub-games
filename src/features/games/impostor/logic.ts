@@ -1,6 +1,7 @@
 import { HybridLobbyState } from '@/src/features/lobby';
 import {
   resolveImpostorContentMode,
+  resolveImpostorClueTurnSeconds,
   resolveImpostorCount,
   resolveImpostorRoundTargetPlayers,
 } from '@/src/features/lobby/gameSettings';
@@ -171,6 +172,7 @@ export const createImpostorRound = ({
   const configuredMaxPlayers = clamp(resolveImpostorRoundTargetPlayers(lobby.gameSettings), 4, 12);
   const impostorCount = eligiblePlayers.length >= 7 ? resolveImpostorCount(lobby.gameSettings) : 1;
   const mode = resolveImpostorContentMode(lobby.gameSettings);
+  const clueTurnSeconds = resolveImpostorClueTurnSeconds(lobby.gameSettings);
 
   if (eligiblePlayers.length < 4) {
     throw new Error('Not enough ready players for Impostor round.');
@@ -205,9 +207,12 @@ export const createImpostorRound = ({
     impostorPrompt: prompt.impostorPrompt,
     players,
     impostorCount,
+    clueTurnSeconds,
     phase: 'reveal',
     activeTurnIndex: 0,
+    activeTurnStartedAt: Date.now(),
     clues: {},
+    submittedCluePlayerIds: [],
     clueHistoryByPlayer: {},
     usedClueTokens: [],
     clueCycle: 1,
@@ -239,7 +244,8 @@ export const getActiveTurnPlayer = (round: ImpostorRound): ImpostorRoundPlayer |
 export const submitRoundClue = (
   round: ImpostorRound,
   playerId: string,
-  clue: string
+  clue: string,
+  options?: { allowPartial?: boolean }
 ): { round: ImpostorRound; error?: string } => {
   if (round.phase !== 'clues') {
     return { round, error: 'Round is not in clue phase.' };
@@ -251,37 +257,52 @@ export const submitRoundClue = (
     return { round, error: 'This is not your turn.' };
   }
 
-  const clueToken = toOneWordToken(clue);
+  if (round.submittedCluePlayerIds.includes(playerId)) {
+    return { round, error: 'This player already submitted a clue in this cycle.' };
+  }
 
-  if (!clueToken) {
+  const rawClue = clue.trim();
+  const autoClueCandidate =
+    options?.allowPartial && rawClue ? rawClue.split(/\s+/)[0]?.slice(0, 20) ?? '' : rawClue;
+  const clueCandidate = options?.allowPartial ? autoClueCandidate : rawClue;
+  const clueToken = clueCandidate ? toOneWordToken(clueCandidate) : null;
+
+  if (!options?.allowPartial && !clueToken) {
     return { round, error: 'Use one short word only.' };
   }
 
-  if (round.usedClueTokens.includes(clueToken)) {
+  if (clueToken && round.usedClueTokens.includes(clueToken) && !options?.allowPartial) {
     return { round, error: 'This clue was already used in this round.' };
-  }
-
-  if (round.clues[playerId]) {
-    return { round, error: 'This player already submitted a clue in this cycle.' };
   }
 
   const nextActiveTurnIndex = round.activeTurnIndex + 1;
   const turnOrder = getTurnOrder(round);
   const isLastTurn = nextActiveTurnIndex >= turnOrder.length;
+  const storedClue = clueToken ? clueCandidate.trim() : '';
 
   return {
     round: {
       ...round,
       clues: {
         ...round.clues,
-        [playerId]: clue.trim(),
+        ...(storedClue ? { [playerId]: storedClue } : {}),
       },
+      submittedCluePlayerIds: [...round.submittedCluePlayerIds, playerId],
       clueHistoryByPlayer: {
         ...round.clueHistoryByPlayer,
-        [playerId]: [...(round.clueHistoryByPlayer[playerId] ?? []), clue.trim()],
+        ...(storedClue
+          ? {
+              [playerId]: [...(round.clueHistoryByPlayer[playerId] ?? []), storedClue],
+            }
+          : {}),
       },
-      usedClueTokens: [...round.usedClueTokens, clueToken],
+      usedClueTokens: clueToken
+        ? round.usedClueTokens.includes(clueToken)
+          ? round.usedClueTokens
+          : [...round.usedClueTokens, clueToken]
+        : round.usedClueTokens,
       activeTurnIndex: isLastTurn ? turnOrder.length : nextActiveTurnIndex,
+      activeTurnStartedAt: Date.now(),
       phase: 'clues',
     },
   };
@@ -294,7 +315,7 @@ export const proceedToRoundDecision = (
     return { round, error: 'Round is not in clue phase.' };
   }
 
-  const submittedCount = Object.keys(round.clues).length;
+  const submittedCount = round.submittedCluePlayerIds.length;
   if (submittedCount < round.players.length) {
     return { round, error: 'Wait for all clues before continuing.' };
   }
@@ -349,7 +370,9 @@ export const submitRoundDecisionVote = (
         players: rotatePlayersForNextCycle(round.players, nextClueCycle),
         phase: 'clues',
         activeTurnIndex: 0,
+        activeTurnStartedAt: Date.now(),
         clues: {},
+        submittedCluePlayerIds: [],
         usedClueTokens: [],
         clueCycle: nextClueCycle,
         decisionVotes: {},

@@ -15,6 +15,8 @@ export type LobbyPanelCopy = {
   questions: string;
   roundPlayers: string;
   impostors: string;
+  clueTimer: string;
+  secondsShort: string;
   hostOnlyHint: string;
   waitingHostStart: string;
   countdownStarting: string;

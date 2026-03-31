@@ -1,6 +1,11 @@
+export { CluesComposerDock } from '@/src/features/games/impostor/components/CluesComposerDock';
+export { CluesHeroPanel } from '@/src/features/games/impostor/components/CluesHeroPanel';
 export { ClueSlotCard } from '@/src/features/games/impostor/components/ClueSlotCard';
 export { ImpostorCluesPhase } from '@/src/features/games/impostor/components/CluesPhase';
 export { ImpostorGuessingPhase } from '@/src/features/games/impostor/components/GuessingPhase';
+export { ImpostorRoundHeader } from '@/src/features/games/impostor/components/RoundHeader';
+export { ImpostorRulesModal } from '@/src/features/games/impostor/components/RulesModal';
+export { PlayerClueCard } from '@/src/features/games/impostor/components/PlayerClueCard';
 export { ImpostorResultPhase } from '@/src/features/games/impostor/components/ResultPhase';
 export { ImpostorRevealHeroCard } from '@/src/features/games/impostor/components/RevealHeroCard';
 export { ImpostorRevealPhase } from '@/src/features/games/impostor/components/RevealPhase';

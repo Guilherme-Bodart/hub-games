@@ -8,6 +8,7 @@ export const LOBBY_SETTINGS_KEYS = {
   impostorContentMode: 'impostorContentMode',
   impostorTargetPlayers: 'impostorTargetPlayers',
   impostorCount: 'impostorCount',
+  impostorClueTurnSeconds: 'impostorClueTurnSeconds',
 } as const;
 
 const LEGACY_LOBBY_SETTINGS_KEYS = {
@@ -15,6 +16,7 @@ const LEGACY_LOBBY_SETTINGS_KEYS = {
   impostorContentMode: 'impostor.contentMode',
   impostorTargetPlayers: 'impostor.targetPlayers',
   impostorCount: 'impostor.impostorCount',
+  impostorClueTurnSeconds: 'impostor.clueTurnSeconds',
 } as const;
 
 const DEFAULT_ACTION_AUTHORITY_MODE: LobbyActionAuthorityMode = 'host-only';
@@ -22,6 +24,8 @@ const DEFAULT_IMPOSTOR_CONTENT_MODE: ImpostorContentMode = 'words';
 const IMPOSTOR_MIN_PLAYERS = 4;
 const IMPOSTOR_MAX_PLAYERS = 12;
 const MAX_IMPOSTORS = 2;
+const DEFAULT_IMPOSTOR_CLUE_TURN_SECONDS = 20;
+const IMPOSTOR_CLUE_TURN_OPTIONS = [10, 20, 30] as const;
 
 const toFiniteNumber = (value: unknown): number | null => {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -61,6 +65,7 @@ export const getDefaultLobbyGameSettings = (
       [LOBBY_SETTINGS_KEYS.impostorContentMode]: DEFAULT_IMPOSTOR_CONTENT_MODE,
       [LOBBY_SETTINGS_KEYS.impostorTargetPlayers]: IMPOSTOR_MAX_PLAYERS,
       [LOBBY_SETTINGS_KEYS.impostorCount]: 1,
+      [LOBBY_SETTINGS_KEYS.impostorClueTurnSeconds]: DEFAULT_IMPOSTOR_CLUE_TURN_SECONDS,
     };
   }
 
@@ -101,10 +106,17 @@ export const normalizeLobbyGameSettings = (
   const desiredImpostorCount = clamp(Math.floor(parsedImpostorCount ?? 1), 1, MAX_IMPOSTORS);
   const impostorCount = targetPlayers >= 7 ? desiredImpostorCount : 1;
   const contentMode = getSettingValue(merged, 'impostorContentMode') === 'questions' ? 'questions' : 'words';
+  const parsedClueTurnSeconds = toFiniteNumber(getSettingValue(merged, 'impostorClueTurnSeconds'));
+  const clueTurnSeconds = IMPOSTOR_CLUE_TURN_OPTIONS.includes(
+    parsedClueTurnSeconds as (typeof IMPOSTOR_CLUE_TURN_OPTIONS)[number]
+  )
+    ? (parsedClueTurnSeconds as (typeof IMPOSTOR_CLUE_TURN_OPTIONS)[number])
+    : DEFAULT_IMPOSTOR_CLUE_TURN_SECONDS;
 
   merged[LOBBY_SETTINGS_KEYS.impostorContentMode] = contentMode;
   merged[LOBBY_SETTINGS_KEYS.impostorTargetPlayers] = targetPlayers;
   merged[LOBBY_SETTINGS_KEYS.impostorCount] = impostorCount;
+  merged[LOBBY_SETTINGS_KEYS.impostorClueTurnSeconds] = clueTurnSeconds;
 
   return merged;
 };
@@ -127,4 +139,11 @@ export const resolveImpostorRoundTargetPlayers = (settings: LobbyGameSettings): 
 export const resolveImpostorCount = (settings: LobbyGameSettings): number => {
   const parsed = toFiniteNumber(getSettingValue(settings, 'impostorCount'));
   return parsed ? clamp(Math.floor(parsed), 1, MAX_IMPOSTORS) : 1;
+};
+
+export const resolveImpostorClueTurnSeconds = (settings: LobbyGameSettings): 10 | 20 | 30 => {
+  const parsed = toFiniteNumber(getSettingValue(settings, 'impostorClueTurnSeconds'));
+  return IMPOSTOR_CLUE_TURN_OPTIONS.includes(parsed as 10 | 20 | 30)
+    ? (parsed as 10 | 20 | 30)
+    : DEFAULT_IMPOSTOR_CLUE_TURN_SECONDS;
 };

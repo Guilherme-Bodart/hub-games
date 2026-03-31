@@ -44,6 +44,7 @@ const remoteImpostorRoundSchema = z.object({
   impostorPrompt: z.string().min(1),
   players: coerceToArray(remoteImpostorPlayerSchema),
   impostorCount: z.number().int().min(1).max(2),
+  clueTurnSeconds: z.union([z.literal(10), z.literal(20), z.literal(30)]).default(20),
   phase: z.union([
     z.literal('reveal'),
     z.literal('clues'),
@@ -53,7 +54,9 @@ const remoteImpostorRoundSchema = z.object({
     z.literal('result'),
   ]),
   activeTurnIndex: z.number().int().min(0),
+  activeTurnStartedAt: z.number().int().min(0).default(0),
   clues: z.record(z.string(), z.string()).default({}),
+  submittedCluePlayerIds: coerceToArray(z.string()).default([]),
   clueHistoryByPlayer: z.record(z.string(), coerceToArray(z.string())).default({}),
   usedClueTokens: coerceToArray(z.string()).default([]),
   clueCycle: z.number().int().min(1).default(1),
@@ -236,6 +239,10 @@ const parseRemoteImpostorRound = (
     players: rawRound.players ?? previousRound.players,
     impostorCount:
       typeof rawRound.impostorCount === 'number' ? rawRound.impostorCount : previousRound.impostorCount,
+    clueTurnSeconds:
+      rawRound.clueTurnSeconds === 10 || rawRound.clueTurnSeconds === 20 || rawRound.clueTurnSeconds === 30
+        ? rawRound.clueTurnSeconds
+        : previousRound.clueTurnSeconds,
     phase:
       typeof rawRound.phase === 'string'
         ? rawRound.phase
@@ -244,6 +251,10 @@ const parseRemoteImpostorRound = (
       typeof rawRound.activeTurnIndex === 'number'
         ? rawRound.activeTurnIndex
         : previousRound.activeTurnIndex,
+    activeTurnStartedAt:
+      typeof rawRound.activeTurnStartedAt === 'number'
+        ? rawRound.activeTurnStartedAt
+        : previousRound.activeTurnStartedAt,
   };
 
   const mergedStatePayload = {

@@ -12,7 +12,10 @@ import { useImpostorRoundEffects } from '@/src/features/games/impostor/hooks/use
 import { useImpostorGameScreen } from '@/src/features/games/impostor/hooks/useImpostorGameScreen';
 import { ImpostorRound } from '@/src/features/games/impostor/types';
 import { GameRuntimeScreenProps } from '@/src/features/games/types';
-import { resolveLobbyActionAuthorityMode } from '@/src/features/lobby/gameSettings';
+import {
+  resolveImpostorClueTurnSeconds,
+  resolveLobbyActionAuthorityMode,
+} from '@/src/features/lobby/gameSettings';
 import { Locale } from '@/src/i18n/types';
 
 type UseImpostorGameControllerParams = Pick<
@@ -47,6 +50,7 @@ export function useImpostorGameController({
   const [votingDraftsByPlayer, setVotingDraftsByPlayer] = useState<Record<string, string[]>>({});
   const [isVoteSelectionUnlocked, setIsVoteSelectionUnlocked] = useState(false);
   const [guessDrafts, setGuessDrafts] = useState<Record<string, string>>({});
+  const [clueTurnRemainingSeconds, setClueTurnRemainingSeconds] = useState(20);
 
   const { isPt, copy, phaseLabel, topBarStatusTone } = useImpostorGameScreen({
     locale,
@@ -57,6 +61,8 @@ export function useImpostorGameController({
 
   const latestLobbyRef = useRef(lobby);
   const latestRoundRef = useRef<ImpostorRound | null>(null);
+  const latestClueInputRef = useRef('');
+  const pendingClueTurnKeyRef = useRef<string | null>(null);
   const impostorPromptPulse = useSharedValue(0.5);
   const resultFlicker = useSharedValue(0.8);
   const revealFogOpacity = useSharedValue(0);
@@ -69,6 +75,21 @@ export function useImpostorGameController({
   useEffect(() => {
     latestRoundRef.current = round;
   }, [round]);
+
+  useEffect(() => {
+    latestClueInputRef.current = clueInput;
+  }, [clueInput]);
+
+  const clueTurnSeconds = round?.clueTurnSeconds ?? resolveImpostorClueTurnSeconds(lobby.gameSettings);
+
+  const currentClueTurnKey =
+    round?.phase === 'clues' ? `${round.id}:${round.clueCycle}:${round.activeTurnIndex}` : null;
+
+  useEffect(() => {
+    if (pendingClueTurnKeyRef.current && pendingClueTurnKeyRef.current !== currentClueTurnKey) {
+      pendingClueTurnKeyRef.current = null;
+    }
+  }, [currentClueTurnKey]);
 
   useEffect(() => {
     impostorPromptPulse.value = withRepeat(withTiming(1, { duration: 920 }), -1, true);
@@ -169,6 +190,9 @@ export function useImpostorGameController({
     resultActionsAt: derived.resultActionsAt,
     clueInput,
     setClueInput,
+    onClueSubmitStarted: () => {
+      pendingClueTurnKeyRef.current = currentClueTurnKey;
+    },
     localPlayerIds: derived.localPlayerIds,
     isRemote,
     canControl: derived.canControl,
@@ -197,6 +221,51 @@ export function useImpostorGameController({
   const revealPromptStyle = useAnimatedStyle(() => ({
     opacity: revealPromptOpacity.value,
   }));
+
+  useEffect(() => {
+    if (round?.phase !== 'clues') {
+      setClueTurnRemainingSeconds(clueTurnSeconds);
+      return;
+    }
+
+    const tick = () => {
+      const deadline = round.activeTurnStartedAt + clueTurnSeconds * 1000;
+      const remainingMs = Math.max(0, deadline - Date.now());
+      setClueTurnRemainingSeconds(Math.max(0, Math.ceil(remainingMs / 1000)));
+    };
+
+    tick();
+    const intervalId = setInterval(tick, 250);
+    return () => clearInterval(intervalId);
+  }, [clueTurnSeconds, round?.activeTurnStartedAt, round?.phase]);
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.phase !== 'clues' ||
+      !actions.canSubmitClue ||
+      actions.isClueCycleComplete ||
+      pendingClueTurnKeyRef.current === currentClueTurnKey
+    ) {
+      return;
+    }
+
+    const deadline = round.activeTurnStartedAt + clueTurnSeconds * 1000;
+    const remainingMs = deadline - Date.now();
+    const timeoutMs = Math.max(0, remainingMs);
+    const timeoutId = setTimeout(() => {
+      actions.handleAutoSubmitClue(latestClueInputRef.current);
+    }, timeoutMs);
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    actions.canSubmitClue,
+    actions.handleAutoSubmitClue,
+    actions.isClueCycleComplete,
+    clueTurnSeconds,
+    currentClueTurnKey,
+    round,
+  ]);
 
   return {
     round,
@@ -228,6 +297,8 @@ export function useImpostorGameController({
     setClueInput,
     clueProgress: derived.clueProgress,
     clueSubmittedCount: derived.clueSubmittedCount,
+    clueTurnSeconds,
+    clueTurnRemainingSeconds,
     typingLabel: derived.typingLabel,
     handleProceedToDecision: actions.handleProceedToDecision,
     handleSubmitClue: actions.handleSubmitClue,

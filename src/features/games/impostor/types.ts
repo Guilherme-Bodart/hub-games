@@ -32,9 +32,12 @@ export type ImpostorRound = {
   impostorPrompt: string;
   players: ImpostorRoundPlayer[];
   impostorCount: number;
+  clueTurnSeconds: 10 | 20 | 30;
   phase: ImpostorPhase;
   activeTurnIndex: number;
+  activeTurnStartedAt: number;
   clues: Record<string, string>;
+  submittedCluePlayerIds: string[];
   clueHistoryByPlayer: Record<string, string[]>;
   usedClueTokens: string[];
   clueCycle: number;

@@ -179,10 +179,16 @@ export default function LobbyScreen() {
           })
         }
         impostorCount={settingsModalProps.impostorCount as 1 | 2}
+        impostorClueTurnSeconds={settingsModalProps.impostorClueTurnSeconds}
         totalPlayers={settingsModalProps.totalPlayers}
         onSetImpostorCount={(value) =>
           settingsModalProps.onUpdateSettings({
             [LOBBY_SETTINGS_KEYS.impostorCount]: value,
+          })
+        }
+        onSetImpostorClueTurnSeconds={(value) =>
+          settingsModalProps.onUpdateSettings({
+            [LOBBY_SETTINGS_KEYS.impostorClueTurnSeconds]: value,
           })
         }
       />

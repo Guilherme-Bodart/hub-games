@@ -80,8 +80,8 @@ export function useImpostorDerivedState({
   );
 
   const revealedIsImpostor = Boolean(revealedPlayer?.isImpostor);
-  const clueProgress = round ? Object.keys(round.clues).length / Math.max(round.players.length, 1) : 0;
-  const clueSubmittedCount = round ? Object.keys(round.clues).length : 0;
+  const clueProgress = round ? round.submittedCluePlayerIds.length / Math.max(round.players.length, 1) : 0;
+  const clueSubmittedCount = round ? round.submittedCluePlayerIds.length : 0;
 
   const activeVotingSelection =
     round && activeVotingPlayerId

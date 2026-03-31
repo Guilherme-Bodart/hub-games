@@ -1,27 +1,15 @@
 ﻿import { Pressable, Text, View } from 'react-native';
 
+import type { LobbyPanelCopy } from '@/src/features/lobby/lobby.types';
 import { useI18n } from '@/src/i18n';
 import { useTheme } from '@/src/theme';
 import { Modal } from '@/src/ui/atoms';
 import { styles } from '@/src/features/lobby/styles/lobbyStyles';
 
-export type LobbySettingsCopy = {
-  settingsTitle: string;
-  controlMode: string;
-  hostOnly: string;
-  collaborative: string;
-  impostorMode: string;
-  words: string;
-  questions: string;
-  roundPlayers: string;
-  impostors: string;
-  hostOnlyHint: string;
-};
-
 type LobbySettingsModalProps = {
   visible: boolean;
   onClose: () => void;
-  panelCopy: LobbySettingsCopy;
+  panelCopy: LobbyPanelCopy;
   isSettingsEditable: boolean;
   actionAuthorityMode: 'host-only' | 'collaborative';
   onSetActionAuthorityMode: (mode: 'host-only' | 'collaborative') => void;
@@ -33,8 +21,10 @@ type LobbySettingsModalProps = {
   maximumPlayers: number;
   onSetImpostorTargetPlayers: (value: number) => void;
   impostorCount: number;
+  impostorClueTurnSeconds: 10 | 20 | 30;
   totalPlayers: number;
   onSetImpostorCount: (value: 1 | 2) => void;
+  onSetImpostorClueTurnSeconds: (value: 10 | 20 | 30) => void;
 };
 
 export function LobbySettingsModal({
@@ -52,8 +42,10 @@ export function LobbySettingsModal({
   maximumPlayers,
   onSetImpostorTargetPlayers,
   impostorCount,
+  impostorClueTurnSeconds,
   totalPlayers,
   onSetImpostorCount,
+  onSetImpostorClueTurnSeconds,
 }: LobbySettingsModalProps) {
   const { t } = useI18n();
   const { theme } = useTheme();
@@ -395,6 +387,61 @@ export function LobbySettingsModal({
                         },
                       ]}>
                       {optionValue}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <Text
+              style={[
+                styles.settingsLabel,
+                {
+                  color: theme.semantic.text.secondary,
+                  fontFamily: theme.semantic.typography.bodyFamily,
+                  fontWeight: theme.semantic.typography.bodyWeight,
+                },
+              ]}>
+              {panelCopy.clueTimer}
+            </Text>
+            <View style={styles.settingsToggleRow}>
+              {[10, 20, 30].map((secondsOption) => {
+                const optionValue = secondsOption as 10 | 20 | 30;
+                const isActive = impostorClueTurnSeconds === optionValue;
+
+                return (
+                  <Pressable
+                    key={`imp-timer-${optionValue}`}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${optionValue}${panelCopy.secondsShort} ${panelCopy.clueTimer}`}
+                    accessibilityState={{ disabled: !isSettingsEditable, selected: isActive }}
+                    disabled={!isSettingsEditable}
+                    onPress={() => onSetImpostorClueTurnSeconds(optionValue)}
+                    style={[
+                      styles.settingsToggle,
+                      {
+                        borderColor: isActive
+                          ? theme.semantic.button.primary.bg
+                          : theme.semantic.border.subtle,
+                        backgroundColor: isActive
+                          ? theme.semantic.button.primary.bg
+                          : theme.semantic.bg.surface,
+                        opacity: isSettingsEditable ? 1 : 0.45,
+                      },
+                    ]}>
+                    <Text
+                      style={[
+                        styles.settingsToggleText,
+                        {
+                          color: isActive
+                            ? theme.semantic.button.primary.text
+                            : theme.semantic.text.secondary,
+                          fontFamily: theme.semantic.typography.titleFamily,
+                          fontWeight: theme.semantic.typography.titleWeight,
+                        },
+                      ]}>
+                      {optionValue}
+                      {panelCopy.secondsShort}
                     </Text>
                   </Pressable>
                 );

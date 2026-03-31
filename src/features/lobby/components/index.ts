@@ -6,4 +6,4 @@ export { LobbySettingsModal } from '@/src/features/lobby/components/LobbySetting
 export { LobbyAddPlayerModal } from '@/src/features/lobby/components/LobbyAddPlayerModal';
 export { LobbyLeaveConfirmModal } from '@/src/features/lobby/components/LobbyLeaveConfirmModal';
 export { LobbyStartDock } from '@/src/features/lobby/components/LobbyStartDock';
-export type { LobbySettingsCopy } from '@/src/features/lobby/components/LobbySettingsModal';
+export type { LobbyPanelCopy as LobbySettingsCopy } from '@/src/features/lobby/lobby.types';

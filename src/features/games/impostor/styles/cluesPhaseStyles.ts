@@ -1,0 +1,255 @@
+import { StyleSheet } from 'react-native';
+
+export const cluesPhaseStyles = StyleSheet.create({
+  section: {
+    gap: 16,
+  },
+  heroPanel: {
+    borderWidth: 1,
+    borderRadius: 32,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    gap: 18,
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 7 },
+    elevation: 6,
+  },
+  heroHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  heroCopy: {
+    flex: 1,
+    gap: 5,
+  },
+  heroEyebrow: {
+    fontSize: 11,
+    lineHeight: 13,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  heroTitle: {
+    fontSize: 36,
+    lineHeight: 38,
+  },
+  heroHint: {
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  progressBadge: {
+    minHeight: 44,
+    minWidth: 108,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressBadgeText: {
+    fontSize: 13,
+    lineHeight: 15,
+    letterSpacing: 0.1,
+    textAlign: 'center',
+  },
+  progressStepsRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  progressStepItem: {
+    width: 58,
+    alignItems: 'center',
+    gap: 6,
+  },
+  progressStepAvatarFocus: {
+    width: 58,
+    height: 58,
+    borderRadius: 999,
+    borderWidth: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressStepAvatarSide: {
+    width: 40,
+    height: 40,
+    borderRadius: 999,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressStepTextFocus: {
+    fontSize: 12,
+    lineHeight: 14,
+    textAlign: 'center',
+  },
+  progressStepTextSide: {
+    fontSize: 11,
+    lineHeight: 13,
+    textAlign: 'center',
+  },
+  heroBody: {
+    paddingTop: 2,
+  },
+  rosterSection: {
+    gap: 10,
+  },
+  rosterHeader: {
+    gap: 4,
+    paddingHorizontal: 2,
+  },
+  rosterEyebrow: {
+    fontSize: 11,
+    lineHeight: 12,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  rosterTitle: {
+    fontSize: 16,
+    lineHeight: 19,
+  },
+  progressTrack: {
+    width: '100%',
+    height: 16,
+    borderRadius: 999,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 999,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  cardCell: {
+    minWidth: 0,
+  },
+  playerCard: {
+    borderWidth: 1,
+    borderRadius: 22,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    gap: 10,
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  playerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  avatarWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  playerMeta: {
+    flex: 1,
+    minWidth: 0,
+    gap: 1,
+  },
+  playerMetaLabel: {
+    fontSize: 10,
+    lineHeight: 12,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  playerName: {
+    fontSize: 18,
+    lineHeight: 20,
+  },
+  historyCountBadge: {
+    minWidth: 28,
+    height: 28,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  historyCountText: {
+    fontSize: 11,
+    lineHeight: 12,
+  },
+  playerStatusInline: {
+    fontSize: 12,
+    lineHeight: 15,
+  },
+  emphasisLabel: {
+    fontSize: 16,
+    lineHeight: 20,
+    minHeight: 24,
+  },
+  historyBlock: {
+    borderWidth: 1,
+    borderRadius: 18,
+    paddingHorizontal: 10,
+    paddingVertical: 9,
+    gap: 6,
+  },
+  historyLabel: {
+    fontSize: 10,
+    lineHeight: 12,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  historyList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  historyChip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  historyChipText: {
+    fontSize: 11,
+    lineHeight: 13,
+  },
+  actionButton: {
+    width: '100%',
+  },
+  composerStage: {
+    paddingTop: 8,
+  },
+  composerCard: {
+    borderWidth: 1,
+    borderRadius: 22,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    gap: 12,
+  },
+  composerHelper: {
+    fontSize: 15,
+    lineHeight: 19,
+  },
+  composerInput: {
+    marginTop: 0,
+  },
+  passiveDockPill: {
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+  },
+  passiveDockPillText: {
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'left',
+  },
+});

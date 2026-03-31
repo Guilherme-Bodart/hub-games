@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import {
+  resolveImpostorClueTurnSeconds,
   resolveImpostorContentMode,
   resolveImpostorCount,
   resolveImpostorRoundTargetPlayers,
@@ -84,6 +85,7 @@ export function useLobbyDerivedState({
   const impostorContentMode = lobby ? resolveImpostorContentMode(lobby.gameSettings) : 'words';
   const impostorTargetPlayers = lobby ? resolveImpostorRoundTargetPlayers(lobby.gameSettings) : 12;
   const impostorCount = lobby ? resolveImpostorCount(lobby.gameSettings) : 1;
+  const impostorClueTurnSeconds = lobby ? resolveImpostorClueTurnSeconds(lobby.gameSettings) : 20;
   const lobbyPlayersLimit = isImpostorLobby ? Math.min(impostorTargetPlayers, maximumPlayers) : maximumPlayers;
   const tooManyPlayers = totalPlayers > lobbyPlayersLimit;
   const canAddPlayer = totalPlayers < lobbyPlayersLimit;
@@ -131,6 +133,7 @@ export function useLobbyDerivedState({
     impostorContentMode,
     impostorTargetPlayers,
     impostorCount,
+    impostorClueTurnSeconds,
     lobbyPlayersLimit,
     tooManyPlayers,
     canAddPlayer,

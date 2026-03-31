@@ -22,6 +22,7 @@ type UseImpostorGameActionsParams = {
   resultActionsAt: number;
   clueInput: string;
   setClueInput: Dispatch<SetStateAction<string>>;
+  onClueSubmitStarted: () => void;
   localPlayerIds: Set<string>;
   isRemote: boolean;
   canControl: boolean;
@@ -45,6 +46,7 @@ export function useImpostorGameActions({
   resultActionsAt,
   clueInput,
   setClueInput,
+  onClueSubmitStarted,
   localPlayerIds,
   isRemote,
   canControl,
@@ -58,7 +60,9 @@ export function useImpostorGameActions({
   activeVotingSelection,
 }: UseImpostorGameActionsParams) {
   const activeTurn = round ? getActiveTurnPlayer(round) : null;
-  const isClueCycleComplete = Boolean(round && Object.keys(round.clues).length >= round.players.length);
+  const isClueCycleComplete = Boolean(
+    round && round.submittedCluePlayerIds.length >= round.players.length
+  );
   const canSubmitClue = Boolean(activeTurn && localPlayerIds.has(activeTurn.id) && !isClueCycleComplete);
 
   const handleExitLobby = useCallback(async () => {
@@ -120,7 +124,15 @@ export function useImpostorGameActions({
     }
 
     triggerGameFeedback('submit');
-    void saveRound({ ...round, phase: 'clues', activeTurnIndex: 0 });
+    void saveRound({
+      ...round,
+      phase: 'clues',
+      activeTurnIndex: 0,
+      activeTurnStartedAt: Date.now(),
+      clues: {},
+      submittedCluePlayerIds: [],
+      usedClueTokens: [],
+    });
   }, [round, saveRound]);
 
   const handleProceedToDecision = useCallback(() => {
@@ -149,10 +161,33 @@ export function useImpostorGameActions({
       return;
     }
 
+    onClueSubmitStarted();
     setClueInput('');
     triggerGameFeedback('submit');
     void saveRound(response.round);
-  }, [activeTurn?.id, clueInput, round, saveRound, setClueInput, setError]);
+  }, [activeTurn?.id, clueInput, onClueSubmitStarted, round, saveRound, setClueInput, setError]);
+
+  const handleAutoSubmitClue = useCallback(
+    (draft: string) => {
+      if (!round) {
+        return;
+      }
+
+      const response = submitRoundClue(round, activeTurn?.id || '', draft, {
+        allowPartial: true,
+      });
+      if (response.error) {
+        setError(response.error);
+        return;
+      }
+
+      onClueSubmitStarted();
+      setClueInput('');
+      triggerGameFeedback('warning');
+      void saveRound(response.round);
+    },
+    [activeTurn?.id, onClueSubmitStarted, round, saveRound, setClueInput, setError]
+  );
 
   const handleToggleVotingSuspect = useCallback(
     (playerId: string) => {
@@ -241,6 +276,7 @@ export function useImpostorGameActions({
     handleGoClues,
     handleProceedToDecision,
     handleSubmitClue,
+    handleAutoSubmitClue,
     handleToggleVotingSuspect,
     handleUnlockVoteSelection,
     isConfirmVoteDisabled,

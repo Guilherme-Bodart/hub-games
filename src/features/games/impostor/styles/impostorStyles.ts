@@ -4,6 +4,10 @@ export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  screenBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
   emptyWrap: {
     flex: 1,
     justifyContent: 'center',

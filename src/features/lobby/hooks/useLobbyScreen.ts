@@ -78,6 +78,7 @@ type UseLobbyScreenResult = {
     impostorContentMode: 'words' | 'questions';
     impostorTargetPlayers: number;
     impostorCount: number;
+    impostorClueTurnSeconds: 10 | 20 | 30;
     minimumPlayers: number;
     maximumPlayers: number;
     totalPlayers: number;
@@ -196,6 +197,7 @@ export function useLobbyScreen(): UseLobbyScreenResult {
     impostorContentMode: derived.impostorContentMode,
     impostorTargetPlayers: derived.impostorTargetPlayers,
     impostorCount: derived.impostorCount,
+    impostorClueTurnSeconds: derived.impostorClueTurnSeconds as 10 | 20 | 30,
     minimumPlayers: derived.minimumPlayers,
     maximumPlayers: derived.maximumPlayers,
     totalPlayers: derived.totalPlayers,

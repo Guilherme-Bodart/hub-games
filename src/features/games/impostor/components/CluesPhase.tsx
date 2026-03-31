@@ -1,14 +1,15 @@
 import { Text, View } from 'react-native';
 
+import { CluesComposerDock } from '@/src/features/games/impostor/components/CluesComposerDock';
+import { CluesHeroPanel } from '@/src/features/games/impostor/components/CluesHeroPanel';
+import { useImpostorCluesPhaseViewModel } from '@/src/features/games/impostor/hooks/useImpostorCluesPhaseViewModel';
+import { cluesPhaseStyles as styles } from '@/src/features/games/impostor/styles/cluesPhaseStyles';
 import { ImpostorRound } from '@/src/features/games/impostor/types';
-import { styles } from '@/src/features/games/impostor/styles/impostorStyles';
 import { ThemeTokens } from '@/src/theme/types';
-import { Button, Card, Input } from '@/src/ui/atoms';
-import { ClueSlotCard } from './ClueSlotCard';
+import { PlayerClueCard } from './PlayerClueCard';
 
 type CluesPhaseProps = {
   round: ImpostorRound;
-  copy: Record<string, string>;
   isPt: boolean;
   theme: ThemeTokens;
   isClueCycleComplete: boolean;
@@ -18,17 +19,18 @@ type CluesPhaseProps = {
   clueSubmittedCount: number;
   typingLabel: string;
   canSubmitClue: boolean;
+  clueTurnLabel: string;
   clueInput: string;
-  isRemote: boolean;
-  canControl: boolean;
   onChangeClueInput: (value: string) => void;
-  onProceedDecision: () => void;
   onSubmitClue: () => void;
+  onProceedDecision: () => void;
+  submitLabel: string;
+  proceedLabel: string;
+  isProceedDisabled: boolean;
 };
 
 export function ImpostorCluesPhase({
   round,
-  copy,
   isPt,
   theme,
   isClueCycleComplete,
@@ -38,82 +40,98 @@ export function ImpostorCluesPhase({
   clueSubmittedCount,
   typingLabel,
   canSubmitClue,
+  clueTurnLabel,
   clueInput,
-  isRemote,
-  canControl,
   onChangeClueInput,
-  onProceedDecision,
   onSubmitClue,
+  onProceedDecision,
+  submitLabel,
+  proceedLabel,
+  isProceedDisabled,
 }: CluesPhaseProps) {
+  const viewModel = useImpostorCluesPhaseViewModel({
+    round,
+    isPt,
+    activeTurnId,
+    activeTurnName,
+    clueSubmittedCount,
+    clueProgress,
+    isClueCycleComplete,
+    canSubmitClue,
+    typingLabel,
+  });
+
   return (
-    <Card
-      title={copy.clues}
-      subtitle={isClueCycleComplete ? (isPt ? 'Todas as pistas enviadas' : 'All clues submitted') : activeTurnName || '-'}>
-      <View style={styles.progressWrap}>
-        <View
-          style={[
-            styles.progressTrack,
-            { backgroundColor: theme.semantic.bg.surface, borderColor: theme.semantic.border.subtle },
-          ]}>
-          <View
+    <View style={styles.section}>
+      <CluesHeroPanel
+        theme={theme}
+        eyebrow={viewModel.headerEyebrow}
+        title={viewModel.headerTitle}
+        hint={viewModel.headerHint}
+        progressLabel={clueTurnLabel}
+        progressWidth={viewModel.progressWidth}
+        progressSteps={viewModel.progressSteps}>
+        <CluesComposerDock
+          theme={theme}
+          canSubmitClue={canSubmitClue}
+          isClueCycleComplete={isClueCycleComplete}
+          clueInput={clueInput}
+          inputLabel={undefined}
+          inputPlaceholder={isPt ? 'Digite uma palavra' : 'Type one word'}
+          helperText={viewModel.composerHelperText}
+          submitLabel={submitLabel}
+          proceedLabel={proceedLabel}
+          isProceedDisabled={isProceedDisabled}
+          onChangeClueInput={onChangeClueInput}
+          onSubmitClue={onSubmitClue}
+          onProceedDecision={onProceedDecision}
+        />
+      </CluesHeroPanel>
+
+      <View style={styles.rosterSection}>
+        <View style={styles.rosterHeader}>
+          <Text
             style={[
-              styles.progressFill,
+              styles.rosterEyebrow,
               {
-                backgroundColor: theme.semantic.button.primary.bg,
-                width: `${Math.round(clueProgress * 100)}%`,
+                color: theme.semantic.text.muted,
+                fontFamily: theme.semantic.typography.bodyFamily,
+                fontWeight: theme.semantic.typography.bodyWeight,
               },
-            ]}
-          />
+            ]}>
+            {viewModel.rosterEyebrow}
+          </Text>
+          <Text
+            style={[
+              styles.rosterTitle,
+              {
+                color: theme.semantic.text.primary,
+                fontFamily: theme.semantic.typography.titleFamily,
+                fontWeight: theme.semantic.typography.titleWeight,
+              },
+            ]}>
+            {viewModel.rosterTitle}
+          </Text>
         </View>
-        <Text style={{ color: theme.semantic.text.secondary, fontSize: 12 }}>
-          {isPt
-            ? `${clueSubmittedCount}/${round.players.length} pistas enviadas`
-            : `${clueSubmittedCount}/${round.players.length} clues submitted`}
-        </Text>
+
+        <View style={styles.grid}>
+          {viewModel.cards.map((card) => (
+            <View key={`slot-${card.player.id}`} style={[styles.cardCell, { width: card.width }]}>
+              <PlayerClueCard
+                player={card.player}
+                clue={card.clue}
+                previousClues={card.previousClues}
+                playerLabel={undefined}
+                statusLabel={card.statusLabel}
+                emphasisLabel={card.emphasisLabel}
+                historyLabel={card.historyLabel}
+                tone={card.tone}
+                theme={theme}
+              />
+            </View>
+          ))}
+        </View>
       </View>
-
-      <View style={styles.cluesGrid}>
-        {round.players.map((player) => {
-          const clue = round.clues[player.id];
-          const isActive = activeTurnId === player.id;
-          const clueHistory = round.clueHistoryByPlayer[player.id] ?? [];
-          const previousClues = clue ? clueHistory.slice(0, -1) : clueHistory;
-
-          return (
-            <ClueSlotCard
-              key={`slot-${player.id}`}
-              player={player}
-              clue={clue}
-              isActive={Boolean(isActive)}
-              previousClues={previousClues}
-              typingLabel={typingLabel}
-              waitingLabel={copy.waitingClue}
-              theme={theme}
-            />
-          );
-        })}
-      </View>
-
-      {isClueCycleComplete ? (
-        <Button label={copy.goDecision} onPress={onProceedDecision} disabled={isRemote && !canControl} />
-      ) : null}
-
-      {canSubmitClue ? (
-        <>
-          <Input value={clueInput} onChangeText={onChangeClueInput} placeholder={copy.clueInput} style={styles.input} />
-          <Button label={copy.submitClue} onPress={onSubmitClue} disabled={!clueInput.trim()} />
-        </>
-      ) : (
-        <Text style={{ color: theme.semantic.text.muted }}>
-          {isClueCycleComplete
-            ? isPt
-              ? 'Revise as pistas e avance quando quiser.'
-              : 'Review clues and continue when ready.'
-            : isPt
-              ? 'Aguardando jogador da vez.'
-              : 'Waiting active player.'}
-        </Text>
-      )}
-    </Card>
+    </View>
   );
 }
