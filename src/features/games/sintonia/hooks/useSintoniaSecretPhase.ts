@@ -8,7 +8,7 @@ import {
 } from '@/src/features/games/sintonia/realtime';
 import { triggerGameFeedback } from '@/src/ui/feedback';
 
-const HOLD_TO_REVEAL_MS = 1000;
+const HOLD_TO_REVEAL_MS = 750;
 
 type UseSintoniaSecretPhaseParams = {
   round: SintoniaRound | null;

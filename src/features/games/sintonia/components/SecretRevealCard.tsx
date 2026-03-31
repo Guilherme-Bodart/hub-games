@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { SecretRevealInteractiveCard } from '@/src/features/games/sintonia/components/SecretRevealInteractiveCard';
+import { RevealCard } from '@/src/features/games/shared/reveal-card';
 import { SintoniaPlayer } from '@/src/features/games/sintonia/types';
 import { styles } from '@/src/features/games/sintonia/styles/sintoniaStyles';
 import { ThemeTokens } from '@/src/theme/types';
@@ -20,7 +20,6 @@ type SintoniaSecretRevealCardProps = {
   chargingLabel: string;
   releaseHintLabel: string;
   waitingLabel: string;
-  readyProgressLabel: string;
   revealedLabel: string;
   nextLabel: string;
   readyLabel: string;
@@ -42,7 +41,6 @@ export function SintoniaSecretRevealCard({
   chargingLabel,
   releaseHintLabel,
   waitingLabel,
-  readyProgressLabel,
   revealedLabel,
   nextLabel,
   readyLabel,
@@ -50,7 +48,16 @@ export function SintoniaSecretRevealCard({
   onPressOut,
   onAdvance,
 }: SintoniaSecretRevealCardProps) {
-  const actionLabel = hasMoreLocalPlayers ? nextLabel : readyLabel;
+  const isActionLocked = !isWaitingOthers && !canAdvance;
+  const revealButtonLabel = holdHintLabel.toLowerCase().includes('segure')
+    ? 'SEGURE PARA REVELAR'
+    : 'HOLD TO REVEAL';
+  const actionLabel = isActionLocked
+    ? revealButtonLabel
+    : hasMoreLocalPlayers
+      ? nextLabel
+      : readyLabel;
+  const helperLabel = isActionLocked ? null : phaseSubtitle;
 
   return (
     <View
@@ -60,39 +67,23 @@ export function SintoniaSecretRevealCard({
           backgroundColor: 'transparent',
         },
       ]}>
-      <View style={styles.secretStageHeader}>
-        <View
-          style={[
-            styles.secretStageProgressBadge,
-            {
-              borderColor: withAlpha(theme.semantic.border.subtle, 0.76),
-              backgroundColor: withAlpha(theme.semantic.bg.surface, 0.9),
-            },
-          ]}>
-          <Text
-            style={[
-              styles.secretStageProgressText,
-              {
-                color: theme.semantic.text.secondary,
-                fontFamily: theme.semantic.typography.bodyFamily,
-                fontWeight: theme.semantic.typography.bodyWeight,
-              },
-            ]}>
-            {readyProgressLabel}
-          </Text>
-        </View>
-      </View>
-
-      <SecretRevealInteractiveCard
+      <RevealCard
+        accessibilityLabel={player ? `Carta secreta de ${player.name}` : waitingLabel}
+        content={{
+          mode: 'number',
+          revealedLabel,
+          value: player?.secretNumber ?? '',
+        }}
+        copy={{
+          chargingLabel,
+          holdHintLabel,
+          releaseHintLabel,
+          waitingLabel,
+        }}
         theme={theme}
         player={player}
         isRevealed={isRevealed}
         isLocalReady={isLocalReady}
-        waitingLabel={waitingLabel}
-        holdHintLabel={holdHintLabel}
-        chargingLabel={chargingLabel}
-        releaseHintLabel={releaseHintLabel}
-        revealedLabel={revealedLabel}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
       />
@@ -126,11 +117,13 @@ export function SintoniaSecretRevealCard({
           onPress={onAdvance}
           disabled={!canAdvance}
           size="lg"
-          style={styles.secretPrimaryButton}
+          color={isActionLocked ? withAlpha(theme.semantic.bg.elevated, 0.98) : undefined}
+          textColor={isActionLocked ? withAlpha(theme.semantic.text.secondary, 0.78) : undefined}
+          style={[styles.secretPrimaryButton, isActionLocked ? styles.secretPrimaryButtonLocked : null]}
         />
       ) : null}
 
-      {!isWaitingOthers ? (
+      {!isWaitingOthers && helperLabel ? (
         <Text
           style={[
             styles.secretRevealSubHint,
@@ -140,7 +133,7 @@ export function SintoniaSecretRevealCard({
               fontWeight: theme.semantic.typography.bodyWeight,
             },
           ]}>
-          {phaseSubtitle}
+          {helperLabel}
         </Text>
       ) : null}
     </View>

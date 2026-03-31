@@ -28,4 +28,9 @@ export const GENERATED_AVATAR_ASSETS: ReadonlyArray<ImageSourcePropType> = [
   require('../../../assets/images/avatar_23.webp'),
   require('../../../assets/images/avatar_24.webp'),
   require('../../../assets/images/avatar_25.webp'),
+  require('../../../assets/images/avatar_26.webp'),
+  require('../../../assets/images/avatar_27.webp'),
+  require('../../../assets/images/avatar_28.webp'),
+  require('../../../assets/images/avatar_29.webp'),
+  require('../../../assets/images/avatar_30.webp'),
 ];

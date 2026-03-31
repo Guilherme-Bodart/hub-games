@@ -257,6 +257,9 @@ export const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 999,
   },
+  secretPrimaryButtonLocked: {
+    opacity: 0.86,
+  },
   secretSecondaryButton: {
     width: '100%',
   },

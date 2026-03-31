@@ -13,6 +13,7 @@ type SecretPhaseHeaderProps = {
   roundLabel: string;
   players: SintoniaPlayer[];
   playersCountLabel: string;
+  readyStatusLabel: string;
   onPressInfo: () => void;
   infoLabel: string;
 };
@@ -25,6 +26,7 @@ export function SecretPhaseHeader({
   roundLabel,
   players,
   playersCountLabel,
+  readyStatusLabel,
   onPressInfo,
   infoLabel,
 }: SecretPhaseHeaderProps) {
@@ -126,7 +128,7 @@ export function SecretPhaseHeader({
               fontWeight: theme.semantic.typography.bodyWeight,
             },
           ]}>
-          {playersCountLabel}
+          {readyStatusLabel}
         </Text>
       </View>
     </View>
