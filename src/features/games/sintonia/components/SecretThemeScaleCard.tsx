@@ -35,7 +35,7 @@ export function SecretThemeScaleCard({
         colors={[withAlpha('#FFFFFF', 0.6), withAlpha('#FFFFFF', 0)]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
-        style={{ position: 'absolute', top: 0, right: 0, left: 0, height: '50%', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
+        style={styles.scaleGloss}
       />
 
       <Text
@@ -62,8 +62,38 @@ export function SecretThemeScaleCard({
           ]}>
           {scaleStartLabel}
         </Text>
-        <View style={[styles.scaleTrack, { backgroundColor: withAlpha(theme.semantic.border.subtle, 0.94) }]}>
-          <View style={[styles.scaleDot, { backgroundColor: withAlpha(theme.semantic.text.secondary, 0.72) }]} />
+        <View style={styles.scaleTrackWrap}>
+          <View
+            style={[
+              styles.scaleTrack,
+              { backgroundColor: withAlpha(theme.semantic.border.subtle, 0.14) },
+            ]}>
+            <LinearGradient
+              colors={[
+                withAlpha(theme.semantic.button.primary.bg, 0.48),
+                withAlpha(theme.semantic.text.secondary, 0.16),
+                withAlpha(theme.semantic.button.accent.bg, 0.56),
+              ]}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={styles.scaleTrackGradient}
+            />
+            <View
+              style={[
+                styles.scaleDotHalo,
+                {
+                  borderColor: withAlpha(theme.semantic.text.secondary, 0.22),
+                  backgroundColor: withAlpha(theme.semantic.bg.surface, 0.96),
+                },
+              ]}>
+              <View
+                style={[
+                  styles.scaleDot,
+                  { backgroundColor: withAlpha(theme.semantic.text.secondary, 0.74) },
+                ]}
+              />
+            </View>
+          </View>
         </View>
         <Text
           style={[

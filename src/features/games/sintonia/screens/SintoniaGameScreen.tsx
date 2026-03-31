@@ -74,7 +74,7 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
       <GameScreenShell
         showBackdrop={!isSecretPhase}
         style={isSecretPhase ? { backgroundColor: theme.semantic.bg.app } : undefined}
-        contentStyle={isSecretPhase ? { paddingTop: 8, paddingBottom: 20 } : undefined}
+        contentStyle={isSecretPhase ? { paddingTop: 18, paddingBottom: 20 } : undefined}
         footerInset={isSecretPhase ? 24 : 176}
         footer={
           !isSecretPhase ? (
@@ -107,6 +107,10 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               roundLabel={t('sintonia.roundLiveLabel')}
               players={game.round.players}
               playersCountLabel={t('sintonia.playersCountCompact', { count: game.round.players.length })}
+              readyStatusLabel={t('sintonia.secretReadyProgress', {
+                ready: game.secretReadyPlayersCount,
+                total: game.secretTotalPlayersCount,
+              })}
               onPressInfo={() => game.setRulesVisible(true)}
               infoLabel={t('sintonia.rulesTitle')}
             />
@@ -139,16 +143,15 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               isLocalReady={game.isLocalDeviceReady}
               isWaitingOthers={game.isSecretWaitingOthers}
               hasMoreLocalPlayers={game.hasMoreLocalSecretPlayers}
-              canAdvance={game.primaryAction.disabled === false}
+              canAdvance={
+                !game.isLocalDeviceReady &&
+                (!game.currentSecretPlayer || game.isCurrentSecretViewed)
+              }
               phaseSubtitle={t('sintonia.secretPhaseSubtitle')}
               holdHintLabel={t('sintonia.secretHoldToReveal')}
               chargingLabel={t('sintonia.secretCharging')}
               releaseHintLabel={t('sintonia.secretReleaseToHide')}
               waitingLabel={t('sintonia.secretWaitingOthers')}
-              readyProgressLabel={t('sintonia.secretReadyProgress', {
-                ready: game.secretReadyPlayersCount,
-                total: game.secretTotalPlayersCount,
-              })}
               revealedLabel={t('sintonia.secretRevealedTag')}
               nextLabel={t('sintonia.secretNextPlayer')}
               readyLabel={t('sintonia.secretReadyAction')}

@@ -7,17 +7,17 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-type UseSecretRevealCardAnimationParams = {
-  isRevealed: boolean;
+type UseRevealCardAnimationParams = {
   isLocalReady: boolean;
+  isRevealed: boolean;
 };
 
-const HOLD_CHARGE_DURATION_MS = 1000;
+const HOLD_CHARGE_DURATION_MS = 750;
 
-export function useSecretRevealCardAnimation({
-  isRevealed,
+export function useRevealCardAnimation({
   isLocalReady,
-}: UseSecretRevealCardAnimationParams) {
+  isRevealed,
+}: UseRevealCardAnimationParams) {
   const [isPressing, setIsPressing] = useState(false);
   const chargeProgress = useSharedValue(0);
   const flipProgress = useSharedValue(isRevealed ? 1 : 0);
@@ -47,35 +47,50 @@ export function useSecretRevealCardAnimation({
   };
 
   const shellStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: interpolate(chargeProgress.value, [0, 1], [1, 1.02]) }],
-    shadowOpacity: 0.14 + chargeProgress.value * 0.22,
-    shadowRadius: 10 + chargeProgress.value * 14,
+    shadowOpacity: 0.18 + chargeProgress.value * 0.34,
+    shadowRadius: 14 + chargeProgress.value * 24,
   }));
 
   const chargeGlowStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(chargeProgress.value, [0, 1], [0.08, 1]),
-    shadowOpacity: 0.14 + chargeProgress.value * 0.32,
-    shadowRadius: 8 + chargeProgress.value * 14,
-    transform: [{ scale: interpolate(chargeProgress.value, [0, 1], [1, 1.01]) }],
+    opacity: interpolate(chargeProgress.value, [0, 0.08, 1], [0.14, 0.36, 1]),
+    shadowOpacity: 0.26 + chargeProgress.value * 0.56,
+    shadowRadius: 14 + chargeProgress.value * 26,
+  }));
+
+  const backGlowStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(chargeProgress.value, [0, 0.08, 1], [0, 0.34, 1]),
+    shadowOpacity: 0.18 + chargeProgress.value * 0.58,
+    shadowRadius: 18 + chargeProgress.value * 42,
+    transform: [
+      { scaleX: interpolate(chargeProgress.value, [0, 1], [0.8, 1.14]) },
+      { scaleY: interpolate(chargeProgress.value, [0, 1], [0.7, 1.22]) },
+    ],
   }));
 
   const frontFaceStyle = useAnimatedStyle(() => ({
-    transform: [{ perspective: 1000 }, { rotateY: `${interpolate(flipProgress.value, [0, 1], [0, 180])}deg` }],
+    transform: [
+      { perspective: 1000 },
+      { rotateY: `${interpolate(flipProgress.value, [0, 1], [0, 180])}deg` },
+    ],
     opacity: interpolate(flipProgress.value, [0, 0.5, 1], [1, 0.2, 0]),
   }));
 
   const backFaceStyle = useAnimatedStyle(() => ({
-    transform: [{ perspective: 1000 }, { rotateY: `${interpolate(flipProgress.value, [0, 1], [180, 360])}deg` }],
+    transform: [
+      { perspective: 1000 },
+      { rotateY: `${interpolate(flipProgress.value, [0, 1], [180, 360])}deg` },
+    ],
     opacity: interpolate(flipProgress.value, [0, 0.5, 1], [0, 0.2, 1]),
   }));
 
   return {
+    backFaceStyle,
+    backGlowStyle,
+    chargeGlowStyle,
+    chargeProgress,
+    frontFaceStyle,
     isPressing,
     setPressingState,
-    chargeProgress,
     shellStyle,
-    chargeGlowStyle,
-    frontFaceStyle,
-    backFaceStyle,
   };
 }

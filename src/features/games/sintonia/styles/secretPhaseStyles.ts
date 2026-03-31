@@ -10,6 +10,7 @@ export const secretPhaseStyles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     gap: 12,
+    paddingTop: 6,
   },
   phaseHeaderLeft: {
     flex: 1,
@@ -55,6 +56,16 @@ export const secretPhaseStyles = StyleSheet.create({
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
+  readyBadge: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 11,
+    paddingVertical: 5,
+  },
+  readyBadgeText: {
+    fontSize: 12,
+    lineHeight: 14,
+  },
   infoButton: {
     width: 34,
     height: 34,
@@ -68,11 +79,20 @@ export const secretPhaseStyles = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    gap: 10,
+    gap: 12,
     shadowOpacity: 0.12,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 3 },
     elevation: 5,
+  },
+  scaleGloss: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    left: 0,
+    height: '50%',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   scaleTitle: {
     fontSize: 11,
@@ -84,7 +104,7 @@ export const secretPhaseStyles = StyleSheet.create({
   scaleAxisRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
   scaleEdgeLabel: {
     fontSize: 17,
@@ -92,19 +112,37 @@ export const secretPhaseStyles = StyleSheet.create({
     flexShrink: 0,
     textTransform: 'uppercase',
   },
+  scaleTrackWrap: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   scaleTrack: {
     flex: 1,
-    height: 1,
+    height: 4,
+    borderRadius: 999,
     position: 'relative',
+    overflow: 'visible',
+  },
+  scaleTrackGradient: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 999,
+  },
+  scaleDotHalo: {
+    position: 'absolute',
+    width: 18,
+    height: 18,
+    borderRadius: 999,
+    borderWidth: 1,
+    top: -7,
+    left: '50%',
+    marginLeft: -9,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scaleDot: {
-    position: 'absolute',
     width: 6,
     height: 6,
     borderRadius: 999,
-    top: -2.5,
-    left: '50%',
-    marginLeft: -3,
   },
   scaleThemeText: {
     fontSize: 24,
