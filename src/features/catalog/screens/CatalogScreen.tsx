@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
+  CatalogAvatarPickerModal,
   CatalogGameGrid,
   CatalogHeader,
   CatalogJoinCodeModal,
@@ -32,11 +33,13 @@ export default function CatalogScreen() {
           <CatalogHeader
             title="FESTA HUB"
             nickname={state.nickname}
+            avatarId={state.avatarId}
             nicknameDraft={state.nicknameDraft}
             isEditingNickname={state.isEditingNickname}
             onNicknameDraftChange={handlers.setNicknameDraft}
             onStartNicknameEditing={handlers.startNicknameEditing}
             onCommitNicknameEdit={handlers.commitNicknameEdit}
+            onOpenAvatarPicker={handlers.openAvatarPicker}
             onShuffleNickname={handlers.shuffleNickname}
             onOpenSettings={handlers.openSettings}
             settingsLabel={t('settings.title')}
@@ -77,6 +80,13 @@ export default function CatalogScreen() {
           void handlers.joinByCode();
         }}
         onClose={handlers.closeJoinCodeModal}
+      />
+
+      <CatalogAvatarPickerModal
+        visible={state.isAvatarPickerVisible}
+        selectedAvatarId={state.avatarId}
+        onSelectAvatar={handlers.selectAvatar}
+        onClose={handlers.closeAvatarPicker}
       />
     </SafeAreaView>
   );

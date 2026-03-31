@@ -1,37 +1,34 @@
-import { SymbolView } from 'expo-symbols';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { styles as catalogStyles } from '@/src/features/catalog/styles/catalogStyles';
 import { useI18n } from '@/src/i18n';
-import { IconCircleButton } from '@/src/ui/atoms';
+import { AvatarSprite, IconCircleButton } from '@/src/ui/atoms';
 
 type CatalogHeaderProps = {
   title: string;
   nickname: string;
+  avatarId: number;
   nicknameDraft: string;
   isEditingNickname: boolean;
   onNicknameDraftChange: (value: string) => void;
   onStartNicknameEditing: () => void;
   onCommitNicknameEdit: () => void;
+  onOpenAvatarPicker: () => void;
   onShuffleNickname: () => void;
   onOpenSettings: () => void;
   settingsLabel: string;
 };
 
-const personSymbolName = {
-  ios: 'person.crop.circle',
-  android: 'account_circle',
-  web: 'account_circle',
-} as const;
-
 export function CatalogHeader({
   title,
   nickname,
+  avatarId,
   nicknameDraft,
   isEditingNickname,
   onNicknameDraftChange,
   onStartNicknameEditing,
   onCommitNicknameEdit,
+  onOpenAvatarPicker,
   onShuffleNickname,
   onOpenSettings,
   settingsLabel,
@@ -45,9 +42,14 @@ export function CatalogHeader({
         {isEditingNickname ? (
           <View style={styles.identityWrap}>
             <View style={catalogStyles.profileIdentityRow}>
-              <View style={catalogStyles.profileAvatarWrap}>
-                <SymbolView name={personSymbolName} size={28} tintColor="#6A6D88" />
-              </View>
+              <TouchableOpacity
+                style={catalogStyles.profileAvatarWrap}
+                onPress={onOpenAvatarPicker}
+                accessibilityRole="button"
+                accessibilityLabel={t('catalog.editAvatar')}
+                activeOpacity={0.88}>
+                <AvatarSprite avatarId={avatarId} size={30} />
+              </TouchableOpacity>
               <TextInput
                 value={nicknameDraft}
                 onChangeText={(value) => onNicknameDraftChange(value.slice(0, 20))}
@@ -62,21 +64,28 @@ export function CatalogHeader({
             </View>
           </View>
         ) : (
-          <TouchableOpacity
-            style={styles.identityWrap}
-            onPress={onStartNicknameEditing}
-            accessibilityRole="button"
-            accessibilityLabel={t('catalog.editNickname')}
-            activeOpacity={0.9}>
+          <View style={styles.identityWrap}>
             <View style={catalogStyles.profileIdentityRow}>
-              <View style={catalogStyles.profileAvatarWrap}>
-                <SymbolView name={personSymbolName} size={28} tintColor="#6A6D88" />
-              </View>
-              <Text numberOfLines={1} style={catalogStyles.profileNameText}>
-                {nickname}
-              </Text>
+              <TouchableOpacity
+                style={catalogStyles.profileAvatarWrap}
+                onPress={onOpenAvatarPicker}
+                accessibilityRole="button"
+                accessibilityLabel={t('catalog.editAvatar')}
+                activeOpacity={0.88}>
+                <AvatarSprite avatarId={avatarId} size={30} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onStartNicknameEditing}
+                accessibilityRole="button"
+                accessibilityLabel={t('catalog.editNickname')}
+                activeOpacity={0.9}
+                style={styles.nicknameTapTarget}>
+                <Text numberOfLines={1} style={catalogStyles.profileNameText}>
+                  {nickname}
+                </Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+          </View>
         )}
 
         <View style={styles.actionsRow}>
@@ -118,5 +127,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  nicknameTapTarget: {
+    flex: 1,
   },
 });

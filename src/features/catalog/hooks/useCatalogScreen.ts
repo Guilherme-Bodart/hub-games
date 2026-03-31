@@ -10,6 +10,10 @@ import {
 } from '@/src/features/catalog/catalog.utils';
 import type { UseCatalogScreenResult } from '@/src/features/catalog/catalog.types';
 import { useLobbySessionStore } from '@/src/features/lobby';
+import {
+  getOrCreateClientIdentity,
+  persistPreferredAvatarId,
+} from '@/src/features/lobby/lobbyPersistenceService';
 import { useI18n } from '@/src/i18n';
 import { triggerGameFeedback } from '@/src/ui/feedback';
 
@@ -25,8 +29,10 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
   const setPreferredNickname = useLobbySessionStore((state) => state.setPreferredNickname);
 
   const [nickname, setNickname] = useState('');
+  const [avatarId, setAvatarId] = useState(0);
   const [nicknameDraft, setNicknameDraft] = useState('');
   const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const [isAvatarPickerVisible, setIsAvatarPickerVisible] = useState(false);
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isJoiningRoom, setIsJoiningRoom] = useState(false);
   const [isCodeModalVisible, setIsCodeModalVisible] = useState(false);
@@ -38,10 +44,12 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
   useEffect(() => {
     let active = true;
 
-    void getPreferredNickname().then((storedNickname) => {
+    void Promise.all([getPreferredNickname(), getOrCreateClientIdentity()]).then(([storedNickname, identity]) => {
       if (!active) {
         return;
       }
+
+      setAvatarId(identity.avatarId);
 
       const normalized = storedNickname.trim();
       if (normalized) {
@@ -99,11 +107,28 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
     void setPreferredNickname(nextNickname);
   };
 
+  const openAvatarPicker = () => {
+    setIsAvatarPickerVisible(true);
+    triggerGameFeedback('confirm');
+  };
+
+  const closeAvatarPicker = () => {
+    setIsAvatarPickerVisible(false);
+  };
+
+  const selectAvatar = (nextAvatarId: number) => {
+    setAvatarId(nextAvatarId);
+    setIsAvatarPickerVisible(false);
+    void persistPreferredAvatarId(nextAvatarId);
+    triggerGameFeedback('confirm');
+  };
+
   const openGame = async (game: GameCatalogItem) => {
     const sessionNickname = resolveNickname();
 
     try {
       setIsCreatingRoom(true);
+      await persistPreferredAvatarId(avatarId);
       await createRemoteSession(game.id, { nickname: sessionNickname });
       triggerGameFeedback('submit');
       router.push('/lobby');
@@ -149,6 +174,7 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
     try {
       setIsJoiningRoom(true);
       setRoomCodeError(null);
+      await persistPreferredAvatarId(avatarId);
       await joinRemoteSession(normalizedCode, { nickname: sessionNickname });
       triggerGameFeedback('submit');
       closeJoinCodeModal();
@@ -172,8 +198,10 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
     locale,
     state: {
       nickname,
+      avatarId,
       nicknameDraft,
       isEditingNickname,
+      isAvatarPickerVisible,
       isCreatingRoom,
       isJoiningRoom,
       isCodeModalVisible,
@@ -188,6 +216,9 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
       setNicknameDraft,
       startNicknameEditing,
       commitNicknameEdit,
+      openAvatarPicker,
+      closeAvatarPicker,
+      selectAvatar,
       shuffleNickname,
       openJoinCodeModal,
       closeJoinCodeModal,

@@ -32,7 +32,11 @@ export const translations: Record<Locale, TranslationMap> = {
     'catalog.openRoomAccessLabel': 'Abrir c\u00F3digo da sala',
     'catalog.openGameA11y': 'Abrir jogo {game}',
     'catalog.editNickname': 'Editar apelido',
+    'catalog.editAvatar': 'Trocar avatar',
     'catalog.shuffleNickname': 'Trocar apelido',
+    'catalog.avatarPickerTitle': 'Escolha seu avatar',
+    'catalog.avatarPickerSubtitle':
+      'Esse avatar vira sua prefer\u00EAncia. Se ele j\u00E1 estiver em uso na sala, o jogo escolhe outro livre.',
     'catalog.closeCodeModal': 'Fechar modal de c\u00F3digo',
     'catalog.nicknameLabel': 'Seu apelido',
     'catalog.nicknamePlaceholder': 'Digite seu apelido',
@@ -208,7 +212,11 @@ export const translations: Record<Locale, TranslationMap> = {
     'catalog.openRoomAccessLabel': 'Open room code',
     'catalog.openGameA11y': 'Open game {game}',
     'catalog.editNickname': 'Edit nickname',
+    'catalog.editAvatar': 'Change avatar',
     'catalog.shuffleNickname': 'Shuffle nickname',
+    'catalog.avatarPickerTitle': 'Choose your avatar',
+    'catalog.avatarPickerSubtitle':
+      'This becomes your preferred avatar. If it is already taken in the room, the game will pick another free one.',
     'catalog.closeCodeModal': 'Close code modal',
     'catalog.nicknameLabel': 'Your nickname',
     'catalog.nicknamePlaceholder': 'Type your nickname',

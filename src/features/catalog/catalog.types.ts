@@ -22,8 +22,10 @@ export type CatalogButtonTone = 'orange' | 'blue';
 
 export type CatalogState = {
   nickname: string;
+  avatarId: number;
   nicknameDraft: string;
   isEditingNickname: boolean;
+  isAvatarPickerVisible: boolean;
   isCreatingRoom: boolean;
   isJoiningRoom: boolean;
   isCodeModalVisible: boolean;
@@ -39,6 +41,9 @@ export type CatalogHandlers = {
   setNicknameDraft: (value: string) => void;
   startNicknameEditing: () => void;
   commitNicknameEdit: () => void;
+  openAvatarPicker: () => void;
+  closeAvatarPicker: () => void;
+  selectAvatar: (avatarId: number) => void;
   shuffleNickname: () => void;
   openJoinCodeModal: () => void;
   closeJoinCodeModal: () => void;

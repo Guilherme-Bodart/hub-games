@@ -25,6 +25,7 @@ import { ensureFirebaseAnonymousAuth, getFirebaseServices } from '@/src/integrat
 type RemoteIdentity = {
   playerName: string;
   deviceLabel: string;
+  preferredAvatarId?: number;
 };
 
 type CreateRemoteRoomParams = RemoteIdentity & {
@@ -152,8 +153,17 @@ const getRoomIdleCutoff = (): number => Date.now() - ROOM_IDLE_TTL_MS;
 
 const pickAvatarId = (
   usedAvatarIds: Set<number>,
+  preferredAvatarId?: number,
   random: () => number = Math.random
 ): number => {
+  if (typeof preferredAvatarId === 'number' && Number.isFinite(preferredAvatarId)) {
+    const normalizedPreferredAvatarId = normalizeAvatarId(preferredAvatarId);
+
+    if (!usedAvatarIds.has(normalizedPreferredAvatarId)) {
+      return normalizedPreferredAvatarId;
+    }
+  }
+
   const availableAvatarIds: number[] = [];
 
   for (let avatarId = 0; avatarId < AVATAR_SPRITE_TOTAL; avatarId += 1) {
@@ -467,7 +477,7 @@ const buildRemoteDevice = (
   const deviceId = createId('device');
   const playerId = createId('player');
   const usedAvatarIds = collectUsedAvatarIds(lobby);
-  const avatarId = pickAvatarId(usedAvatarIds);
+  const avatarId = pickAvatarId(usedAvatarIds, identity.preferredAvatarId);
 
   return {
     deviceId,
@@ -528,7 +538,7 @@ export const createRemoteRoom = async (
               [playerId]: {
                 id: playerId,
                 name: params.playerName.trim(),
-                avatarId: pickAvatarId(new Set<number>()),
+                avatarId: pickAvatarId(new Set<number>(), params.preferredAvatarId),
                 isReady: true,
                 isHost: true,
                 deviceId,
@@ -633,7 +643,7 @@ export const joinRemoteRoom = async (
       updates[`devices/${existingDevice.id}/players/${newPlayerId}`] = {
         id: newPlayerId,
         name: params.playerName.trim(),
-        avatarId: pickAvatarId(usedAvatarIds),
+        avatarId: pickAvatarId(usedAvatarIds, params.preferredAvatarId),
         isReady: false,
         isHost: false,
         deviceId: existingDevice.id,

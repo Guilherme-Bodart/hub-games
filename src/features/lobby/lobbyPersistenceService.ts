@@ -1,9 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { normalizeAvatarId } from '@/src/features/lobby/avatarCatalog';
 
 const CLIENT_ID_STORAGE_KEY = '@hub-games/realtime-client-id';
 const PREFERRED_NICKNAME_STORAGE_KEY = '@hub-games/preferred-nickname';
+const PREFERRED_AVATAR_ID_STORAGE_KEY = '@hub-games/preferred-avatar-id';
 const REMOTE_SESSION_CONTEXT_STORAGE_KEY = '@hub-games/remote-session-context';
 const ROOM_CODE_LENGTH = 5;
+
+const deriveAvatarIdFromClientId = (clientId: string): number => {
+  const hash = Array.from(clientId).reduce((accumulator, character, index) => {
+    return accumulator + character.charCodeAt(0) * (index + 1);
+  }, 0);
+
+  return normalizeAvatarId(hash);
+};
 
 export type RemoteSessionContext = {
   roomCode: string;
@@ -59,9 +69,11 @@ export const getOrCreateClientIdentity = async (nickname?: string): Promise<{
   clientId: string;
   playerName: string;
   deviceLabel: string;
+  avatarId: number;
 }> => {
   const storedClientId = await AsyncStorage.getItem(CLIENT_ID_STORAGE_KEY);
   const storedNickname = await AsyncStorage.getItem(PREFERRED_NICKNAME_STORAGE_KEY);
+  const storedAvatarId = await AsyncStorage.getItem(PREFERRED_AVATAR_ID_STORAGE_KEY);
   const clientId = storedClientId ?? createClientId();
 
   if (!storedClientId) {
@@ -77,11 +89,21 @@ export const getOrCreateClientIdentity = async (nickname?: string): Promise<{
 
   const suffix = clientId.slice(-4).toUpperCase();
   const fallbackPlayerName = `Jogador ${suffix}`;
+  const parsedAvatarId =
+    typeof storedAvatarId === 'string' && storedAvatarId.trim() ? Number(storedAvatarId) : Number.NaN;
+  const avatarId = Number.isFinite(parsedAvatarId)
+    ? normalizeAvatarId(parsedAvatarId)
+    : deriveAvatarIdFromClientId(clientId);
+
+  if (!Number.isFinite(parsedAvatarId)) {
+    await AsyncStorage.setItem(PREFERRED_AVATAR_ID_STORAGE_KEY, String(avatarId));
+  }
 
   return {
     clientId,
     playerName: resolvedNickname || fallbackPlayerName,
     deviceLabel: `Dispositivo ${suffix}`,
+    avatarId,
   };
 };
 
@@ -104,6 +126,34 @@ export const persistPreferredNickname = async (nickname: string): Promise<void> 
     }
 
     await AsyncStorage.setItem(PREFERRED_NICKNAME_STORAGE_KEY, normalizedNickname);
+  } catch {
+    // Ignore storage failures to avoid blocking game actions.
+  }
+};
+
+export const getStoredPreferredAvatarId = async (): Promise<number> => {
+  try {
+    const storedAvatarId = await AsyncStorage.getItem(PREFERRED_AVATAR_ID_STORAGE_KEY);
+    const parsedAvatarId =
+      typeof storedAvatarId === 'string' && storedAvatarId.trim()
+        ? Number(storedAvatarId)
+        : Number.NaN;
+
+    if (!Number.isFinite(parsedAvatarId)) {
+      return 0;
+    }
+
+    return normalizeAvatarId(parsedAvatarId);
+  } catch {
+    return 0;
+  }
+};
+
+export const persistPreferredAvatarId = async (avatarId: number): Promise<void> => {
+  const normalizedAvatarId = normalizeAvatarId(avatarId);
+
+  try {
+    await AsyncStorage.setItem(PREFERRED_AVATAR_ID_STORAGE_KEY, String(normalizedAvatarId));
   } catch {
     // Ignore storage failures to avoid blocking game actions.
   }

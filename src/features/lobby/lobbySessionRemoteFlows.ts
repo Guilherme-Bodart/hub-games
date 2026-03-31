@@ -119,6 +119,7 @@ export const createRemoteSessionFlow = async (
           gameId,
           playerName: identity.playerName,
           deviceLabel: identity.deviceLabel,
+          preferredAvatarId: identity.avatarId,
         }),
       {
         fallbackMessage: 'Falha ao criar sala remota.',
@@ -196,6 +197,7 @@ export const joinRemoteSessionFlow = async (
           roomCode: normalizedCode,
           playerName: identity.playerName,
           deviceLabel: identity.deviceLabel,
+          preferredAvatarId: identity.avatarId,
         }),
       {
         fallbackMessage: 'Falha ao entrar na sala.',

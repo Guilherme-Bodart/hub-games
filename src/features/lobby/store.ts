@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
+import { normalizeAvatarId } from '@/src/features/lobby/avatarCatalog';
 import { assignUniqueAvatarIds, pickAvailableAvatarId } from '@/src/features/lobby/avatarPool';
 import {
   addRemotePlayer,
@@ -23,6 +24,7 @@ export type SessionRestoreStatus = 'idle' | 'restoring' | 'ready' | 'failed';
 
 const CLIENT_ID_STORAGE_KEY = '@hub-games/realtime-client-id';
 const PREFERRED_NICKNAME_STORAGE_KEY = '@hub-games/preferred-nickname';
+const PREFERRED_AVATAR_ID_STORAGE_KEY = '@hub-games/preferred-avatar-id';
 const REMOTE_SESSION_CONTEXT_STORAGE_KEY = '@hub-games/remote-session-context';
 const REMOTE_SYNC_TIMEOUT_MS = 8000;
 const REMOTE_ACTION_TIMEOUT_MS = 8500;
@@ -73,6 +75,14 @@ const createRoomCode = (): string =>
 
 const createClientId = (): string =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+
+const deriveAvatarIdFromClientId = (clientId: string): number => {
+  const hash = Array.from(clientId).reduce((accumulator, character, index) => {
+    return accumulator + character.charCodeAt(0) * (index + 1);
+  }, 0);
+
+  return normalizeAvatarId(hash);
+};
 
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => {
@@ -320,9 +330,11 @@ const getOrCreateClientIdentity = async (nickname?: string): Promise<{
   clientId: string;
   playerName: string;
   deviceLabel: string;
+  avatarId: number;
 }> => {
   const storedClientId = await AsyncStorage.getItem(CLIENT_ID_STORAGE_KEY);
   const storedNickname = await AsyncStorage.getItem(PREFERRED_NICKNAME_STORAGE_KEY);
+  const storedAvatarId = await AsyncStorage.getItem(PREFERRED_AVATAR_ID_STORAGE_KEY);
   const clientId = storedClientId ?? createClientId();
 
   if (!storedClientId) {
@@ -338,11 +350,21 @@ const getOrCreateClientIdentity = async (nickname?: string): Promise<{
 
   const suffix = clientId.slice(-4).toUpperCase();
   const fallbackPlayerName = `Jogador ${suffix}`;
+  const parsedAvatarId =
+    typeof storedAvatarId === 'string' && storedAvatarId.trim() ? Number(storedAvatarId) : Number.NaN;
+  const avatarId = Number.isFinite(parsedAvatarId)
+    ? normalizeAvatarId(parsedAvatarId)
+    : deriveAvatarIdFromClientId(clientId);
+
+  if (!Number.isFinite(parsedAvatarId)) {
+    await AsyncStorage.setItem(PREFERRED_AVATAR_ID_STORAGE_KEY, String(avatarId));
+  }
 
   return {
     clientId,
     playerName: resolvedNickname || fallbackPlayerName,
     deviceLabel: `Dispositivo ${suffix}`,
+    avatarId,
   };
 };
 
@@ -558,6 +580,7 @@ export const useLobbySessionStore = create<LobbySessionStore>((set, get) => ({
             gameId,
             playerName: identity.playerName,
             deviceLabel: identity.deviceLabel,
+            preferredAvatarId: identity.avatarId,
           }),
         {
           fallbackMessage: 'Falha ao criar sala remota.',
@@ -632,6 +655,7 @@ export const useLobbySessionStore = create<LobbySessionStore>((set, get) => ({
             roomCode: normalizedCode,
             playerName: identity.playerName,
             deviceLabel: identity.deviceLabel,
+            preferredAvatarId: identity.avatarId,
           }),
         {
           fallbackMessage: 'Falha ao entrar na sala.',

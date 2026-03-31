@@ -149,6 +149,9 @@ export const styles = StyleSheet.create({
   codeModal: {
     borderRadius: 24,
   },
+  avatarModal: {
+    borderRadius: 24,
+  },
   codeModalTitle: {
     color: '#23254D',
     fontFamily: 'Baloo2_700Bold',
@@ -161,6 +164,45 @@ export const styles = StyleSheet.create({
     fontFamily: 'Nunito_700Bold',
     fontSize: 14,
     lineHeight: 18,
+  },
+  avatarModalSubtitle: {
+    color: '#4A4A6F',
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  avatarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    paddingTop: 6,
+  },
+  avatarOption: {
+    width: '22%',
+    minWidth: 64,
+    aspectRatio: 1,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: '#D7DFEB',
+    backgroundColor: '#F6F8FC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  avatarOptionSelected: {
+    borderColor: '#F47D74',
+    backgroundColor: '#FFF1EF',
+  },
+  avatarOptionInner: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   codeModalInputWrap: {
     marginTop: 2,
