@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
-import { ImpostorRound } from '@/src/features/games/impostor/types';
 import { impostorPhaseStyles as styles } from '@/src/features/games/impostor/styles/impostorPhaseStyles';
+import { ImpostorRound } from '@/src/features/games/impostor/types';
 import { ThemeTokens } from '@/src/theme/types';
 import { withAlpha } from '@/src/theme/utils';
 import { Button, Input } from '@/src/ui/atoms';
@@ -51,8 +51,8 @@ export function ImpostorGuessingPhase({
         style={[
           styles.guessStageHero,
           {
-            backgroundColor: withAlpha('#FFFFFF', 0.92),
-            borderColor: withAlpha(theme.semantic.status.error, 0.16),
+            backgroundColor: withAlpha('#FFFFFF', 0.94),
+            borderColor: withAlpha(theme.semantic.status.error, 0.2),
           },
         ]}>
         <Text
@@ -96,33 +96,36 @@ export function ImpostorGuessingPhase({
             styles.voteSummary,
             {
               borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
-              backgroundColor: withAlpha('#FFFFFF', 0.92),
+              backgroundColor: withAlpha('#FFFFFF', 0.94),
             },
-        ]}>
+          ]}>
           <Text style={{ color: theme.semantic.text.secondary, fontSize: 12 }}>
-            {isPt ? 'Resultado da votação' : 'Voting result'}
+            {isPt ? 'Mais votados na rodada' : 'Most voted this round'}
           </Text>
-          {votingTallies.map((entry) => (
+          {votingTallies.slice(0, 3).map((entry) => (
             <Text key={`guess-tally-${entry.playerId}`} style={{ color: theme.semantic.text.primary }}>
-              {`${entry.name}: ${entry.votes}`}
+              {`${entry.name}: ${entry.votes} ${isPt ? 'votos' : 'votes'}`}
             </Text>
           ))}
         </View>
       ) : null}
+
       {round.caughtImpostorIds.map((impostorId) => {
         const impostor = round.players.find((player) => player.id === impostorId);
         if (!impostor) {
           return null;
         }
+
         const canEdit = localPlayerIds.has(impostorId) && !round.impostorGuesses[impostorId];
+
         return (
           <View
             key={impostorId}
             style={[
               styles.guessCard,
               {
-                borderColor: withAlpha(theme.semantic.status.error, 0.16),
-                backgroundColor: withAlpha('#FFFFFF', 0.94),
+                borderColor: withAlpha(theme.semantic.status.error, 0.18),
+                backgroundColor: withAlpha('#FFFFFF', 0.95),
               },
             ]}>
             <Text
@@ -143,10 +146,11 @@ export function ImpostorGuessingPhase({
                   : 'Type the exact civilian word to try to steal the round.'
                 : isPt
                   ? 'Aguardando o chute final deste impostor.'
-                  : 'Waiting for this impostor’s final guess.'}
+                  : 'Waiting for this impostor final guess.'}
             </Text>
+
             {round.impostorGuesses[impostorId] ? (
-              <Text style={{ color: theme.semantic.text.secondary }}>{round.impostorGuesses[impostorId]}</Text>
+              <Text style={{ color: theme.semantic.text.primary }}>{round.impostorGuesses[impostorId]}</Text>
             ) : (
               <>
                 <Input
@@ -160,6 +164,8 @@ export function ImpostorGuessingPhase({
                   label={copy.submitGuess}
                   onPress={() => onSubmitGuess(impostorId)}
                   disabled={!canEdit || !guessDrafts[impostorId]?.trim()}
+                  size="lg"
+                  style={{ width: '100%' }}
                 />
               </>
             )}

@@ -43,7 +43,13 @@ export function ResultVoteMapBlock({
       {entries.map((entry) => (
         <View
           key={`vote-map-${entry.suspect.id}`}
-          style={[styles.voteMapRow, { borderColor: theme.semantic.border.subtle }]}>
+          style={[
+            styles.voteMapRow,
+            {
+              borderColor: theme.semantic.border.subtle,
+              backgroundColor: theme.semantic.bg.elevated,
+            },
+          ]}>
           <View style={styles.voteMapTarget}>
             <AvatarSprite avatarId={entry.suspect.avatarId} size={28} />
             <Text style={{ color: theme.semantic.text.primary, fontSize: 13 }}>{entry.suspect.name}</Text>

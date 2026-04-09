@@ -60,28 +60,28 @@ export function useImpostorCluesPhaseViewModel({
 
     const headerTitle = isClueCycleComplete
       ? isPt
-        ? 'Hora da decisão'
+        ? 'Hora da decis\u00E3o'
         : 'Decision time'
       : activeTurnName
         ? activeTurnName
         : isPt
-          ? 'Aguardando o próximo jogador'
+          ? 'Aguardando o pr\u00F3ximo jogador'
           : 'Waiting for the next player';
 
     const headerHint = isClueCycleComplete
       ? isPt
-        ? 'Escolham o próximo passo.'
+        ? 'Escolham o pr\u00F3ximo passo.'
         : 'Choose the next step.'
       : isPt
-        ? 'Curta e sutil.'
-        : 'Short and subtle.';
+        ? 'Curta, limpa e sem entregar.'
+        : 'Keep it short and subtle.';
 
     const cards: PlayerClueCardViewModel[] = round.players.map((player) => {
       const clue = round.clues[player.id];
       const isActive = activeTurnId === player.id;
       const hasSubmitted = round.submittedCluePlayerIds.includes(player.id);
       const clueHistory = round.clueHistoryByPlayer[player.id] ?? [];
-      const previousClues = clue ? clueHistory.slice(0, -1) : clueHistory;
+      const previousClues = (clue ? clueHistory.slice(0, -1) : clueHistory).slice(-2);
       const tone: PlayerClueCardTone = hasSubmitted ? 'submitted' : isActive ? 'typing' : 'waiting';
 
       return {
@@ -95,21 +95,21 @@ export function useImpostorCluesPhaseViewModel({
             : 'Clue sent'
           : isActive
             ? isPt
-              ? 'digitando...'
-              : 'Typing now'
+              ? 'na vez'
+              : 'Your turn'
             : isPt
-              ? 'aguardando...'
-              : 'Waiting...',
+              ? 'aguarde'
+              : 'Waiting',
         emphasisLabel: clue
           ? clue
           : hasSubmitted
             ? isPt
-              ? 'tempo esgotado'
-              : 'time up'
+              ? 'Sem pista'
+              : 'No clue'
             : isActive
               ? typingLabel
               : '',
-        historyLabel: isPt ? 'Histórico' : 'History',
+        historyLabel: isPt ? 'Antes' : 'Before',
         historyEmptyLabel: isPt ? 'Sem pistas anteriores.' : 'No previous clues yet.',
         tone,
         width: usesTwoColumns ? '48.5%' : '100%',
@@ -165,7 +165,7 @@ export function useImpostorCluesPhaseViewModel({
               ? `${activeTurnName}'s turn.`
               : 'Waiting for the current turn.',
       rosterEyebrow: isPt ? 'Mesa da rodada' : 'Round table',
-      rosterTitle: isPt ? 'Quem já jogou e quem falta' : 'Who already played and who is next',
+      rosterTitle: isPt ? 'Quem j\u00E1 jogou' : 'Who already played',
       cards: orderedCards,
       progressSteps,
     };

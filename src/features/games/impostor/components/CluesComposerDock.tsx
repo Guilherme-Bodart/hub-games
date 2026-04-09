@@ -37,18 +37,14 @@ export function CluesComposerDock({
   onProceedDecision,
 }: CluesComposerDockProps) {
   return (
-    <View
-      style={[
-        styles.composerStage,
-        null,
-      ]}>
+    <View style={styles.composerStage}>
       {canSubmitClue ? (
         <View
           style={[
             styles.composerCard,
             {
-              backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.92),
-              borderColor: withAlpha(theme.semantic.button.primary.bg, 0.12),
+              backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.94),
+              borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
             },
           ]}>
           {helperText ? (
@@ -84,8 +80,8 @@ export function CluesComposerDock({
           style={[
             styles.composerCard,
             {
-              backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.88),
-              borderColor: withAlpha(theme.semantic.border.subtle, 0.78),
+              backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.92),
+              borderColor: withAlpha(theme.semantic.border.subtle, 0.9),
             },
           ]}>
           {isClueCycleComplete ? (
@@ -116,7 +112,7 @@ export function CluesComposerDock({
               style={[
                 styles.passiveDockPill,
                 {
-                  backgroundColor: withAlpha(theme.semantic.bg.surface, 0.92),
+                  backgroundColor: withAlpha(theme.semantic.bg.surface, 0.94),
                   borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
                 },
               ]}>

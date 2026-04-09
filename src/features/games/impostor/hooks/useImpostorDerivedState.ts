@@ -172,7 +172,7 @@ export function useImpostorDerivedState({
 
   const typingLabel = isPt ? `digitando${'.'.repeat(typingDotsCount)}` : `typing${'.'.repeat(typingDotsCount)}`;
 
-  const resultShouldShowQuestionBlock = round?.mode === 'questions';
+  const resultShouldShowQuestionBlock = Boolean(round);
   const suspenseWinnerIsImpostor = resultRouletteTick % 2 === 0;
 
   const bannerWinnerIsImpostor =
@@ -180,9 +180,9 @@ export function useImpostorDerivedState({
       ? suspenseWinnerIsImpostor
       : round?.result?.winner === 'impostors';
 
-  const revealResultBlockAt = resultShouldShowQuestionBlock ? 3 : -1;
-  const votingResultBlockAt = resultShouldShowQuestionBlock ? 4 : 3;
-  const resultActionsAt = resultShouldShowQuestionBlock ? 5 : 4;
+  const revealResultBlockAt = 3;
+  const votingResultBlockAt = 4;
+  const resultActionsAt = 5;
 
   return {
     canControl,

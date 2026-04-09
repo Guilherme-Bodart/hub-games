@@ -9,7 +9,7 @@ export const roundHeaderStyles = StyleSheet.create({
   },
   phaseHeaderLeft: {
     flex: 1,
-    gap: 1,
+    gap: 3,
   },
   roundLabel: {
     fontSize: 13,
@@ -25,7 +25,7 @@ export const roundHeaderStyles = StyleSheet.create({
   },
   phaseHeaderRight: {
     alignItems: 'flex-end',
-    gap: 5,
+    gap: 8,
   },
   playerStack: {
     flexDirection: 'row',
@@ -46,18 +46,13 @@ export const roundHeaderStyles = StyleSheet.create({
     lineHeight: 12,
   },
   playersCountLabel: {
-    fontSize: 9,
-    lineHeight: 11,
+    fontSize: 10,
+    lineHeight: 12,
     letterSpacing: 0.7,
     textTransform: 'uppercase',
   },
   infoButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 999,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: 2,
   },
   rulesText: {
     fontSize: 14,

@@ -9,13 +9,18 @@ type UseImpostorGameScreenParams = {
   setShellPhase?: (phase: string) => void;
 };
 
-export function useImpostorGameScreen({ locale, round, error, setShellPhase }: UseImpostorGameScreenParams) {
+export function useImpostorGameScreen({
+  locale,
+  round,
+  error,
+  setShellPhase,
+}: UseImpostorGameScreenParams) {
   const isPt = locale === 'pt';
 
   const copy = useMemo(
     () => ({
       title: 'Impostor',
-      noPlayers: isPt ? 'Mínimo de 4 jogadores prontos.' : 'Minimum of 4 ready players.',
+      noPlayers: isPt ? 'M\u00EDnimo de 4 jogadores prontos.' : 'Minimum of 4 ready players.',
       waiting: isPt ? 'Aguardando rodada...' : 'Waiting for round...',
       playersCountCompact: isPt ? 'jogadores' : 'players',
       roundTheme: isPt ? 'Tema da rodada' : 'Round theme',
@@ -26,7 +31,7 @@ export function useImpostorGameScreen({ locale, round, error, setShellPhase }: U
         ? 'Cada rodada tem civis e impostor. Os civis recebem a palavra real; o impostor recebe apenas uma dica ampla e tenta se misturar.'
         : 'Each round has civilians and an impostor. Civilians get the real word; the impostor gets only a broad hint and tries to blend in.',
       rulesStepOne: isPt
-        ? 'Revelem o papel em segredo e passem o celular para o próximo jogador.'
+        ? 'Revelem o papel em segredo e passem o celular para o pr\u00F3ximo jogador.'
         : 'Reveal each role in secret and pass the phone to the next player.',
       rulesStepTwo: isPt
         ? 'Na fase de pistas, cada jogador envia uma palavra curta sem entregar demais.'
@@ -34,17 +39,15 @@ export function useImpostorGameScreen({ locale, round, error, setShellPhase }: U
       rulesStepThree: isPt
         ? 'Depois, o grupo decide se continua, vota em suspeitos e tenta identificar o impostor.'
         : 'Then the group decides whether to continue, vote on suspects, and identify the impostor.',
-      reveal: isPt ? 'Revelação' : 'Reveal',
+      reveal: isPt ? 'Revela\u00E7\u00E3o' : 'Reveal',
       revealStageEyebrow: isPt ? 'Passe o celular' : 'Pass the phone',
       revealStageTitle: isPt ? 'Cada jogador revela em segredo' : 'Each player reveals in secret',
-      revealStageHint: isPt
-        ? 'Segure sua carta, memorize a informação e entregue o celular para o próximo.'
-        : 'Hold your card, memorize the info, and hand the phone to the next player.',
-      revealQueueLabel: isPt ? 'Ordem local de revelação' : 'Local reveal order',
+      revealStageHint: isPt ? 'Memorize e passe para o pr\u00F3ximo.' : 'Memorize it and pass it on.',
+      revealQueueLabel: isPt ? 'Ordem local de revela\u00E7\u00E3o' : 'Local reveal order',
       revealWaitingLabel: isPt ? 'Aguardando jogador local' : 'Waiting for local player',
       revealPassLabel: isPt ? 'Passe o celular' : 'Pass the phone',
       revealPlayerProgress: isPt ? 'Jogador' : 'Player',
-      revealNextPlayer: isPt ? 'Próximo jogador' : 'Next player',
+      revealNextPlayer: isPt ? 'Pr\u00F3ximo jogador' : 'Next player',
       revealEmptyLabel: isPt
         ? 'Nenhum jogador local pronto para revelar neste aparelho.'
         : 'No local player is ready to reveal on this device.',
@@ -52,18 +55,20 @@ export function useImpostorGameScreen({ locale, round, error, setShellPhase }: U
       revealCivilPromptLabel: isPt ? 'Palavra do civil' : 'Civil word',
       revealImpostorPromptLabel: isPt ? 'Dica do impostor' : 'Impostor hint',
       revealImpostorHint: isPt
-        ? 'Você não recebeu a palavra exata. Use essa dica ampla para blefar.'
+        ? 'Voc\u00EA n\u00E3o recebeu a palavra exata. Use essa dica ampla para blefar.'
         : 'You did not receive the exact word. Use this broad hint to bluff.',
       revealCivilHint: isPt
-        ? 'Guarde a palavra exata e dê uma pista sem entregar demais.'
+        ? 'Guarde a palavra exata e d\u00EA uma pista sem entregar demais.'
         : 'Keep the exact word secret and give a clue without giving too much away.',
       clues: isPt ? 'Pista' : 'Clue',
       cluesStageEyebrow: isPt ? 'Rodada em andamento' : 'Round in motion',
-      cluesStageHint: isPt ? 'Pistas curtas, ritmo rápido e nada de entregar demais.' : 'Keep clues short, quick, and subtle.',
-      roundDecision: isPt ? 'Decisão da rodada' : 'Round decision',
-      voting: isPt ? 'Votação' : 'Voting',
+      cluesStageHint: isPt
+        ? 'Pistas curtas, ritmo r\u00E1pido e nada de entregar demais.'
+        : 'Keep clues short, quick, and subtle.',
+      roundDecision: isPt ? 'Decis\u00E3o' : 'Decision',
+      voting: isPt ? 'Vota\u00E7\u00E3o' : 'Voting',
       guessing: isPt ? 'Chute' : 'Guess',
-      guessingStageTitle: isPt ? 'Última chance do impostor' : 'Impostor last chance',
+      guessingStageTitle: isPt ? '\u00DAltima chance do impostor' : 'Impostor last chance',
       guessingStageHint: isPt
         ? 'Se acertar a palavra dos civis, o impostor rouba a rodada.'
         : 'If the impostor guesses the civilian word, the round flips.',
@@ -74,11 +79,11 @@ export function useImpostorGameScreen({ locale, round, error, setShellPhase }: U
       releaseRevealHint: isPt ? 'Solte para ocultar.' : 'Release to hide.',
       clueInput: isPt ? 'Digite uma palavra' : 'Type one word',
       submitClue: isPt ? 'Enviar pista' : 'Send clue',
-      goDecision: isPt ? 'Ir para decisão' : 'Go to decision',
+      goDecision: isPt ? 'Ir para decis\u00E3o' : 'Go to decision',
       waitingClue: isPt ? 'aguardando...' : 'waiting...',
       roundDecisionHint: isPt
-        ? 'Todos votam: mais uma rodada de palavras ou ir para suspeitos.'
-        : 'Everyone votes: another clue round or go to suspects.',
+        ? 'Escolham se a rodada continua ou avan\u00E7a.'
+        : 'Choose whether the round continues or advances.',
       continueClues: isPt ? 'Mais pistas' : 'More clues',
       goSuspects: isPt ? 'Ir para suspeitos' : 'Go to suspects',
       turnOf: isPt ? 'Vez de' : 'Turn',
@@ -90,12 +95,12 @@ export function useImpostorGameScreen({ locale, round, error, setShellPhase }: U
       submitGuess: isPt ? 'Confirmar chute' : 'Submit guess',
       winnerC: isPt ? 'Civis venceram' : 'Civilians won',
       winnerI: isPt ? 'Impostores venceram' : 'Impostors won',
-      suspense: isPt ? 'Sinal instável...' : 'Signal unstable...',
+      suspense: isPt ? 'Sinal inst\u00E1vel...' : 'Signal unstable...',
       defeatBanner: isPt ? 'Derrota dos civis' : 'Civilians defeated',
-      victoryBanner: isPt ? 'Vitória dos civis' : 'Civilians win',
+      victoryBanner: isPt ? 'Vit\u00F3ria dos civis' : 'Civilians win',
       impostorRevealSingle: isPt ? 'O impostor era' : 'The impostor was',
       impostorRevealMulti: isPt ? 'Os impostores eram' : 'The impostors were',
-      revealBlockTitle: isPt ? 'Revelação da rodada' : 'Round reveal',
+      revealBlockTitle: isPt ? 'Revela\u00E7\u00E3o da rodada' : 'Round reveal',
       civilWord: isPt ? 'Palavra dos civis' : 'Civil word',
       impostorSecret: isPt ? 'Segredo do impostor' : 'Impostor secret',
       impostorHintWord: isPt ? 'Dica recebida pelo impostor' : 'Hint shown to the impostor',
@@ -143,4 +148,3 @@ export function useImpostorGameScreen({ locale, round, error, setShellPhase }: U
     topBarStatusTone,
   };
 }
-

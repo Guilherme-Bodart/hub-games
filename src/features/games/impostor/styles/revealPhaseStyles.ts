@@ -3,6 +3,10 @@ import { StyleSheet } from 'react-native';
 export const revealPhaseStyles = StyleSheet.create({
   actionPanel: {
     gap: 10,
+    width: '100%',
+  },
+  actionButton: {
+    width: '100%',
   },
   actionPanelHint: {
     fontSize: 12,
@@ -24,6 +28,7 @@ export const revealPhaseStyles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    justifyContent: 'center',
   },
   passLabel: {
     fontSize: 11,
