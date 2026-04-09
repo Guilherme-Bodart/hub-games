@@ -151,7 +151,7 @@ const mapErrorMessage = (message: string, fallbackMessage: string): string => {
   const lowered = normalized.toLowerCase();
 
   if (lowered.includes('permission denied')) {
-    return 'Sem permissao para sincronizar a rodada.';
+    return 'Sem permissão para sincronizar a rodada.';
   }
 
   if (
@@ -160,11 +160,11 @@ const mapErrorMessage = (message: string, fallbackMessage: string): string => {
     lowered.includes('offline') ||
     lowered.includes('disconnected')
   ) {
-    return 'Conexao instavel durante a rodada. Tentando reconectar.';
+    return 'Conexão instável durante a rodada. Tentando reconectar.';
   }
 
   if (lowered.includes('invalid') || lowered.includes('payload')) {
-    return 'Dados incompletos da rodada recebidos. Mantendo ultimo estado valido.';
+    return 'Dados incompletos da rodada recebidos. Mantendo o último estado válido.';
   }
 
   return normalized;
@@ -380,7 +380,7 @@ export const subscribeRemoteImpostorState = ({
       onState(parsedRound);
     },
     (error) => {
-      onError(toFirebaseError('Sincronizacao remota de Impostor instavel.', error).message);
+      onError(toFirebaseError('Sincronização remota de Impostor instável.', error).message);
     }
   );
 };

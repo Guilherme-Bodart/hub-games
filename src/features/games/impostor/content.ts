@@ -2,70 +2,88 @@ import { Locale } from '@/src/i18n';
 
 import { ImpostorPromptMode } from '@/src/features/games/impostor/types';
 
-type PromptDeckEntry = {
+type LocalizedText = Record<Locale, string>;
+
+type BasePromptDeckEntry = {
   id: string;
-  theme: Record<Locale, string>;
-  civilPrompt: Record<Locale, string>;
-  impostorPrompt: Record<Locale, string>;
+  theme: LocalizedText;
+  civilPrompt: LocalizedText;
 };
 
-const wordsDeck: PromptDeckEntry[] = [
+type WordPromptDeckEntry = BasePromptDeckEntry & {
+  impostorHint: LocalizedText;
+  tags: string[];
+};
+
+type QuestionPromptDeckEntry = BasePromptDeckEntry & {
+  impostorPrompt: LocalizedText;
+};
+
+const wordsDeck: WordPromptDeckEntry[] = [
   {
     id: 'w-fast-food',
-    theme: { pt: 'Comida rapida', en: 'Fast food' },
-    civilPrompt: { pt: 'Hamburguer', en: 'Burger' },
-    impostorPrompt: { pt: 'Sanduiche', en: 'Sandwich' },
+    theme: { pt: 'Lanche de rua', en: 'Street snack' },
+    civilPrompt: { pt: 'Hambúrguer', en: 'Burger' },
+    impostorHint: { pt: 'Comida', en: 'Food' },
+    tags: ['food', 'snack', 'fast-food'],
   },
   {
     id: 'w-music',
-    theme: { pt: 'Musica', en: 'Music' },
+    theme: { pt: 'Palco', en: 'Stage' },
     civilPrompt: { pt: 'Guitarra', en: 'Guitar' },
-    impostorPrompt: { pt: 'Violao', en: 'Acoustic guitar' },
+    impostorHint: { pt: 'Música', en: 'Music' },
+    tags: ['music', 'instrument'],
   },
   {
     id: 'w-travel',
-    theme: { pt: 'Viagem', en: 'Travel' },
+    theme: { pt: 'Embarque', en: 'Departure' },
     civilPrompt: { pt: 'Aeroporto', en: 'Airport' },
-    impostorPrompt: { pt: 'Rodoviaria', en: 'Bus terminal' },
+    impostorHint: { pt: 'Viagem', en: 'Travel' },
+    tags: ['travel', 'transport'],
   },
   {
     id: 'w-house',
-    theme: { pt: 'Casa', en: 'Home' },
+    theme: { pt: 'Rotina da casa', en: 'Home routine' },
     civilPrompt: { pt: 'Geladeira', en: 'Fridge' },
-    impostorPrompt: { pt: 'Freezer', en: 'Freezer' },
+    impostorHint: { pt: 'Cozinha', en: 'Kitchen' },
+    tags: ['home', 'kitchen', 'appliance'],
   },
   {
     id: 'w-sports',
-    theme: { pt: 'Esporte', en: 'Sports' },
+    theme: { pt: 'Dia de jogo', en: 'Game day' },
     civilPrompt: { pt: 'Futebol', en: 'Football' },
-    impostorPrompt: { pt: 'Futsal', en: 'Indoor football' },
+    impostorHint: { pt: 'Esporte', en: 'Sport' },
+    tags: ['sports', 'ball', 'competition'],
   },
   {
     id: 'w-nature',
-    theme: { pt: 'Natureza', en: 'Nature' },
+    theme: { pt: 'Paisagem', en: 'Landscape' },
     civilPrompt: { pt: 'Cachoeira', en: 'Waterfall' },
-    impostorPrompt: { pt: 'Rio', en: 'River' },
+    impostorHint: { pt: 'Natureza', en: 'Nature' },
+    tags: ['nature', 'water', 'outdoors'],
   },
   {
     id: 'w-office',
-    theme: { pt: 'Trabalho', en: 'Work' },
-    civilPrompt: { pt: 'Reuniao', en: 'Meeting' },
-    impostorPrompt: { pt: 'Workshop', en: 'Workshop' },
+    theme: { pt: 'Escritório', en: 'Office' },
+    civilPrompt: { pt: 'Reunião', en: 'Meeting' },
+    impostorHint: { pt: 'Trabalho', en: 'Work' },
+    tags: ['work', 'office', 'team'],
   },
   {
     id: 'w-school',
-    theme: { pt: 'Escola', en: 'School' },
+    theme: { pt: 'Sala de aula', en: 'Classroom' },
     civilPrompt: { pt: 'Caderno', en: 'Notebook' },
-    impostorPrompt: { pt: 'Livro', en: 'Book' },
+    impostorHint: { pt: 'Escola', en: 'School' },
+    tags: ['school', 'study', 'classroom'],
   },
 ];
 
-const questionsDeck: PromptDeckEntry[] = [
+const questionsDeck: QuestionPromptDeckEntry[] = [
   {
     id: 'q-phone-use',
     theme: { pt: 'Rotina digital', en: 'Digital routine' },
     civilPrompt: {
-      pt: 'Quantas vezes por dia voce pega no celular?',
+      pt: 'Quantas vezes por dia você pega no celular?',
       en: 'How many times per day do you pick up your phone?',
     },
     impostorPrompt: {
@@ -77,47 +95,47 @@ const questionsDeck: PromptDeckEntry[] = [
     id: 'q-sleep',
     theme: { pt: 'Sono', en: 'Sleep' },
     civilPrompt: {
-      pt: 'Quantas horas voce dormiu ontem?',
+      pt: 'Quantas horas você dormiu ontem?',
       en: 'How many hours did you sleep last night?',
     },
     impostorPrompt: {
-      pt: 'Qual a media de horas de sono recomendada por noite?',
+      pt: 'Qual é a média de horas de sono recomendada por noite?',
       en: 'What is the recommended average number of sleep hours per night?',
     },
   },
   {
     id: 'q-water',
-    theme: { pt: 'Saude', en: 'Health' },
+    theme: { pt: 'Saúde', en: 'Health' },
     civilPrompt: {
-      pt: 'Quantos copos de agua voce bebe por dia?',
+      pt: 'Quantos copos de água você bebe por dia?',
       en: 'How many glasses of water do you drink per day?',
     },
     impostorPrompt: {
-      pt: 'Quantos litros de agua sao recomendados por dia?',
+      pt: 'Quantos litros de água são recomendados por dia?',
       en: 'How many liters of water are recommended per day?',
     },
   },
   {
     id: 'q-workout',
-    theme: { pt: 'Exercicio', en: 'Exercise' },
+    theme: { pt: 'Exercício', en: 'Exercise' },
     civilPrompt: {
-      pt: 'Quantas vezes por semana voce treina?',
+      pt: 'Quantas vezes por semana você treina?',
       en: 'How many times per week do you work out?',
     },
     impostorPrompt: {
-      pt: 'Qual a media de minutos de atividade fisica por semana recomendada?',
-      en: 'What is the recommended weekly minutes of physical activity?',
+      pt: 'Qual é a média de minutos de atividade física recomendada por semana?',
+      en: 'What is the recommended number of minutes of physical activity per week?',
     },
   },
   {
     id: 'q-streaming',
     theme: { pt: 'Entretenimento', en: 'Entertainment' },
     civilPrompt: {
-      pt: 'Quantas series voce assistiu no ultimo mes?',
+      pt: 'Quantas séries você assistiu no último mês?',
       en: 'How many series did you watch in the last month?',
     },
     impostorPrompt: {
-      pt: 'Quantas horas de streaming por semana em media as pessoas assistem?',
+      pt: 'Quantas horas de streaming por semana, em média, as pessoas assistem?',
       en: 'How many hours of streaming per week do people watch on average?',
     },
   },
@@ -125,22 +143,23 @@ const questionsDeck: PromptDeckEntry[] = [
     id: 'q-coffee',
     theme: { pt: 'Consumo', en: 'Consumption' },
     civilPrompt: {
-      pt: 'Quantos cafes voce toma por dia?',
+      pt: 'Quantos cafés você toma por dia?',
       en: 'How many coffees do you drink per day?',
     },
     impostorPrompt: {
-      pt: 'Qual o consumo medio de cafe por pessoa por dia?',
+      pt: 'Qual é o consumo médio de café por pessoa por dia?',
       en: 'What is the average coffee consumption per person per day?',
     },
   },
 ];
 
-const pickEntry = (entries: PromptDeckEntry[], random: () => number = Math.random): PromptDeckEntry => {
+const pickEntry = <T extends BasePromptDeckEntry>(
+  entries: T[],
+  random: () => number = Math.random
+): T => {
   const selectedIndex = Math.floor(random() * entries.length);
   return entries[selectedIndex] ?? entries[0];
 };
-
-const WORDS_IMPOSTOR_TOKEN = 'IMPOSTOR';
 
 export const getPromptDeckSize = (mode: ImpostorPromptMode): number =>
   mode === 'questions' ? questionsDeck.length : wordsDeck.length;
@@ -155,12 +174,23 @@ export const pickImpostorPromptEntry = (
   civilPrompt: string;
   impostorPrompt: string;
 } => {
-  const entry = pickEntry(mode === 'questions' ? questionsDeck : wordsDeck, random);
+  if (mode === 'questions') {
+    const entry = pickEntry(questionsDeck, random);
+
+    return {
+      id: entry.id,
+      theme: entry.theme[locale],
+      civilPrompt: entry.civilPrompt[locale],
+      impostorPrompt: entry.impostorPrompt[locale],
+    };
+  }
+
+  const entry = pickEntry(wordsDeck, random);
 
   return {
     id: entry.id,
     theme: entry.theme[locale],
     civilPrompt: entry.civilPrompt[locale],
-    impostorPrompt: mode === 'words' ? WORDS_IMPOSTOR_TOKEN : entry.impostorPrompt[locale],
+    impostorPrompt: entry.impostorHint[locale],
   };
 };

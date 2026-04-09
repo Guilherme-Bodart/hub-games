@@ -60,7 +60,21 @@ export function RevealCardBackContent({
         />
         <Text
           style={[
-            styles.impostorText,
+            styles.impostorWordmark,
+            {
+              color: visuals.revealTextColor,
+              fontFamily: theme.semantic.typography.titleFamily,
+              fontWeight: theme.semantic.typography.titleWeight,
+            },
+          ]}>
+          IMPOSTOR
+        </Text>
+        <Text
+          adjustsFontSizeToFit
+          minimumFontScale={0.82}
+          numberOfLines={2}
+          style={[
+            styles.impostorHintValue,
             {
               color: visuals.revealTextColor,
               fontFamily: theme.semantic.typography.titleFamily,
@@ -85,6 +99,9 @@ export function RevealCardBackContent({
           },
         ]}>
         <Text
+          adjustsFontSizeToFit
+          minimumFontScale={0.82}
+          numberOfLines={2}
           style={[
             styles.secretText,
             {

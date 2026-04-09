@@ -115,8 +115,6 @@ export default function LobbyScreen() {
           lobbyTitle={headerPanelProps.lobbyTitle}
           settingsLabel={headerPanelProps.panelCopy.settingsTitle}
           onOpenSettings={headerPanelProps.onOpenSettings}
-          countdownValue={headerPanelProps.countdownValue}
-          countdownStartingLabel={headerPanelProps.panelCopy.countdownStarting}
           isRemoteLobby={headerPanelProps.isRemoteLobby}
           roomCode={headerPanelProps.roomCode}
           isRoomCodeHidden={headerPanelProps.isRoomCodeHidden}
@@ -132,9 +130,8 @@ export default function LobbyScreen() {
           readyLabel={headerPanelProps.readyLabel}
           isImpostorLobby={headerPanelProps.isImpostorLobby}
           impostorLobbyBadgeLabel={headerPanelProps.impostorLobbyBadgeLabel}
-          modeLabel={headerPanelProps.modeLabel}
-          remoteStatusTone={headerPanelProps.remoteStatusTone}
-          remoteStatusLabel={headerPanelProps.remoteStatusLabel}
+          impostorContentModeLabel={headerPanelProps.impostorContentModeLabel}
+          clueTimerBadgeLabel={headerPanelProps.clueTimerBadgeLabel}
         />
 
         <LobbyPlayersSection
@@ -211,13 +208,12 @@ export default function LobbyScreen() {
       <LobbyStartDock
         style={styles.bottomDock}
         label={startDockProps.label}
+        helperText={startDockProps.helperText}
         onStart={startDockProps.onStart}
         disabled={startDockProps.disabled}
-        startButtonStyle={{
-          backgroundColor: '#F47D74',
-          borderColor: '#E86B63',
-          borderBottomColor: '#D85D56',
-        }}
+        buttonColor="#F58C83"
+        buttonTextColor="#20255C"
+        startButtonStyle={styles.bottomPrimaryButton}
       />
     </SafeAreaView>
   );

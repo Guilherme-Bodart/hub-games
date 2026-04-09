@@ -9,9 +9,9 @@ export default function NotFoundScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Rota nao encontrada' }} />
+      <Stack.Screen options={{ title: 'Rota não encontrada' }} />
       <Screen contentContainerStyle={styles.container}>
-        <Card title="Ops" subtitle="Essa tela nao existe no hub.">
+        <Card title="Ops" subtitle="Essa tela não existe no hub.">
           <Text
             style={[
               styles.text,
@@ -21,7 +21,7 @@ export default function NotFoundScreen() {
                 fontWeight: theme.semantic.typography.bodyWeight,
               },
             ]}>
-            Volte para o catalogo e continue a festa.
+            Volte para o catálogo e continue a festa.
           </Text>
           <Link href="/" asChild>
             <Button label="Ir para home" onPress={() => undefined} />

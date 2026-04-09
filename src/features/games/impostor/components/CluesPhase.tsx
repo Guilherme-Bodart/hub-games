@@ -76,7 +76,7 @@ export function ImpostorCluesPhase({
           canSubmitClue={canSubmitClue}
           isClueCycleComplete={isClueCycleComplete}
           clueInput={clueInput}
-          inputLabel={undefined}
+          inputLabel={viewModel.inputLabel}
           inputPlaceholder={isPt ? 'Digite uma palavra' : 'Type one word'}
           helperText={viewModel.composerHelperText}
           submitLabel={submitLabel}

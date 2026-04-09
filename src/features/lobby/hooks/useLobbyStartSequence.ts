@@ -85,7 +85,7 @@ export function useLobbyStartSequence({
         await initializeRemoteImpostorRound(lobby.roomCode, initialRound, lobby.selectedDeviceId);
       } catch (error) {
         Alert.alert(
-          'Impostor Neon',
+          'Impostor',
           error instanceof Error && error.message ? error.message : t('lobby.startErrorImpostor')
         );
         return;

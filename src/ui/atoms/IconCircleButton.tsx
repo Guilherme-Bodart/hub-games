@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ComponentProps } from 'react';
-import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '@/src/theme';
 import { resolveIconButtonTone, tactileShadowStyle } from '@/src/ui/atoms/tactile';
@@ -40,29 +40,43 @@ export function IconCircleButton({
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.base,
-        tactileShadowStyle,
+      style={[
         {
           width: size,
           height: size,
-          borderRadius: standardRadius,
-          backgroundColor: resolvedTone.backgroundColor,
-          borderColor: resolvedTone.borderColor,
-          opacity: pressed ? theme.semantic.motion.feedback.pressedOpacity : 1,
         },
         style,
       ]}>
-      <Ionicons name={icon} size={iconSize} color={resolvedTone.iconColor} />
+      {({ pressed }) => (
+        <View
+          style={[
+            styles.base,
+            tactileShadowStyle,
+            {
+              width: size,
+              height: size,
+              borderRadius: standardRadius,
+              backgroundColor: resolvedTone.backgroundColor,
+              borderColor: resolvedTone.borderColor,
+              opacity: pressed ? theme.semantic.motion.feedback.pressedOpacity : 1,
+              transform: [{ scale: pressed ? 0.96 : 1 }],
+            },
+          ]}>
+          <Ionicons name={icon} size={iconSize} color={resolvedTone.iconColor} />
+        </View>
+      )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   base: {
+    minWidth: 44,
+    minHeight: 44,
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
     overflow: 'hidden',
   },
 });

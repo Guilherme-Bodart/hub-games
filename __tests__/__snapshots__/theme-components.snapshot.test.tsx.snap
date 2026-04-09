@@ -322,7 +322,7 @@ exports[`Neon design system snapshots Card snapshot [{ name: 'blueberrySky', lab
         ]
       }
     >
-      Impostor Neon
+      Impostor
     </Text>
     <Text
       style={
@@ -397,7 +397,7 @@ exports[`Neon design system snapshots Card snapshot [{ name: 'coralPop', label: 
         ]
       }
     >
-      Impostor Neon
+      Impostor
     </Text>
     <Text
       style={
@@ -472,7 +472,7 @@ exports[`Neon design system snapshots Card snapshot [{ name: 'mintJam', label: '
         ]
       }
     >
-      Impostor Neon
+      Impostor
     </Text>
     <Text
       style={

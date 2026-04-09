@@ -94,7 +94,7 @@ const mapFirebaseMessage = (message: string, fallbackMessage: string): string =>
   const lowered = normalized.toLowerCase();
 
   if (lowered.includes('permission denied') || lowered.includes('sem permiss')) {
-    return 'Sem permissao para acessar esta sala.';
+    return 'Sem permissão para acessar esta sala.';
   }
 
   if (
@@ -103,7 +103,7 @@ const mapFirebaseMessage = (message: string, fallbackMessage: string): string =>
     lowered.includes('offline') ||
     lowered.includes('disconnected')
   ) {
-    return 'Conexao instavel com a sala. Tente novamente em instantes.';
+    return 'Conexão instável com a sala. Tente novamente em instantes.';
   }
 
   if (lowered.includes('expired') || lowered.includes('inactivity') || lowered.includes('inativa')) {
@@ -111,7 +111,7 @@ const mapFirebaseMessage = (message: string, fallbackMessage: string): string =>
   }
 
   if (lowered.includes('invalid') || lowered.includes('payload')) {
-    return 'A sala enviou dados incompletos. Aguarde a proxima sincronizacao.';
+    return 'A sala enviou dados incompletos. Aguarde a próxima sincronização.';
   }
 
   return normalized;
@@ -384,7 +384,7 @@ const parseRemoteLobbySnapshot = (
     const reparsedLobby = remoteLobbySchema.safeParse(coercedLobby);
 
     if (!reparsedLobby.success) {
-      throw new Error('Dados da sala estao incompletos no Firebase.');
+      throw new Error('Dados da sala estão incompletos no Firebase.');
     }
 
     return reparsedLobby.data;
@@ -779,7 +779,7 @@ export const subscribeRemoteLobby = ({
       }
     },
     (error) => {
-      onError(toFirebaseError('Sincronizacao da sala instavel. Tentando reconectar.', error).message);
+      onError(toFirebaseError('Sincronização da sala instável. Tentando reconectar.', error).message);
     }
   );
 

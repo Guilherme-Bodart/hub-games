@@ -17,23 +17,23 @@ type IconButtonTone = 'neutral' | 'primary' | 'secondary';
 export const resolveIconButtonTone = (theme: ThemeTokens, tone: IconButtonTone) => {
   if (tone === 'primary') {
     return {
-      backgroundColor: '#FFFFFF',
-      borderColor: 'rgba(0,0,0,0.12)',
+      backgroundColor: 'rgba(255,255,255,0.98)',
+      borderColor: 'rgba(183,191,208,0.9)',
       iconColor: theme.semantic.button.primary.text,
     };
   }
 
   if (tone === 'secondary') {
     return {
-      backgroundColor: '#FFFFFF',
-      borderColor: 'rgba(0,0,0,0.12)',
+      backgroundColor: 'rgba(255,255,255,0.98)',
+      borderColor: 'rgba(183,191,208,0.9)',
       iconColor: theme.semantic.button.accent.bg,
     };
   }
 
   return {
-    backgroundColor: '#FFFFFF',
-    borderColor: 'rgba(0,0,0,0.12)',
+    backgroundColor: 'rgba(255,255,255,0.98)',
+    borderColor: 'rgba(183,191,208,0.9)',
     iconColor: '#2B2A46',
   };
 };

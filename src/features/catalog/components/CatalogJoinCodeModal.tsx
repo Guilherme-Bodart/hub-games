@@ -1,6 +1,6 @@
 import { Text, TextInput, View } from 'react-native';
 
-import { styles } from '@/src/features/catalog/styles/catalogStyles';
+import { catalogUi, styles } from '@/src/features/catalog/styles/catalogStyles';
 import { useI18n } from '@/src/i18n';
 import { Button, Modal } from '@/src/ui/atoms';
 
@@ -55,6 +55,8 @@ export function CatalogJoinCodeModal({
         disabled={isJoiningRoom}
         variant="primary"
         size="lg"
+        color={catalogUi.roomButton}
+        textColor="#20255C"
         style={[styles.codeModalConfirmButton, isJoiningRoom ? styles.modeButtonDisabled : null]}
       />
     </Modal>

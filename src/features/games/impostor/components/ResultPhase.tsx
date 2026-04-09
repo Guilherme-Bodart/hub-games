@@ -1,9 +1,11 @@
 import { Text, Pressable, View } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
+import { ResultVoteMapBlock } from '@/src/features/games/impostor/components/ResultVoteMapBlock';
 import { ImpostorRound } from '@/src/features/games/impostor/types';
-import { styles } from '@/src/features/games/impostor/styles/impostorStyles';
+import { impostorPhaseStyles as styles } from '@/src/features/games/impostor/styles/impostorPhaseStyles';
 import { ThemeTokens } from '@/src/theme/types';
+import { withAlpha } from '@/src/theme/utils';
 import { AvatarSprite, Button, Card } from '@/src/ui/atoms';
 
 type ImpostorResultCopy = {
@@ -19,6 +21,7 @@ type ImpostorResultCopy = {
   revealBlockTitle: string;
   civilWord: string;
   impostorSecret: string;
+  impostorHintWord: string;
   voteMapTitle: string;
   votesCount: string;
   newRound: string;
@@ -80,7 +83,15 @@ export function ImpostorResultPhase({
   canStartNewRound,
 }: ImpostorResultPhaseProps) {
   return (
-    <Card title={copy.result} style={styles.resultCard}>
+    <Card
+      title={copy.result}
+      style={[
+        styles.resultCard,
+        {
+          backgroundColor: withAlpha('#FFFFFF', 0.94),
+          borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
+        },
+      ]}>
       {resultStage < resultActionsAt ? (
         <Pressable
           accessibilityRole="button"
@@ -180,7 +191,7 @@ export function ImpostorResultPhase({
             </View>
             <View style={styles.resultPromptRow}>
               <Text style={[styles.resultBlockLabel, { color: theme.semantic.text.secondary }]}>
-                {copy.impostorSecret}
+                {round.mode === 'words' ? copy.impostorHintWord : copy.impostorSecret}
               </Text>
               <Text
                 style={[
@@ -198,42 +209,12 @@ export function ImpostorResultPhase({
 
       {hasVotingTallies && resultStage >= votingResultBlockAt ? (
         <Animated.View entering={FadeInUp.duration(420)}>
-          <View
-            style={[
-              styles.resultBlock,
-              {
-                borderColor: theme.semantic.border.subtle,
-                backgroundColor: theme.semantic.bg.surface,
-              },
-            ]}>
-            <Text style={[styles.resultBlockTitle, { color: theme.semantic.text.primary }]}>{copy.voteMapTitle}</Text>
-            {voteBreakdown.map((entry) => (
-              <View
-                key={`vote-map-${entry.suspect.id}`}
-                style={[styles.voteMapRow, { borderColor: theme.semantic.border.subtle }]}>
-                <View style={styles.voteMapTarget}>
-                  <AvatarSprite avatarId={entry.suspect.avatarId} size={28} />
-                  <Text style={{ color: theme.semantic.text.primary, fontSize: 13 }}>{entry.suspect.name}</Text>
-                </View>
-                <View style={styles.voteMapVoters}>
-                  {entry.voters.length ? (
-                    entry.voters.map((voter) => (
-                      <AvatarSprite
-                        key={`vote-voter-${entry.suspect.id}-${voter.id}`}
-                        avatarId={voter.avatarId}
-                        size={18}
-                      />
-                    ))
-                  ) : (
-                    <Text style={{ color: theme.semantic.text.muted, fontSize: 12 }}>-</Text>
-                  )}
-                </View>
-                <Text style={{ color: theme.semantic.text.secondary, fontSize: 12 }}>
-                  {`${entry.voteCount} ${copy.votesCount}`}
-                </Text>
-              </View>
-            ))}
-          </View>
+          <ResultVoteMapBlock
+            entries={voteBreakdown}
+            title={copy.voteMapTitle}
+            votesCountLabel={copy.votesCount}
+            theme={theme}
+          />
         </Animated.View>
       ) : null}
 

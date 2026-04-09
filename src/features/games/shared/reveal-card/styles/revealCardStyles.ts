@@ -130,6 +130,20 @@ export const revealCardStyles = StyleSheet.create({
   impostorSurface: {
     minHeight: 198,
     paddingHorizontal: 26,
+    gap: 12,
+  },
+  impostorWordmark: {
+    fontSize: 34,
+    lineHeight: 36,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 2.2,
+  },
+  impostorHintValue: {
+    fontSize: 20,
+    lineHeight: 24,
+    textAlign: 'center',
+    maxWidth: '94%',
   },
   impostorText: {
     fontSize: 36,
@@ -225,8 +239,8 @@ export const revealCardStyles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   secretText: {
-    fontSize: 40,
-    lineHeight: 46,
+    fontSize: 36,
+    lineHeight: 42,
     textAlign: 'center',
     maxWidth: '94%',
   },

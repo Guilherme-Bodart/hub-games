@@ -165,19 +165,7 @@ export function useImpostorDerivedState({
       );
   }, [round]);
 
-  const votingRevealDone =
-    round?.phase === 'voting' ? visibleVotingCount >= round.players.length : true;
-
-  const revealGridColumns = viewportWidth >= 760 ? 4 : viewportWidth >= 560 ? 3 : viewportWidth >= 390 ? 2 : 1;
-
-  const playerCardWidth =
-    revealGridColumns === 4
-      ? '23.6%'
-      : revealGridColumns === 3
-        ? '31.8%'
-        : revealGridColumns === 2
-          ? '48.6%'
-          : '100%';
+  const votingRevealDone = round?.phase === 'voting' ? round.players.length > 0 : true;
 
   const voteGridColumnsCompact = viewportWidth >= 900 ? 3 : 2;
   const voteCellWidth = voteGridColumnsCompact === 3 ? '31.8%' : '47%';
@@ -215,7 +203,6 @@ export function useImpostorDerivedState({
     impostorPlayers,
     voteBreakdown,
     votingRevealDone,
-    playerCardWidth,
     voteCellWidth,
     typingLabel,
     resultShouldShowQuestionBlock,

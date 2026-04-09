@@ -163,13 +163,13 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
 
   const isPt = locale === 'pt';
   const copy = {
-    title: isPt ? 'Impostor Neon' : 'Neon Impostor',
-    noPlayers: isPt ? 'Minimo de 4 jogadores prontos.' : 'Minimum of 4 ready players.',
+    title: 'Impostor',
+    noPlayers: isPt ? 'Mínimo de 4 jogadores prontos.' : 'Minimum of 4 ready players.',
     waiting: isPt ? 'Aguardando rodada...' : 'Waiting for round...',
-    reveal: isPt ? 'Revelacao' : 'Reveal',
+    reveal: isPt ? 'Revelação' : 'Reveal',
     clues: isPt ? 'Pistas' : 'Clues',
-    roundDecision: isPt ? 'Decisao da rodada' : 'Round decision',
-    voting: isPt ? 'Votacao' : 'Voting',
+    roundDecision: isPt ? 'Decisão da rodada' : 'Round decision',
+    voting: isPt ? 'Votação' : 'Voting',
     guessing: isPt ? 'Chute' : 'Guess',
     result: isPt ? 'Resultado' : 'Result',
     skipSuspense: isPt ? 'Pular suspense' : 'Skip suspense',
@@ -178,7 +178,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
     releaseRevealHint: isPt ? 'Solte para ocultar.' : 'Release to hide.',
     clueInput: isPt ? 'Digite 1 palavra curta' : 'Type 1 short word',
     submitClue: isPt ? 'Enviar pista' : 'Send clue',
-    goDecision: isPt ? 'Ir para decisao' : 'Go to decision',
+    goDecision: isPt ? 'Ir para decisão' : 'Go to decision',
     waitingClue: isPt ? 'aguardando...' : 'waiting...',
     roundDecisionHint: isPt
       ? 'Todos votam: mais uma rodada de palavras ou ir para suspeitos.'
@@ -194,12 +194,12 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
     submitGuess: isPt ? 'Confirmar chute' : 'Submit guess',
     winnerC: isPt ? 'Civis venceram' : 'Civilians won',
     winnerI: isPt ? 'Impostores venceram' : 'Impostors won',
-    suspense: isPt ? 'Sinal instavel...' : 'Signal unstable...',
+    suspense: isPt ? 'Sinal instável...' : 'Signal unstable...',
     defeatBanner: isPt ? 'Derrota dos civis' : 'Civilians defeated',
     victoryBanner: isPt ? 'Vitoria dos civis' : 'Civilians victory',
     impostorRevealSingle: isPt ? 'O impostor era' : 'The impostor was',
     impostorRevealMulti: isPt ? 'Os impostores eram' : 'The impostors were',
-    revealBlockTitle: isPt ? 'Revelacao da rodada' : 'Round reveal',
+    revealBlockTitle: isPt ? 'Revelação da rodada' : 'Round reveal',
     civilWord: isPt ? 'Palavra dos civis' : 'Civil word',
     impostorSecret: isPt ? 'Segredo do impostor' : 'Impostor secret',
     voteMapTitle: isPt ? 'Quem votou em quem' : 'Who voted for who',
@@ -655,7 +655,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                 ? 'Impostores pegos tentam acertar a palavra final.'
                 : 'Caught impostors attempt the final prompt guess.'
               : isPt
-                ? 'Revise o resultado e prepare a proxima rodada.'
+                ? 'Revise o resultado e prepare a próxima rodada.'
                 : 'Review the result and prepare the next round.';
 
   useEffect(() => {
@@ -792,7 +792,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
             subtitle={
               error ||
               (isPt
-                ? 'Aguardando configuracao da rodada. O host pode iniciar novamente.'
+                ? 'Aguardando configuração da rodada. O host pode iniciar novamente.'
                 : 'Waiting for round setup. The host can start again.')
             }>
             {canControl ? (

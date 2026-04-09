@@ -1,3 +1,7 @@
+import {
+  GAME_COVER_ASSETS,
+  GAME_COVER_ASPECT_RATIOS,
+} from '@/src/features/games/gameCoverAssets';
 import { GamePlugin } from '@/src/features/games/types';
 import { SintoniaGameScreen } from '@/src/features/games/sintonia/screens/SintoniaGameScreen';
 
@@ -6,11 +10,11 @@ export const sintoniaGamePlugin: GamePlugin = {
     id: 'sintonia',
     coverGlyph: '01',
     coverTone: '#2A153A',
-    coverImage: require('../../../../assets/images/game_1.webp'),
-    coverAspectRatio: 922 / 512,
+    coverImage: GAME_COVER_ASSETS.SINTONIA,
+    coverAspectRatio: GAME_COVER_ASPECT_RATIOS.SINTONIA,
     title: { pt: 'Sintonia', en: 'Sync Match' },
     subtitle: {
-      pt: 'Acerte o n\u00FAmero escondido no embalo da galera.',
+      pt: 'Acerte o número escondido no embalo da galera.',
       en: 'Match the hidden number with your squad vibe.',
     },
     players: { min: 2, max: 10 },

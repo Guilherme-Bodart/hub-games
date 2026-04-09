@@ -56,23 +56,25 @@ export function useImpostorCluesPhaseViewModel({
   const usesTwoColumns = width >= 760;
 
   return useMemo(() => {
-    const totalPlayers = round.players.length;
     const safeProgress = Math.max(0, Math.min(1, clueProgress));
-    const cardSubtitle = isPt ? 'Uma palavra curta por jogador' : 'One short word per player';
-
-    const headerEyebrow = '';
 
     const headerTitle = isClueCycleComplete
       ? isPt
-        ? 'Pistas prontas'
-        : 'All clues are in.'
+        ? 'Hora da decisão'
+        : 'Decision time'
       : activeTurnName
         ? activeTurnName
         : isPt
-          ? 'Aguardando o proximo jogador'
+          ? 'Aguardando o próximo jogador'
           : 'Waiting for the next player';
 
-    const headerHint = '';
+    const headerHint = isClueCycleComplete
+      ? isPt
+        ? 'Escolham o próximo passo.'
+        : 'Choose the next step.'
+      : isPt
+        ? 'Curta e sutil.'
+        : 'Short and subtle.';
 
     const cards: PlayerClueCardViewModel[] = round.players.map((player) => {
       const clue = round.clues[player.id];
@@ -107,7 +109,7 @@ export function useImpostorCluesPhaseViewModel({
             : isActive
               ? typingLabel
               : '',
-        historyLabel: isPt ? 'Historico' : 'History',
+        historyLabel: isPt ? 'Histórico' : 'History',
         historyEmptyLabel: isPt ? 'Sem pistas anteriores.' : 'No previous clues yet.',
         tone,
         width: usesTwoColumns ? '48.5%' : '100%',
@@ -118,11 +120,11 @@ export function useImpostorCluesPhaseViewModel({
       .map((player) => cards.find((card) => card.player.id === player.id))
       .filter((card): card is PlayerClueCardViewModel => Boolean(card));
 
-    const rosterCards = orderedCards;
-
     const focusIndex = Math.min(round.activeTurnIndex, Math.max(round.players.length - 1, 0));
-    const visibleStart = Math.max(0, focusIndex - 2);
-    const visibleEnd = Math.min(round.players.length, focusIndex + 3);
+    const visibleCount = Math.min(5, round.players.length);
+    const maxVisibleStart = Math.max(0, round.players.length - visibleCount);
+    const visibleStart = Math.min(Math.max(0, focusIndex - 2), maxVisibleStart);
+    const visibleEnd = visibleStart + visibleCount;
     const visiblePlayers = round.players.slice(visibleStart, visibleEnd);
 
     const progressSteps: ProgressStepViewModel[] = visiblePlayers.map((player, index) => {
@@ -145,20 +147,12 @@ export function useImpostorCluesPhaseViewModel({
     });
 
     return {
-      cardSubtitle,
-      headerEyebrow,
+      headerEyebrow: '',
       headerTitle,
       headerHint,
       progressLabel: '',
       progressWidth: `${Math.round(safeProgress * 100)}%` as ProgressWidth,
       inputLabel: isPt ? 'Sua pista' : 'Your clue',
-      footerMessage: isClueCycleComplete
-        ? isPt
-          ? 'Revise as pistas e avance quando quiser.'
-          : 'Review the clues and continue when ready.'
-        : isPt
-          ? 'Aguardando o jogador da vez.'
-          : 'Waiting for the active player.',
       composerHelperText: isClueCycleComplete
         ? ''
         : canSubmitClue
@@ -170,9 +164,9 @@ export function useImpostorCluesPhaseViewModel({
             : activeTurnName
               ? `${activeTurnName}'s turn.`
               : 'Waiting for the current turn.',
-      rosterEyebrow: isPt ? 'Fila da rodada' : 'Turn order',
-      rosterTitle: isPt ? 'Ordem da rodada' : 'Round order',
-      cards: rosterCards,
+      rosterEyebrow: isPt ? 'Mesa da rodada' : 'Round table',
+      rosterTitle: isPt ? 'Quem já jogou e quem falta' : 'Who already played and who is next',
+      cards: orderedCards,
       progressSteps,
     };
   }, [
@@ -183,6 +177,7 @@ export function useImpostorCluesPhaseViewModel({
     clueSubmittedCount,
     isClueCycleComplete,
     isPt,
+    round.activeTurnIndex,
     round.clueHistoryByPlayer,
     round.clues,
     round.players,

@@ -37,7 +37,6 @@ type UseLobbyScreenResult = {
     lobbyTitle: string;
     panelCopy: LobbyPanelCopy;
     onOpenSettings: () => void;
-    countdownValue: number | null;
     isRemoteLobby: boolean;
     roomCode: string;
     isRoomCodeHidden: boolean;
@@ -54,9 +53,8 @@ type UseLobbyScreenResult = {
     readyLabel: string;
     isImpostorLobby: boolean;
     impostorLobbyBadgeLabel: string;
-    modeLabel: string;
-    remoteStatusLabel: string;
-    remoteStatusTone: 'success' | 'neutral' | 'error';
+    impostorContentModeLabel: string | null;
+    clueTimerBadgeLabel: string | null;
   };
   playersSectionProps: {
     locale: Locale;
@@ -86,6 +84,7 @@ type UseLobbyScreenResult = {
   };
   startDockProps: {
     label: string;
+    helperText?: string;
     onStart: () => void;
     disabled: boolean;
   };
@@ -205,10 +204,6 @@ export function useLobbyScreen(): UseLobbyScreenResult {
   };
 
   const startDockLabel = useMemo(() => {
-    if (countdownValue !== null) {
-      return `${derived.panelCopy.countdownStarting} ${countdownValue}`;
-    }
-
     if (derived.canStartGame && derived.canHostStartThisLobby) {
       return t('lobby.startGame');
     }
@@ -227,7 +222,6 @@ export function useLobbyScreen(): UseLobbyScreenResult {
 
     return t('lobby.waiting', { ready: derived.readyCount, total: derived.totalPlayers });
   }, [
-    countdownValue,
     derived.canHostStartThisLobby,
     derived.canStartGame,
     derived.lobbyPlayersLimit,
@@ -264,7 +258,6 @@ export function useLobbyScreen(): UseLobbyScreenResult {
       lobbyTitle: derived.lobbyTitle,
       panelCopy: derived.panelCopy,
       onOpenSettings: () => setSettingsVisible(true),
-      countdownValue,
       isRemoteLobby: lobby?.mode === 'remote',
       roomCode: lobby?.roomCode ?? '',
       isRoomCodeHidden,
@@ -281,14 +274,19 @@ export function useLobbyScreen(): UseLobbyScreenResult {
       readyLabel: t('common.ready'),
       isImpostorLobby: derived.isImpostorLobby,
       impostorLobbyBadgeLabel: derived.impostorLobbyBadgeLabel,
-      modeLabel: derived.modeLabel,
-      remoteStatusLabel: derived.remoteStatusLabel,
-      remoteStatusTone: derived.remoteStatusTone,
+      impostorContentModeLabel: derived.impostorContentModeLabel,
+      clueTimerBadgeLabel: derived.clueTimerBadgeLabel,
     },
     playersSectionProps,
     settingsModalProps,
     startDockProps: {
-      label: startDockLabel,
+      label: countdownValue !== null ? t('lobby.waitingSimple') : startDockLabel,
+      helperText:
+        countdownValue !== null
+          ? `${derived.panelCopy.countdownStarting} ${countdownValue}`
+          : derived.showReadyHint
+            ? t('lobby.tapAvatarHint')
+          : undefined,
       onStart: () => {
         void beginStartSequence();
       },

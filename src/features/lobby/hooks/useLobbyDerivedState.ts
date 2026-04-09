@@ -17,10 +17,8 @@ import {
 import type { VisibleLobbyPlayer } from '@/src/features/lobby/lobby.types';
 import { resolveNextAutoPlayerName } from '@/src/features/lobby/lobby.utils';
 import type { Locale } from '@/src/i18n';
-import type { TranslationKey } from '@/src/i18n/types';
 import type { HybridLobbyState } from '@/src/features/lobby/types';
-
-const REMOTE_RECONNECT_STATES = new Set(['connecting', 'reconnecting', 'idle']);
+import type { TranslationKey } from '@/src/i18n/types';
 
 type TranslateFn = (key: TranslationKey, params?: Record<string, string | number>) => string;
 
@@ -71,8 +69,6 @@ export function useLobbyDerivedState({
   const minimumPlayers = selectedGame?.players.min ?? 1;
   const maximumPlayers = selectedGame?.players.max ?? Number.MAX_SAFE_INTEGER;
   const lobbyTitle = selectedGame ? selectedGame.title[locale] : t('tabs.lobby');
-  const modeLabel =
-    lobby?.mode === 'local' ? t('common.localMode') : lobby?.mode === 'remote' ? t('common.remoteMode') : t('common.hybridMode');
   const isLocalHost =
     lobby?.devices
       .find((device) => device.id === lobby.selectedDeviceId)
@@ -102,20 +98,13 @@ export function useLobbyDerivedState({
   const playersEmptyHint = getPlayersEmptyHint(locale);
   const impostorLobbyBadgeLabel = getImpostorLobbyBadgeLabel(locale, impostorCount);
   const roomCodeLabels = getRoomCodeVisibilityLabels(locale);
-
-  const remoteStatusTone: 'success' | 'neutral' | 'error' =
-    realtimeStatus === 'connected'
-      ? 'success'
-      : REMOTE_RECONNECT_STATES.has(realtimeStatus)
-        ? 'neutral'
-        : 'error';
-
-  const remoteStatusLabel =
-    realtimeStatus === 'connected'
-      ? t('connection.online')
-      : REMOTE_RECONNECT_STATES.has(realtimeStatus)
-        ? t('connection.reconnecting')
-        : t('connection.error');
+  const impostorContentModeLabel = isImpostorLobby
+    ? impostorContentMode === 'questions'
+      ? panelCopy.questions
+      : panelCopy.words
+    : null;
+  const clueTimerBadgeLabel = isImpostorLobby ? `${impostorClueTurnSeconds}${panelCopy.secondsShort}` : null;
+  const showReadyHint = visiblePlayers.some(({ isLocalDevice, player }) => isLocalDevice && !player.isReady);
 
   return {
     visiblePlayers,
@@ -124,7 +113,6 @@ export function useLobbyDerivedState({
     minimumPlayers,
     maximumPlayers,
     lobbyTitle,
-    modeLabel,
     isLocalHost,
     actionAuthorityMode,
     isImpostorLobby,
@@ -148,8 +136,10 @@ export function useLobbyDerivedState({
     panelCopy,
     playersEmptyHint,
     impostorLobbyBadgeLabel,
+    impostorContentModeLabel,
+    clueTimerBadgeLabel,
+    showReadyHint,
     roomCodeLabels,
-    remoteStatusTone,
-    remoteStatusLabel,
+    realtimeStatus,
   };
 }

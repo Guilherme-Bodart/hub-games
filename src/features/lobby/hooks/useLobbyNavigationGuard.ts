@@ -98,8 +98,13 @@ export function useLobbyNavigationGuard({
   }, [leaveLobby]);
 
   const onBackToCatalog = useCallback(() => {
+    allowLeaveRef.current = true;
+    if (lobby?.mode === 'remote' && isLocalHost) {
+      void clearRemoteStart().catch(() => undefined);
+    }
+    endSession();
     router.replace('/(tabs)');
-  }, [router]);
+  }, [clearRemoteStart, endSession, isLocalHost, lobby?.mode, router]);
 
   return {
     leaveModalVisible,

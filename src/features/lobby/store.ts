@@ -99,7 +99,7 @@ const mapRealtimeMessage = (message: string, fallbackMessage: string): string =>
   const lowered = normalized.toLowerCase();
 
   if (lowered.includes('permission denied') || lowered.includes('sem permiss') || lowered.includes('rules')) {
-    return 'Sem permissao para concluir essa acao nesta sala.';
+    return 'Sem permissão para concluir essa ação nesta sala.';
   }
 
   if (
@@ -109,7 +109,7 @@ const mapRealtimeMessage = (message: string, fallbackMessage: string): string =>
     lowered.includes('disconnected') ||
     lowered.includes('reconnect')
   ) {
-    return 'Conexao instavel. Tente novamente em alguns segundos.';
+    return 'Conexão instável. Tente novamente em alguns segundos.';
   }
 
   if (lowered.includes('expired') || lowered.includes('inactivity') || lowered.includes('inativa')) {
@@ -121,7 +121,7 @@ const mapRealtimeMessage = (message: string, fallbackMessage: string): string =>
     lowered.includes('dados incompletos') ||
     lowered.includes('payload')
   ) {
-    return 'A sala recebeu dados incompletos. Aguarde a proxima sincronizacao.';
+    return 'A sala recebeu dados incompletos. Aguarde a próxima sincronização.';
   }
 
   return normalized;
@@ -131,7 +131,7 @@ const resolveRealtimeMessage = (error: unknown, fallbackMessage: string): string
   mapRealtimeMessage(error instanceof Error && error.message ? error.message : fallbackMessage, fallbackMessage);
 
 const createTimeoutError = (fallbackMessage: string): Error => {
-  const timeoutError = new Error('Tempo limite de conexao atingido.') as Error & { code?: string };
+  const timeoutError = new Error('Tempo limite de conexão atingido.') as Error & { code?: string };
   timeoutError.code = 'timeout';
   timeoutError.message = fallbackMessage;
   return timeoutError;
@@ -424,7 +424,7 @@ const connectRoomSubscriptions = (
     onError: (message) => {
       set({
         realtimeStatus: 'reconnecting',
-        realtimeError: resolveRealtimeMessage(new Error(message), 'Conexao instavel. Tentando reconectar.'),
+        realtimeError: resolveRealtimeMessage(new Error(message), 'Conexão instável. Tentando reconectar.'),
       });
     },
   });
@@ -550,7 +550,7 @@ export const useLobbySessionStore = create<LobbySessionStore>((set, get) => ({
       remoteSessionContext = null;
       await clearStoredRemoteSessionContext().catch(() => undefined);
 
-      const message = resolveRealtimeMessage(error, 'Nao foi possivel restaurar a sala remota.');
+      const message = resolveRealtimeMessage(error, 'Não foi possível restaurar a sala remota.');
       set({
         selectedGameId: null,
         selectedMode: null,
@@ -629,7 +629,7 @@ export const useLobbySessionStore = create<LobbySessionStore>((set, get) => ({
     const normalizedCode = normalizeRoomCode(roomCode);
 
     if (!normalizedCode) {
-      const message = 'Digite um codigo valido para entrar na sala.';
+      const message = 'Digite um código válido para entrar na sala.';
       set({
         realtimeStatus: 'error',
         realtimeError: message,
@@ -735,7 +735,7 @@ export const useLobbySessionStore = create<LobbySessionStore>((set, get) => ({
       executeRemoteAction(
         set,
         () => updateRemoteLobbySettings(session.roomCode, mergedSettings),
-        'Falha ao atualizar configuracoes da sala.',
+        'Falha ao atualizar configurações da sala.',
         { maxAttempts: 3 }
       );
       return;
@@ -823,7 +823,7 @@ export const useLobbySessionStore = create<LobbySessionStore>((set, get) => ({
           realtimeError:
             totalPlayers >= maximumPlayers
               ? `Limite da sala atingido (${maximumPlayers}).`
-              : 'Conexao remota indisponivel.',
+              : 'Conexão remota indisponível.',
         });
         return;
       }

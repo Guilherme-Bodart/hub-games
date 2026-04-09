@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -47,6 +47,10 @@ export default function CatalogScreen() {
         </View>
 
         <ScrollView style={styles.cardsScroll} contentContainerStyle={styles.cardsContent}>
+          <View style={styles.sectionIntro}>
+            <Text style={styles.sectionEyebrow}>{t('catalog.gameShowcase').toUpperCase()}</Text>
+            <Text style={styles.sectionTitle}>{t('catalog.gameShowcaseSubtitle')}</Text>
+          </View>
           <CatalogGameGrid
             games={state.readyGames}
             isBusy={state.isCreatingRoom || state.isJoiningRoom}

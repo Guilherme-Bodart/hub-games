@@ -7,7 +7,6 @@ import {
   ImpostorCluesPhase,
   ImpostorGuessingPhase,
   ImpostorResultPhase,
-  ImpostorRevealHeroCard,
   ImpostorRevealPhase,
   ImpostorRoundHeader,
   ImpostorRoundDecisionPhase,
@@ -46,7 +45,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
             subtitle={
               game.error ||
               (game.isPt
-                ? 'Aguardando configuracao da rodada. O host pode iniciar novamente.'
+                ? 'Aguardando configuração da rodada. O host pode iniciar novamente.'
                 : 'Waiting for round setup. The host can start again.')
             }>
             {game.canControl ? (
@@ -94,7 +93,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
         <ImpostorRoundHeader
           theme={theme}
           title={game.copy.title}
-          roundLabel={game.copy.roundLiveLabel}
+          roundLabel={game.phaseLabel}
           players={game.round.players}
           playersCountLabel={
             game.round.phase === 'clues'
@@ -128,29 +127,17 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               copy={game.copy}
               isPt={game.isPt}
               theme={theme}
-              revealedPrompt={game.revealedPrompt}
-              revealedIsImpostor={game.revealedIsImpostor}
               heldRevealId={game.heldRevealId}
+              revealPlayerIndex={game.revealPlayerIndex}
+              currentRevealPlayer={game.currentRevealPlayer}
+              hasMoreRevealPlayers={game.hasMoreRevealPlayers}
               localRevealPlayers={game.localRevealPlayers}
-              playerCardWidth={game.playerCardWidth}
-              revealFogStyle={game.revealFogStyle}
-              revealPromptStyle={game.revealPromptStyle}
-              impostorPromptPulseStyle={game.impostorPromptPulseStyle}
               canControl={game.canControl}
               isRemote={game.isRemote}
               onPressRevealIn={game.startRevealHold}
               onPressRevealOut={game.stopRevealHold}
+              onAdvanceRevealPlayer={game.handleAdvanceRevealPlayer}
               onGoClues={game.handleGoClues}
-            />
-          ) : null}
-
-          {game.round.phase === 'reveal' && game.revealedPlayer && game.revealedPrompt ? (
-            <ImpostorRevealHeroCard
-              revealedPlayer={game.revealedPlayer}
-              revealedPrompt={game.revealedPrompt}
-              revealedIsImpostor={game.revealedIsImpostor}
-              copy={game.copy}
-              theme={theme}
             />
           ) : null}
 
@@ -186,7 +173,6 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               activeVotingPlayerId={game.activeVotingPlayerId}
               localVotingPlayers={game.localVotingPlayers}
               localVotesSubmittedCount={game.localVotesSubmittedCount}
-              visibleVotingCount={game.visibleVotingCount}
               activeVotingSelection={game.activeVotingSelection}
               isVoteSelectionLocked={game.isVoteSelectionLocked}
               votingRevealDone={game.votingRevealDone}
@@ -203,6 +189,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
             <ImpostorRoundDecisionPhase
               round={game.round}
               localPlayerIds={game.localPlayerIds}
+              isPt={game.isPt}
               theme={theme}
               copy={game.copy}
               onVote={game.handleRoundDecisionVote}

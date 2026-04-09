@@ -21,7 +21,7 @@ export function RevealCard({
   player,
   theme,
 }: RevealCardProps) {
-  const visuals = buildRevealCardVisualTokens(theme, content.mode);
+  const visuals = buildRevealCardVisualTokens(theme, content.mode, { isRevealed });
   const {
     backFaceStyle,
     backGlowStyle,

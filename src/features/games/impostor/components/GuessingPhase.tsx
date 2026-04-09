@@ -1,9 +1,10 @@
 import { Text, View } from 'react-native';
 
 import { ImpostorRound } from '@/src/features/games/impostor/types';
-import { styles } from '@/src/features/games/impostor/styles/impostorStyles';
+import { impostorPhaseStyles as styles } from '@/src/features/games/impostor/styles/impostorPhaseStyles';
 import { ThemeTokens } from '@/src/theme/types';
-import { Button, Card, Input } from '@/src/ui/atoms';
+import { withAlpha } from '@/src/theme/utils';
+import { Button, Input } from '@/src/ui/atoms';
 
 type VotingTally = {
   playerId: string;
@@ -13,6 +14,8 @@ type VotingTally = {
 
 type GuessingPhaseCopy = {
   guessing: string;
+  guessingStageTitle: string;
+  guessingStageHint: string;
   guessInput: string;
   submitGuess: string;
 };
@@ -43,18 +46,61 @@ export function ImpostorGuessingPhase({
   onSubmitGuess,
 }: ImpostorGuessingPhaseProps) {
   return (
-    <Card title={copy.guessing} subtitle={isPt ? 'Impostores pegos fazem o chute final.' : 'Caught impostors make final guess.'}>
+    <View style={styles.guessStage}>
+      <View
+        style={[
+          styles.guessStageHero,
+          {
+            backgroundColor: withAlpha('#FFFFFF', 0.92),
+            borderColor: withAlpha(theme.semantic.status.error, 0.16),
+          },
+        ]}>
+        <Text
+          style={[
+            styles.guessStageLabel,
+            {
+              color: theme.semantic.status.error,
+              fontFamily: theme.semantic.typography.bodyFamily,
+              fontWeight: theme.semantic.typography.bodyWeight,
+            },
+          ]}>
+          {copy.guessing}
+        </Text>
+        <Text
+          style={[
+            styles.guessStageTitle,
+            {
+              color: theme.semantic.text.primary,
+              fontFamily: theme.semantic.typography.titleFamily,
+              fontWeight: theme.semantic.typography.titleWeight,
+            },
+          ]}>
+          {copy.guessingStageTitle}
+        </Text>
+        <Text
+          style={[
+            styles.guessStageHint,
+            {
+              color: theme.semantic.text.secondary,
+              fontFamily: theme.semantic.typography.bodyFamily,
+              fontWeight: theme.semantic.typography.bodyWeight,
+            },
+          ]}>
+          {copy.guessingStageHint}
+        </Text>
+      </View>
+
       {hasVotingTallies ? (
         <View
           style={[
             styles.voteSummary,
             {
-              borderColor: theme.semantic.border.subtle,
-              backgroundColor: theme.semantic.bg.surface,
+              borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
+              backgroundColor: withAlpha('#FFFFFF', 0.92),
             },
-          ]}>
+        ]}>
           <Text style={{ color: theme.semantic.text.secondary, fontSize: 12 }}>
-            {isPt ? 'Resultado da votacao' : 'Voting result'}
+            {isPt ? 'Resultado da votação' : 'Voting result'}
           </Text>
           {votingTallies.map((entry) => (
             <Text key={`guess-tally-${entry.playerId}`} style={{ color: theme.semantic.text.primary }}>
@@ -70,8 +116,35 @@ export function ImpostorGuessingPhase({
         }
         const canEdit = localPlayerIds.has(impostorId) && !round.impostorGuesses[impostorId];
         return (
-          <View key={impostorId} style={{ gap: 6 }}>
-            <Text style={{ color: theme.semantic.text.primary }}>{impostor.name}</Text>
+          <View
+            key={impostorId}
+            style={[
+              styles.guessCard,
+              {
+                borderColor: withAlpha(theme.semantic.status.error, 0.16),
+                backgroundColor: withAlpha('#FFFFFF', 0.94),
+              },
+            ]}>
+            <Text
+              style={[
+                styles.guessCardTitle,
+                {
+                  color: theme.semantic.text.primary,
+                  fontFamily: theme.semantic.typography.titleFamily,
+                  fontWeight: theme.semantic.typography.titleWeight,
+                },
+              ]}>
+              {impostor.name}
+            </Text>
+            <Text style={[styles.guessCardHint, { color: theme.semantic.text.secondary }]}>
+              {canEdit
+                ? isPt
+                  ? 'Digite a palavra exata dos civis para tentar roubar a rodada.'
+                  : 'Type the exact civilian word to try to steal the round.'
+                : isPt
+                  ? 'Aguardando o chute final deste impostor.'
+                  : 'Waiting for this impostor’s final guess.'}
+            </Text>
             {round.impostorGuesses[impostorId] ? (
               <Text style={{ color: theme.semantic.text.secondary }}>{round.impostorGuesses[impostorId]}</Text>
             ) : (
@@ -93,6 +166,6 @@ export function ImpostorGuessingPhase({
           </View>
         );
       })}
-    </Card>
+    </View>
   );
 }

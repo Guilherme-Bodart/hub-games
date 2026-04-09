@@ -1,30 +1,27 @@
-import { SymbolView } from 'expo-symbols';
-import { Pressable, Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Text, View } from 'react-native';
 
+import { RevealCard } from '@/src/features/games/shared/reveal-card';
+import { revealPhaseStyles as styles } from '@/src/features/games/impostor/styles/revealPhaseStyles';
 import { ImpostorRound } from '@/src/features/games/impostor/types';
-import { styles } from '@/src/features/games/impostor/styles/impostorStyles';
 import { ThemeTokens } from '@/src/theme/types';
 import { withAlpha } from '@/src/theme/utils';
-import { AvatarSprite, Button, Card } from '@/src/ui/atoms';
+import { Badge, Button } from '@/src/ui/atoms';
 
 type RevealPhaseProps = {
   round: ImpostorRound;
   copy: Record<string, string>;
   isPt: boolean;
   theme: ThemeTokens;
-  revealedPrompt: string | null;
-  revealedIsImpostor: boolean;
   heldRevealId: string | null;
+  revealPlayerIndex: number;
+  currentRevealPlayer: ImpostorRound['players'][number] | null;
+  hasMoreRevealPlayers: boolean;
   localRevealPlayers: ImpostorRound['players'];
-  playerCardWidth: any;
-  revealFogStyle: any;
-  revealPromptStyle: any;
-  impostorPromptPulseStyle: any;
   canControl: boolean;
   isRemote: boolean;
   onPressRevealIn: (playerId: string) => void;
   onPressRevealOut: (playerId: string) => void;
+  onAdvanceRevealPlayer: () => void;
   onGoClues: () => void;
 };
 
@@ -33,119 +30,140 @@ export function ImpostorRevealPhase({
   copy,
   isPt,
   theme,
-  revealedPrompt,
-  revealedIsImpostor,
   heldRevealId,
+  revealPlayerIndex,
+  currentRevealPlayer,
+  hasMoreRevealPlayers,
   localRevealPlayers,
-  playerCardWidth,
-  revealFogStyle,
-  revealPromptStyle,
-  impostorPromptPulseStyle,
   canControl,
   isRemote,
   onPressRevealIn,
   onPressRevealOut,
+  onAdvanceRevealPlayer,
   onGoClues,
 }: RevealPhaseProps) {
-  return (
-    <Card title={copy.reveal} subtitle={isPt ? 'Segure o card para revelar.' : 'Press and hold a card to reveal.'}>
-      <Animated.View
+  const currentPlayerLabel = currentRevealPlayer
+    ? `${copy.revealPlayerProgress} ${revealPlayerIndex + 1}/${Math.max(localRevealPlayers.length, 1)}`
+    : copy.revealWaitingLabel;
+
+  if (!currentRevealPlayer) {
+    return (
+      <View
         style={[
-          styles.promptBox,
-          revealedIsImpostor ? impostorPromptPulseStyle : null,
+          styles.emptyState,
           {
-            borderColor: revealedIsImpostor ? theme.semantic.status.error : theme.semantic.border.subtle,
-            backgroundColor: revealedIsImpostor ? `${theme.semantic.status.error}18` : theme.semantic.bg.surface,
+            backgroundColor: withAlpha(theme.semantic.bg.surface, 0.94),
+            borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
           },
         ]}>
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.promptFogLayer, revealFogStyle, { backgroundColor: theme.semantic.bg.app }]}
-        />
-        <View style={styles.promptHeader}>
-          <SymbolView
-            name={{
-              ios: revealedPrompt ? 'eye.fill' : 'eye.slash.fill',
-              android: revealedPrompt ? 'visibility' : 'visibility_off',
-              web: revealedPrompt ? 'visibility' : 'visibility_off',
-            }}
-            size={15}
-            tintColor={revealedIsImpostor ? theme.semantic.status.error : theme.semantic.text.muted}
-          />
-          <Text
-            style={{
-              color: revealedIsImpostor ? theme.semantic.status.error : theme.semantic.text.secondary,
-              fontSize: 12,
-            }}>
-            {isPt ? 'Segredo da rodada' : 'Round secret'}
-          </Text>
-        </View>
-        <Animated.Text
+        <Text
           style={[
-            revealPromptStyle,
+            styles.emptyStateText,
             {
-              color: revealedIsImpostor ? theme.semantic.status.error : theme.semantic.text.primary,
-              fontSize: 19,
-              fontWeight: '700',
-              letterSpacing: revealedIsImpostor ? 1 : 0.2,
+              color: theme.semantic.text.secondary,
+              fontFamily: theme.semantic.typography.bodyFamily,
+              fontWeight: theme.semantic.typography.bodyWeight,
             },
           ]}>
-          {revealedPrompt || (heldRevealId ? copy.releaseRevealHint : copy.holdRevealHint)}
-        </Animated.Text>
-      </Animated.View>
+          {copy.revealEmptyLabel}
+        </Text>
+      </View>
+    );
+  }
 
-      <View style={styles.grid}>
-        {localRevealPlayers.map((player) => (
-          <Pressable
-            key={player.id}
-            accessibilityRole="button"
-            accessibilityLabel={`${player.name}. ${copy.holdRevealHint}`}
-            onPressIn={() => onPressRevealIn(player.id)}
-            onPressOut={() => onPressRevealOut(player.id)}
-            style={[
-              styles.playerCard,
-              styles.revealPlayerCard,
-              {
-                width: playerCardWidth as any,
-                borderColor:
-                  heldRevealId === player.id ? theme.semantic.button.primary.bg : theme.semantic.border.subtle,
-                backgroundColor: theme.semantic.bg.surface,
-                opacity: heldRevealId && heldRevealId !== player.id ? 0.36 : 1,
-                borderWidth: heldRevealId === player.id ? 1.8 : 1.2,
-                shadowOpacity: heldRevealId === player.id ? 0.62 : 0.2,
-                shadowRadius: heldRevealId === player.id ? 16 : 7,
-                elevation: heldRevealId === player.id ? 12 : 4,
-              },
-            ]}>
-            <View
-              pointerEvents="none"
-              style={[styles.revealCardFrame, { borderColor: withAlpha(theme.semantic.text.primary, 0.11) }]}
-            />
-            <AvatarSprite avatarId={player.avatarId} size={34} />
-            <Text style={[styles.playerName, { color: theme.semantic.text.primary }]}>{player.name}</Text>
-            <View
-              style={[
-                styles.revealLock,
-                {
-                  borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
-                  backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.72),
-                },
-              ]}>
-              <SymbolView name={{ ios: 'lock.fill', android: 'lock', web: 'lock' }} size={12} tintColor={theme.semantic.text.muted} />
-            </View>
-            <Text style={[styles.revealHint, { color: theme.semantic.text.muted }]}>{copy.holdRevealHint}</Text>
-          </Pressable>
-        ))}
+  const isImpostor = currentRevealPlayer.isImpostor;
+  const actionLabel = hasMoreRevealPlayers ? copy.revealNextPlayer : copy.goClues;
+
+  return (
+    <View style={styles.singleCardStage}>
+      <View style={styles.metaRow}>
+        <Badge label={copy.reveal} variant="info" />
+        <Badge label={currentPlayerLabel} variant="neutral" />
       </View>
 
-      {!localRevealPlayers.length ? (
-        <Text style={{ color: theme.semantic.text.muted }}>
-          {isPt ? 'Nenhum jogador local pronto para revelar.' : 'No local player ready to reveal.'}
+      <Text
+        style={[
+          styles.passLabel,
+          {
+            color: theme.semantic.text.muted,
+            fontFamily: theme.semantic.typography.bodyFamily,
+            fontWeight: theme.semantic.typography.bodyWeight,
+          },
+        ]}>
+        {copy.revealPassLabel}
+      </Text>
+      <Text
+        style={[
+          styles.playerName,
+          {
+            color: theme.semantic.text.primary,
+            fontFamily: theme.semantic.typography.titleFamily,
+            fontWeight: theme.semantic.typography.titleWeight,
+          },
+        ]}>
+        {currentRevealPlayer.name}
+      </Text>
+      <Text
+        style={[
+          styles.playerHint,
+          {
+            color: theme.semantic.text.secondary,
+            fontFamily: theme.semantic.typography.bodyFamily,
+            fontWeight: theme.semantic.typography.bodyWeight,
+          },
+        ]}>
+        {copy.revealStageHint}
+      </Text>
+
+      <RevealCard
+        key={`reveal-card-${currentRevealPlayer.id}-${revealPlayerIndex}`}
+        accessibilityLabel={`${isPt ? 'Carta secreta de' : 'Secret card for'} ${currentRevealPlayer.name}`}
+        content={{
+          mode: isImpostor ? 'impostor' : 'secret',
+          revealedLabel: isImpostor ? copy.revealImpostorPromptLabel : copy.revealCivilPromptLabel,
+          value: isImpostor ? round.impostorPrompt : round.civilPrompt,
+        }}
+        copy={{
+          chargingLabel: copy.holdRevealHint,
+          holdHintLabel: copy.holdRevealHint,
+          releaseHintLabel: copy.releaseRevealHint,
+          waitingLabel: copy.revealWaitingLabel,
+        }}
+        isLocalReady={false}
+        isRevealed={heldRevealId === currentRevealPlayer.id}
+        onPressIn={() => onPressRevealIn(currentRevealPlayer.id)}
+        onPressOut={() => onPressRevealOut(currentRevealPlayer.id)}
+        player={currentRevealPlayer}
+        theme={theme}
+      />
+
+      <View style={styles.actionPanel}>
+        <Button
+          label={actionLabel}
+          onPress={hasMoreRevealPlayers ? onAdvanceRevealPlayer : onGoClues}
+          disabled={!hasMoreRevealPlayers && isRemote && !canControl}
+          size="lg"
+        />
+        <Text
+          style={[
+            styles.actionPanelHint,
+            {
+              color: theme.semantic.text.muted,
+              fontFamily: theme.semantic.typography.bodyFamily,
+              fontWeight: theme.semantic.typography.bodyWeight,
+            },
+          ]}>
+            {hasMoreRevealPlayers
+              ? isPt
+                ? 'Depois de memorizar, passe o celular para o próximo jogador.'
+                : 'After memorizing, pass the phone to the next player.'
+              : isRemote && !canControl
+                ? copy.hostOnly
+                : isPt
+                  ? 'Quando o último jogador terminar, siga para as pistas.'
+                  : 'Once the last player is done, continue to clues.'}
         </Text>
-      ) : null}
-      <Button label={copy.goClues} onPress={onGoClues} disabled={isRemote && !canControl} />
-      {isRemote && !canControl ? <Text style={{ color: theme.semantic.text.muted }}>{copy.hostOnly}</Text> : null}
-    </Card>
+      </View>
+    </View>
   );
 }
-

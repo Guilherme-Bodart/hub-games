@@ -25,7 +25,7 @@ export const LobbyPlayerCard = memo(function LobbyPlayerCard({
 }: LobbyPlayerCardProps) {
   const { t } = useI18n();
   const { theme } = useTheme();
-  const deviceOpacity = isLocalDevice ? 1 : 0.62;
+  const deviceOpacity = isLocalDevice ? 1 : 0.7;
   const readyTone = '#28C2E0';
 
   return (
@@ -98,9 +98,12 @@ export const LobbyPlayerCard = memo(function LobbyPlayerCard({
         accessibilityState={{ disabled: !isLocalDevice, selected: player.isReady }}
         disabled={!isLocalDevice}
         onPress={onToggleReady}
-        style={styles.playerCardPressable}>
+        style={[
+          styles.playerCardPressable,
+          player.isReady ? styles.playerCardPressableReady : null,
+        ]}>
         <View style={styles.avatarShell}>
-          <AvatarSprite avatarId={player.avatarId} size={58} style={styles.playerAvatar} />
+          <AvatarSprite avatarId={player.avatarId} size={46} />
         </View>
         <Text
           numberOfLines={1}
@@ -114,16 +117,18 @@ export const LobbyPlayerCard = memo(function LobbyPlayerCard({
           ]}>
           {player.name}
         </Text>
-        <SymbolView
-          name={
-            isLocalDevice
-              ? { ios: 'iphone', android: 'smartphone', web: 'smartphone' }
-              : { ios: 'wifi', android: 'wifi', web: 'wifi' }
-          }
-          size={12}
-          tintColor="#6B7790"
-          style={styles.deviceIcon}
-        />
+        <View style={styles.playerMetaRow}>
+          <SymbolView
+            name={
+              isLocalDevice
+                ? { ios: 'iphone', android: 'smartphone', web: 'smartphone' }
+                : { ios: 'globe', android: 'language', web: 'language' }
+            }
+            size={12}
+            tintColor="#6B7790"
+            style={styles.deviceIcon}
+          />
+        </View>
       </Pressable>
     </View>
   );

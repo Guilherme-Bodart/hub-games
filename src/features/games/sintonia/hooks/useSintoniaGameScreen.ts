@@ -73,7 +73,7 @@ export function useSintoniaGameScreen({
         ? dragDirectionHint
         : phase === 'revealing'
           ? locale === 'pt'
-            ? 'Aguarde a revelacao.'
+            ? 'Aguarde a revelação.'
             : 'Wait for reveal.'
           : locale === 'pt'
             ? 'Rodada finalizada. Pronto para outra?'

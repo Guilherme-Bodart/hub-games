@@ -19,7 +19,7 @@ const LOBBY_GAME_META: Record<string, LobbyGameMeta> = {
     players: { min: 2, max: 10 },
   },
   'impostor-neon': {
-    title: { pt: 'Impostor Neon', en: 'Neon Impostor' },
+    title: { pt: 'Impostor', en: 'Impostor' },
     players: { min: 4, max: 12 },
   },
   'draw-pass': {
@@ -36,4 +36,3 @@ export const getLobbyGamePlayerLimits = (gameId: string) =>
 
 export const getLobbyGameTitle = (gameId: string, locale: Locale): string | undefined =>
   getLobbyGameMeta(gameId)?.title[locale];
-

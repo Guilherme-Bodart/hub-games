@@ -1,4 +1,4 @@
-export { ImpostorGameScreen } from '@/src/features/games/impostor/ImpostorGameScreen';
+export { ImpostorGameScreen } from '@/src/features/games/impostor/screens/ImpostorGameScreen';
 export { impostorGamePlugin } from '@/src/features/games/impostor/plugin';
 export type {
   ImpostorPhase,
@@ -8,4 +8,3 @@ export type {
   ImpostorRoundResult,
   ImpostorWinner,
 } from '@/src/features/games/impostor/types';
-

@@ -1117,13 +1117,13 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
   const dockHelperText =
     phase === 'secrets'
       ? locale === 'pt'
-        ? 'Segure no seu card para revelar seu numero.'
+        ? 'Segure no seu card para revelar seu número.'
         : 'Hold your card to reveal your number.'
       : phase === 'ordering'
         ? dragDirectionHint
         : phase === 'revealing'
           ? locale === 'pt'
-            ? 'Aguarde a revelacao.'
+            ? 'Aguarde a revelação.'
             : 'Wait for reveal.'
           : locale === 'pt'
             ? 'Rodada finalizada. Pronto para outra?'

@@ -12,15 +12,15 @@ export const roundHeaderStyles = StyleSheet.create({
     gap: 1,
   },
   roundLabel: {
-    fontSize: 10,
-    lineHeight: 12,
+    fontSize: 13,
+    lineHeight: 15,
     textTransform: 'uppercase',
-    letterSpacing: 1.5,
+    letterSpacing: 1.7,
   },
   gameTitle: {
-    fontSize: 32,
-    lineHeight: 34,
-    letterSpacing: -0.6,
+    fontSize: 34,
+    lineHeight: 36,
+    letterSpacing: -0.4,
     textTransform: 'uppercase',
   },
   phaseHeaderRight: {

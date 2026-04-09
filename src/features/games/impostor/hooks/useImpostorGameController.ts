@@ -41,6 +41,7 @@ export function useImpostorGameController({
   const [round, setRound] = useState<ImpostorRound | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [heldRevealId, setHeldRevealId] = useState<string | null>(null);
+  const [revealPlayerIndex, setRevealPlayerIndex] = useState(0);
   const [activeVotingPlayerId, setActiveVotingPlayerId] = useState<string | null>(null);
   const [typingDotsCount, setTypingDotsCount] = useState(1);
   const [visibleVotingCount, setVisibleVotingCount] = useState(0);
@@ -63,10 +64,7 @@ export function useImpostorGameController({
   const latestRoundRef = useRef<ImpostorRound | null>(null);
   const latestClueInputRef = useRef('');
   const pendingClueTurnKeyRef = useRef<string | null>(null);
-  const impostorPromptPulse = useSharedValue(0.5);
   const resultFlicker = useSharedValue(0.8);
-  const revealFogOpacity = useSharedValue(0);
-  const revealPromptOpacity = useSharedValue(0);
 
   useEffect(() => {
     latestLobbyRef.current = lobby;
@@ -92,14 +90,14 @@ export function useImpostorGameController({
   }, [currentClueTurnKey]);
 
   useEffect(() => {
-    impostorPromptPulse.value = withRepeat(withTiming(1, { duration: 920 }), -1, true);
     resultFlicker.value = withRepeat(withTiming(1, { duration: 760 }), -1, true);
-  }, [impostorPromptPulse, resultFlicker]);
+  }, [resultFlicker]);
 
   const initializeRound = useCallback(async () => {
     try {
       setError(null);
       setHeldRevealId(null);
+      setRevealPlayerIndex(0);
       setActiveVotingPlayerId(null);
       setClueInput('');
       setVotingDraftsByPlayer({});
@@ -164,8 +162,6 @@ export function useImpostorGameController({
     round,
     heldRevealId,
     setHeldRevealId,
-    revealFogOpacity,
-    revealPromptOpacity,
     setTypingDotsCount,
     setVisibleVotingCount,
     setActiveVotingPlayerId,
@@ -206,21 +202,34 @@ export function useImpostorGameController({
     activeVotingSelection: derived.activeVotingSelection,
   });
 
-  const impostorPromptPulseStyle = useAnimatedStyle(() => ({
-    opacity: 0.72 + impostorPromptPulse.value * 0.28,
-  }));
-
   const resultFlickerStyle = useAnimatedStyle(() => ({
     opacity: 0.78 + resultFlicker.value * 0.22,
   }));
 
-  const revealFogStyle = useAnimatedStyle(() => ({
-    opacity: revealFogOpacity.value,
-  }));
+  useEffect(() => {
+    setRevealPlayerIndex(0);
+  }, [round?.id]);
 
-  const revealPromptStyle = useAnimatedStyle(() => ({
-    opacity: revealPromptOpacity.value,
-  }));
+  useEffect(() => {
+    if (round?.phase !== 'reveal') {
+      setRevealPlayerIndex(0);
+      return;
+    }
+
+    setRevealPlayerIndex((current) => Math.max(0, Math.min(current, derived.localRevealPlayers.length - 1)));
+  }, [derived.localRevealPlayers.length, round?.phase]);
+
+  const currentRevealPlayer = derived.localRevealPlayers[revealPlayerIndex] ?? null;
+  const hasMoreRevealPlayers = revealPlayerIndex < derived.localRevealPlayers.length - 1;
+
+  useEffect(() => {
+    setHeldRevealId(null);
+  }, [currentRevealPlayer?.id]);
+
+  const handleAdvanceRevealPlayer = useCallback(() => {
+    setHeldRevealId(null);
+    setRevealPlayerIndex((current) => Math.min(current + 1, Math.max(derived.localRevealPlayers.length - 1, 0)));
+  }, [derived.localRevealPlayers.length]);
 
   useEffect(() => {
     if (round?.phase !== 'clues') {
@@ -282,13 +291,13 @@ export function useImpostorGameController({
     revealedPlayer: derived.revealedPlayer,
     revealedIsImpostor: derived.revealedIsImpostor,
     heldRevealId,
+    revealPlayerIndex,
+    currentRevealPlayer,
+    hasMoreRevealPlayers,
     localRevealPlayers: derived.localRevealPlayers,
-    playerCardWidth: derived.playerCardWidth,
-    revealFogStyle,
-    revealPromptStyle,
-    impostorPromptPulseStyle,
     startRevealHold,
     stopRevealHold,
+    handleAdvanceRevealPlayer,
     handleGoClues: actions.handleGoClues,
     activeTurn: actions.activeTurn,
     isClueCycleComplete: actions.isClueCycleComplete,

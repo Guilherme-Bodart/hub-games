@@ -29,7 +29,7 @@ describe('Neon design system snapshots', () => {
     expect(
       await renderWithTheme(
         name,
-        <Card title="Impostor Neon" subtitle="Round checkpoint UI tokenized." />
+        <Card title="Impostor" subtitle="Round checkpoint UI tokenized." />
       )
     ).toMatchSnapshot();
   });

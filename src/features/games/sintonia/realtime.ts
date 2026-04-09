@@ -129,7 +129,7 @@ const mapErrorMessage = (message: string, fallbackMessage: string): string => {
   const lowered = normalized.toLowerCase();
 
   if (lowered.includes('permission denied')) {
-    return 'Sem permissao para sincronizar a rodada de Sintonia.';
+    return 'Sem permissão para sincronizar a rodada de Sintonia.';
   }
 
   if (
@@ -138,7 +138,7 @@ const mapErrorMessage = (message: string, fallbackMessage: string): string => {
     lowered.includes('offline') ||
     lowered.includes('disconnected')
   ) {
-    return 'Conexao instavel na Sintonia. Tentando reconectar.';
+    return 'Conexão instável na Sintonia. Tentando reconectar.';
   }
 
   if (lowered.includes('invalid') || lowered.includes('payload')) {
@@ -315,7 +315,7 @@ export const subscribeRemoteSintoniaState = ({
 
       if (!parsedSession.success) {
         if (!session) {
-          onError('Sessao Sintonia invalida no Firebase.');
+          onError('Sessão Sintonia inválida no Firebase.');
         }
         return;
       }
@@ -324,7 +324,7 @@ export const subscribeRemoteSintoniaState = ({
       emitIfReady();
     },
     (error) => {
-      onError(mapErrorMessage(error.message || '', 'Falha ao sincronizar sessao Sintonia.'));
+      onError(mapErrorMessage(error.message || '', 'Falha ao sincronizar sessão da Sintonia.'));
     }
   );
 
@@ -423,7 +423,7 @@ export const setRemoteSintoniaDeviceReady = async (
         updatedAt: Date.now(),
         updatedByDeviceId: actorDeviceId,
       }),
-    'Falha ao sincronizar prontidao do dispositivo na Sintonia.'
+    'Falha ao sincronizar a prontidão do dispositivo na Sintonia.'
   );
   await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
@@ -445,7 +445,7 @@ export const startRemoteSintoniaReveal = async (
         updatedAt: Date.now(),
         updatedByDeviceId: deviceId,
       }),
-    'Falha ao iniciar revelacao remota na Sintonia.'
+    'Falha ao iniciar revelação remota na Sintonia.'
   );
   await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };
@@ -467,7 +467,7 @@ export const applyRemoteSintoniaRevealStep = async (
         updatedAt: Date.now(),
         updatedByDeviceId: deviceId,
       }),
-    'Falha ao sincronizar etapa de revelacao da Sintonia.'
+    'Falha ao sincronizar a etapa de revelação da Sintonia.'
   );
   await runWithRetry(() => touchRoomActivity(roomCode), 'Falha ao registrar atividade da sala.');
 };

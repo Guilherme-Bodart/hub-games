@@ -11,7 +11,7 @@ const sleep = (ms: number): Promise<void> =>
   });
 
 const createTimeoutError = (fallbackMessage: string): Error => {
-  const timeoutError = new Error('Tempo limite de conexao atingido.') as Error & { code?: string };
+  const timeoutError = new Error('Tempo limite de conexão atingido.') as Error & { code?: string };
   timeoutError.code = 'timeout';
   timeoutError.message = fallbackMessage;
   return timeoutError;

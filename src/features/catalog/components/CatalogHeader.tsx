@@ -48,7 +48,7 @@ export function CatalogHeader({
                 accessibilityRole="button"
                 accessibilityLabel={t('catalog.editAvatar')}
                 activeOpacity={0.88}>
-                <AvatarSprite avatarId={avatarId} size={30} />
+                <AvatarSprite avatarId={avatarId} size={42} />
               </TouchableOpacity>
               <TextInput
                 value={nicknameDraft}
@@ -60,6 +60,7 @@ export function CatalogHeader({
                 style={styles.nicknameInput}
                 placeholder={t('catalog.nicknamePlaceholder')}
                 placeholderTextColor="rgba(43,42,70,0.45)"
+                underlineColorAndroid="transparent"
               />
             </View>
           </View>
@@ -72,7 +73,7 @@ export function CatalogHeader({
                 accessibilityRole="button"
                 accessibilityLabel={t('catalog.editAvatar')}
                 activeOpacity={0.88}>
-                <AvatarSprite avatarId={avatarId} size={30} />
+                <AvatarSprite avatarId={avatarId} size={42} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={onStartNicknameEditing}
@@ -93,11 +94,13 @@ export function CatalogHeader({
             icon="shuffle-outline"
             accessibilityLabel={t('catalog.shuffleNickname')}
             onPress={onShuffleNickname}
+            style={styles.actionButton}
           />
           <IconCircleButton
             icon="settings-outline"
             accessibilityLabel={settingsLabel}
             onPress={onOpenSettings}
+            style={styles.actionButton}
           />
         </View>
       </View>
@@ -122,11 +125,25 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     paddingVertical: 0,
     paddingHorizontal: 0,
+    backgroundColor: 'transparent',
   },
   actionsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flexShrink: 0,
+  },
+  actionButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F8FAFF',
+    borderColor: '#CCD5E4',
+    shadowColor: '#000000',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
   },
   nicknameTapTarget: {
     flex: 1,

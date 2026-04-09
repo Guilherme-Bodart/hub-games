@@ -22,4 +22,12 @@ describe('buildRevealCardVisualTokens', () => {
     expect(tokens.paperEffect.enabled).toBe(true);
     expect(tokens.paperEffect.gradientColors).toHaveLength(3);
   });
+
+  it('keeps impostor cards neutral before they are revealed', () => {
+    const tokens = buildRevealCardVisualTokens(theme, 'impostor', { isRevealed: false });
+
+    expect(tokens.accentColor).toBe(theme.semantic.button.primary.bg);
+    expect(tokens.paperEffect.enabled).toBe(false);
+    expect(tokens.revealTextColor).toBe(theme.semantic.text.primary);
+  });
 });

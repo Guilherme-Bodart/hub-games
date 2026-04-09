@@ -123,7 +123,7 @@ export const buildLobbySessionActions = (
 
       executeRemoteAction(
         () => updateRemoteLobbySettings(session.roomCode, mergedSettings),
-        'Falha ao atualizar configuracoes da sala.',
+        'Falha ao atualizar configurações da sala.',
         (message) => setRealtimeError(set, message),
         { maxAttempts: 3 }
       );
@@ -167,7 +167,7 @@ export const buildLobbySessionActions = (
           set,
           totalPlayers >= maximumPlayers
             ? `Limite da sala atingido (${maximumPlayers}).`
-            : 'Conexao remota indisponivel.'
+            : 'Conexão remota indisponível.'
         );
         return;
       }

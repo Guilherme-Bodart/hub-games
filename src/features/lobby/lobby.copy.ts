@@ -4,9 +4,9 @@ import type { LobbyPanelCopy } from '@/src/features/lobby/lobby.types';
 export const buildLobbyPanelCopy = (locale: Locale): LobbyPanelCopy =>
   locale === 'pt'
     ? {
-        settingsTitle: 'Configuracao da partida',
-        controlMode: 'Controle de acoes',
-        hostOnly: 'So host',
+        settingsTitle: 'Configuração da partida',
+        controlMode: 'Controle de ações',
+        hostOnly: 'Só host',
         collaborative: 'Colaborativo',
         impostorMode: 'Modalidade',
         words: 'Palavras',
@@ -15,8 +15,8 @@ export const buildLobbyPanelCopy = (locale: Locale): LobbyPanelCopy =>
         impostors: 'Impostores',
         clueTimer: 'Tempo da pista',
         secondsShort: 's',
-        hostOnlyHint: 'Apenas o host pode alterar as configuracoes.',
-        waitingHostStart: 'Aguardando host iniciar',
+        hostOnlyHint: 'Apenas o host pode alterar as configurações.',
+        waitingHostStart: 'Aguardando o host iniciar',
         countdownStarting: 'Partida iniciando em',
       }
     : {
@@ -32,7 +32,7 @@ export const buildLobbyPanelCopy = (locale: Locale): LobbyPanelCopy =>
         clueTimer: 'Clue timer',
         secondsShort: 's',
         hostOnlyHint: 'Only the host can change settings.',
-        waitingHostStart: 'Waiting host to start',
+        waitingHostStart: 'Waiting for the host to start',
         countdownStarting: 'Match starting in',
       };
 
@@ -50,6 +50,6 @@ export const getRoomCodeVisibilityLabels = (locale: Locale): {
   showLabel: string;
   hideLabel: string;
 } => ({
-  showLabel: locale === 'pt' ? 'Mostrar codigo da sala' : 'Show room code',
-  hideLabel: locale === 'pt' ? 'Ocultar codigo da sala' : 'Hide room code',
+  showLabel: locale === 'pt' ? 'Mostrar código da sala' : 'Show room code',
+  hideLabel: locale === 'pt' ? 'Ocultar código da sala' : 'Hide room code',
 });

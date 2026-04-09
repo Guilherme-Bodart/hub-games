@@ -7,6 +7,7 @@ import {
   submitRoundClue,
   toggleVotingSelectionForPlayer,
 } from '@/src/features/games/impostor/logic';
+import { pickImpostorPromptEntry } from '@/src/features/games/impostor/content';
 import { ImpostorRound } from '@/src/features/games/impostor/types';
 import { HybridLobbyState } from '@/src/features/lobby';
 
@@ -123,7 +124,8 @@ describe('Impostor logic', () => {
       locale: 'pt',
       random: createSequenceRandom([0.2, 0.7, 0.4, 0.9, 0.6, 0.1]),
     });
-    expect(round.impostorPrompt).toBe('IMPOSTOR');
+    expect(round.impostorPrompt).not.toBe('IMPOSTOR');
+    expect(round.impostorPrompt).not.toBe(round.civilPrompt);
     const impostorIds = round.players.filter((player) => player.isImpostor).map((player) => player.id);
     let votingRound: ImpostorRound = {
       ...round,
@@ -207,6 +209,14 @@ describe('Impostor logic', () => {
 
     const secondClue = submitRoundClue(firstClue.round, secondPlayerId, 'Neon');
     expect(secondClue.error).toBeDefined();
+  });
+
+  it('gives impostors a broad hint instead of the exact civil word in words mode', () => {
+    const entry = pickImpostorPromptEntry('words', 'pt', () => 0);
+
+    expect(entry.civilPrompt).toBe('Hamburguer');
+    expect(entry.impostorPrompt).toBe('Comida');
+    expect(entry.impostorPrompt).not.toBe(entry.civilPrompt);
   });
 
   it('keeps last clue visible and only moves to decision after explicit continue', () => {

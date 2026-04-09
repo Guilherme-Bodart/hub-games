@@ -36,11 +36,11 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
 
   const syncingSubtitle =
     locale === 'pt'
-      ? 'Aguardando sincronizacao da rodada em tempo real.'
+      ? 'Aguardando sincronização da rodada em tempo real.'
       : 'Waiting for real-time round sync.';
   const unavailableSubtitle =
     locale === 'pt'
-      ? 'Nao foi possivel carregar a rodada. Tente iniciar novamente.'
+      ? 'Não foi possível carregar a rodada. Tente iniciar novamente.'
       : 'Could not load the round. Try starting again.';
 
   if (game.isRemoteRealtime && !game.round) {

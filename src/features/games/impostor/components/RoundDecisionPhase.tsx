@@ -1,9 +1,9 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { ImpostorRound } from '@/src/features/games/impostor/types';
-import { styles } from '@/src/features/games/impostor/styles/impostorStyles';
+import { impostorPhaseStyles as styles } from '@/src/features/games/impostor/styles/impostorPhaseStyles';
 import { ThemeTokens } from '@/src/theme/types';
-import { Card } from '@/src/ui/atoms';
+import { withAlpha } from '@/src/theme/utils';
 
 type RoundDecisionVote = 'vote-suspect' | 'continue-clues';
 
@@ -17,6 +17,7 @@ type RoundDecisionPhaseCopy = {
 type ImpostorRoundDecisionPhaseProps = {
   round: ImpostorRound;
   localPlayerIds: Set<string>;
+  isPt: boolean;
   theme: ThemeTokens;
   copy: RoundDecisionPhaseCopy;
   onVote: (playerId: string, vote: RoundDecisionVote) => void;
@@ -25,13 +26,14 @@ type ImpostorRoundDecisionPhaseProps = {
 export function ImpostorRoundDecisionPhase({
   round,
   localPlayerIds,
+  isPt,
   theme,
   copy,
   onVote,
 }: ImpostorRoundDecisionPhaseProps) {
   return (
-    <Card title={copy.roundDecision} subtitle={copy.roundDecisionHint}>
-      <View style={{ gap: 8 }}>
+    <View style={styles.decisionStage}>
+      <View style={{ gap: 10 }}>
         {round.players
           .filter((player) => localPlayerIds.has(player.id))
           .map((player) => {
@@ -43,40 +45,20 @@ export function ImpostorRoundDecisionPhase({
                 style={[
                   styles.decisionRow,
                   {
-                    borderColor: theme.semantic.border.subtle,
-                    backgroundColor: theme.semantic.bg.surface,
+                    borderColor: withAlpha(theme.semantic.border.subtle, 0.94),
+                    backgroundColor: withAlpha('#FFFFFF', 0.94),
                   },
                 ]}>
-                <Text style={{ color: theme.semantic.text.primary }}>{player.name}</Text>
+                <Text
+                  style={{
+                    color: theme.semantic.text.primary,
+                    fontFamily: theme.semantic.typography.titleFamily,
+                    fontWeight: theme.semantic.typography.titleWeight,
+                    fontSize: 18,
+                  }}>
+                  {player.name}
+                </Text>
                 <View style={styles.decisionButtons}>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: currentVote === 'vote-suspect' }}
-                    accessibilityLabel={`${player.name}. ${copy.goSuspects}`}
-                    onPress={() => onVote(player.id, 'vote-suspect')}
-                    style={[
-                      styles.decisionButton,
-                      {
-                        borderColor:
-                          currentVote === 'vote-suspect'
-                            ? theme.semantic.button.accent.bg
-                            : theme.semantic.border.subtle,
-                        backgroundColor:
-                          currentVote === 'vote-suspect'
-                            ? theme.semantic.button.accent.bg
-                            : theme.semantic.bg.elevated,
-                      },
-                    ]}>
-                    <Text
-                      style={{
-                        color:
-                          currentVote === 'vote-suspect'
-                            ? theme.semantic.button.accent.text
-                            : theme.semantic.text.secondary,
-                      }}>
-                      {copy.goSuspects}
-                    </Text>
-                  </Pressable>
                   <Pressable
                     accessibilityRole="button"
                     accessibilityState={{ selected: currentVote === 'continue-clues' }}
@@ -87,22 +69,82 @@ export function ImpostorRoundDecisionPhase({
                       {
                         borderColor:
                           currentVote === 'continue-clues'
-                            ? theme.semantic.border.accent
-                            : theme.semantic.border.subtle,
+                            ? theme.semantic.status.info
+                            : withAlpha(theme.semantic.border.subtle, 0.92),
                         backgroundColor:
                           currentVote === 'continue-clues'
-                            ? theme.semantic.bg.elevated
-                            : theme.semantic.bg.surface,
+                            ? withAlpha(theme.semantic.status.info, 0.94)
+                            : withAlpha(theme.semantic.bg.elevated, 0.9),
                       },
                     ]}>
                     <Text
                       style={{
                         color:
                           currentVote === 'continue-clues'
-                            ? theme.semantic.text.primary
+                            ? '#FFFFFF'
                             : theme.semantic.text.secondary,
+                        fontFamily: theme.semantic.typography.titleFamily,
+                        fontWeight: theme.semantic.typography.titleWeight,
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.7,
                       }}>
                       {copy.continueClues}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.decisionButtonHint,
+                        {
+                          color:
+                            currentVote === 'continue-clues'
+                              ? withAlpha('#FFFFFF', 0.82)
+                              : theme.semantic.text.muted,
+                        },
+                      ]}>
+                      {isPt ? 'Voltar para mais uma rodada curta' : 'Go back for one more short round'}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: currentVote === 'vote-suspect' }}
+                    accessibilityLabel={`${player.name}. ${copy.goSuspects}`}
+                    onPress={() => onVote(player.id, 'vote-suspect')}
+                    style={[
+                      styles.decisionButton,
+                      {
+                        borderColor:
+                          currentVote === 'vote-suspect'
+                            ? theme.semantic.status.error
+                            : withAlpha(theme.semantic.border.subtle, 0.92),
+                        backgroundColor:
+                          currentVote === 'vote-suspect'
+                            ? withAlpha(theme.semantic.status.error, 0.94)
+                            : withAlpha(theme.semantic.bg.surface, 0.94),
+                      },
+                    ]}>
+                    <Text
+                      style={{
+                        color:
+                          currentVote === 'vote-suspect'
+                            ? '#FFFFFF'
+                            : theme.semantic.text.secondary,
+                        fontFamily: theme.semantic.typography.titleFamily,
+                        fontWeight: theme.semantic.typography.titleWeight,
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.7,
+                      }}>
+                      {copy.goSuspects}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.decisionButtonHint,
+                        {
+                          color:
+                            currentVote === 'vote-suspect'
+                              ? withAlpha('#FFFFFF', 0.82)
+                              : theme.semantic.text.muted,
+                        },
+                      ]}>
+                      {isPt ? 'Avancar para a fase de suspeitos' : 'Advance to suspect voting'}
                     </Text>
                   </Pressable>
                 </View>
@@ -110,6 +152,6 @@ export function ImpostorRoundDecisionPhase({
             );
           })}
       </View>
-    </Card>
+    </View>
   );
 }

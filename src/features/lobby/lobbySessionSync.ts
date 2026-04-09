@@ -55,7 +55,7 @@ export const bindRoomSubscriptions = (set: LobbyStoreSet, context: RemoteSession
     onError: (message) => {
       set({
         realtimeStatus: 'reconnecting',
-        realtimeError: resolveRealtimeMessage(new Error(message), 'Conexao instavel. Tentando reconectar.'),
+        realtimeError: resolveRealtimeMessage(new Error(message), 'Conexão instável. Tentando reconectar.'),
       });
     },
   });

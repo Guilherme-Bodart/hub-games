@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef } from 'react';
-import { SharedValue, withTiming } from 'react-native-reanimated';
 
 import {
   subscribeRemoteImpostorState,
@@ -20,8 +19,6 @@ type UseImpostorRoundEffectsParams = {
   round: ImpostorRound | null;
   heldRevealId: string | null;
   setHeldRevealId: Dispatch<SetStateAction<string | null>>;
-  revealFogOpacity: SharedValue<number>;
-  revealPromptOpacity: SharedValue<number>;
   setTypingDotsCount: Dispatch<SetStateAction<number>>;
   setVisibleVotingCount: Dispatch<SetStateAction<number>>;
   setActiveVotingPlayerId: Dispatch<SetStateAction<string | null>>;
@@ -47,8 +44,6 @@ export function useImpostorRoundEffects({
   round,
   heldRevealId,
   setHeldRevealId,
-  revealFogOpacity,
-  revealPromptOpacity,
   setTypingDotsCount,
   setVisibleVotingCount,
   setActiveVotingPlayerId,
@@ -97,18 +92,6 @@ export function useImpostorRoundEffects({
   }, [heldRevealId, localDeviceId, round, setHeldRevealId]);
 
   useEffect(() => {
-    if (!heldRevealId) {
-      revealFogOpacity.value = withTiming(0, { duration: 180 });
-      revealPromptOpacity.value = withTiming(0, { duration: 120 });
-      return;
-    }
-
-    revealFogOpacity.value = 0.68;
-    revealFogOpacity.value = withTiming(0.18, { duration: 620 });
-    revealPromptOpacity.value = withTiming(1, { duration: 620 });
-  }, [heldRevealId, revealFogOpacity, revealPromptOpacity]);
-
-  useEffect(() => {
     if (!round || round.phase !== 'clues') {
       setTypingDotsCount(1);
       return;
@@ -127,19 +110,7 @@ export function useImpostorRoundEffects({
       return;
     }
 
-    setVisibleVotingCount(0);
-    let current = 0;
-
-    const interval = setInterval(() => {
-      current += 1;
-      setVisibleVotingCount(current);
-
-      if (current >= round.players.length) {
-        clearInterval(interval);
-      }
-    }, 250);
-
-    return () => clearInterval(interval);
+    setVisibleVotingCount(round.players.length);
   }, [round?.id, round?.phase, round?.players.length, setVisibleVotingCount]);
 
   useEffect(() => {

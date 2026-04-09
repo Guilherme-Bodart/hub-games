@@ -83,7 +83,7 @@ export const restoreRemoteSessionIfAny = async (
     setRemoteSessionContext(null);
     await clearStoredRemoteSessionContext().catch(() => undefined);
 
-    const message = resolveRealtimeMessage(error, 'Nao foi possivel restaurar a sala remota.');
+    const message = resolveRealtimeMessage(error, 'Não foi possível restaurar a sala remota.');
     set({
       selectedGameId: null,
       selectedMode: null,
@@ -171,7 +171,7 @@ export const joinRemoteSessionFlow = async (
   const normalizedCode = normalizeRoomCode(roomCode);
 
   if (!normalizedCode) {
-    const message = 'Digite um codigo valido para entrar na sala.';
+    const message = 'Digite um código válido para entrar na sala.';
     set({
       realtimeStatus: 'error',
       realtimeError: message,

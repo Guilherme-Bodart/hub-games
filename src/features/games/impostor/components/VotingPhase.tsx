@@ -1,11 +1,10 @@
 import { Pressable, Text, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { ImpostorRound } from '@/src/features/games/impostor/types';
-import { styles } from '@/src/features/games/impostor/styles/impostorStyles';
+import { impostorPhaseStyles as styles } from '@/src/features/games/impostor/styles/impostorPhaseStyles';
 import { ThemeTokens } from '@/src/theme/types';
 import { withAlpha } from '@/src/theme/utils';
-import { AvatarSprite, Button, Card } from '@/src/ui/atoms';
+import { AvatarSprite, Button } from '@/src/ui/atoms';
 
 type VotingPhaseProps = {
   round: ImpostorRound;
@@ -15,7 +14,6 @@ type VotingPhaseProps = {
   activeVotingPlayerId: string | null;
   localVotingPlayers: ImpostorRound['players'];
   localVotesSubmittedCount: number;
-  visibleVotingCount: number;
   activeVotingSelection: string[];
   isVoteSelectionLocked: boolean;
   votingRevealDone: boolean;
@@ -35,7 +33,6 @@ export function ImpostorVotingPhase({
   activeVotingPlayerId,
   localVotingPlayers,
   localVotesSubmittedCount,
-  visibleVotingCount,
   activeVotingSelection,
   isVoteSelectionLocked,
   votingRevealDone,
@@ -47,7 +44,7 @@ export function ImpostorVotingPhase({
   isConfirmDisabled,
 }: VotingPhaseProps) {
   return (
-    <Card>
+    <View style={styles.voteStage}>
       {activeVotingPlayerId ? (
         <View style={styles.activeVoterCard}>
           <Text style={[styles.activeVoterLabel, { color: theme.semantic.text.secondary }]}>{copy.turnOf}</Text>
@@ -95,13 +92,10 @@ export function ImpostorVotingPhase({
           },
         ]}>
         <View style={styles.voteGrid}>
-          {round.players.slice(0, visibleVotingCount).map((player, index) => {
+          {round.players.map((player) => {
             const selected = activeVotingSelection.includes(player.id);
             return (
-              <Animated.View
-                key={player.id}
-                entering={FadeInDown.duration(320).delay(index * 40)}
-                style={[styles.votePlayerCell, { width: voteCellWidth as any }]}>
+              <View key={player.id} style={[styles.votePlayerCell, { width: voteCellWidth as any }]}>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={`${isPt ? 'Selecionar suspeito' : 'Select suspect'}: ${player.name}`}
@@ -126,15 +120,26 @@ export function ImpostorVotingPhase({
                   ]}>
                   <View style={styles.votePlayerRow}>
                     <AvatarSprite avatarId={player.avatarId} size={28} />
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                      style={[styles.playerName, styles.votePlayerName, { color: theme.semantic.text.primary }]}>
-                      {player.name}
-                    </Text>
+                    <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+                      <Text
+                        style={[
+                          styles.votePlayerRole,
+                          {
+                            color: selected ? theme.semantic.button.primary.bg : theme.semantic.text.muted,
+                          },
+                        ]}>
+                        {selected ? (isPt ? 'Suspeito' : 'Selected') : isPt ? 'Jogador' : 'Player'}
+                      </Text>
+                      <Text
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[styles.votePlayerName, { color: theme.semantic.text.primary }]}>
+                        {player.name}
+                      </Text>
+                    </View>
                   </View>
                 </Pressable>
-              </Animated.View>
+              </View>
             );
           })}
         </View>
@@ -153,10 +158,6 @@ export function ImpostorVotingPhase({
           </View>
         ) : null}
       </View>
-
-      {!votingRevealDone ? (
-        <Text style={{ color: theme.semantic.text.muted }}>{isPt ? 'Carregando suspeitos...' : 'Loading suspects...'}</Text>
-      ) : null}
       <Button
         label={
           activeVotingPlayerId
@@ -165,17 +166,19 @@ export function ImpostorVotingPhase({
               : 'Confirm vote'
             : isPt
               ? 'Aguardando votos locais'
-              : 'Waiting local votes'
+              : 'Waiting for local votes'
         }
         disabled={isConfirmDisabled}
         onPress={onConfirmVote}
       />
       {allLocalVotingSubmitted ? (
         <Text style={{ color: theme.semantic.text.muted }}>
-          {isPt ? 'Votos locais enviados. Aguardando outros jogadores...' : 'Local votes sent. Waiting other players...'}
+          {isPt
+            ? 'Votos locais enviados. Aguardando outros jogadores...'
+            : 'Local votes sent. Waiting for other players...'}
         </Text>
       ) : null}
-    </Card>
+    </View>
   );
 }
 

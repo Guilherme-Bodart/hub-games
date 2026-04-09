@@ -8,7 +8,7 @@ export const mapRealtimeMessage = (message: string, fallbackMessage: string): st
   const lowered = normalized.toLowerCase();
 
   if (lowered.includes('permission denied') || lowered.includes('sem permiss') || lowered.includes('rules')) {
-    return 'Sem permissao para concluir essa acao nesta sala.';
+    return 'Sem permissão para concluir essa ação nesta sala.';
   }
 
   if (
@@ -18,7 +18,7 @@ export const mapRealtimeMessage = (message: string, fallbackMessage: string): st
     lowered.includes('disconnected') ||
     lowered.includes('reconnect')
   ) {
-    return 'Conexao instavel. Tente novamente em alguns segundos.';
+    return 'Conexão instável. Tente novamente em alguns segundos.';
   }
 
   if (
@@ -26,7 +26,7 @@ export const mapRealtimeMessage = (message: string, fallbackMessage: string): st
     lowered.includes('dados incompletos') ||
     lowered.includes('payload')
   ) {
-    return 'A sala recebeu dados incompletos. Aguarde a proxima sincronizacao.';
+    return 'A sala recebeu dados incompletos. Aguarde a próxima sincronização.';
   }
 
   return normalized;
