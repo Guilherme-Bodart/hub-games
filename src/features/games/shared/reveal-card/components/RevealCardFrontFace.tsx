@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import {
+  RevealCardCopy,
   RevealCardPlayer,
   RevealCardVisualTokens,
 } from '@/src/features/games/shared/reveal-card/types/revealCard.types';
@@ -12,6 +13,7 @@ import { AvatarSprite } from '@/src/ui/atoms';
 
 type RevealCardFrontFaceProps = {
   chargeProgress: SharedValue<number>;
+  copy: RevealCardCopy;
   frontFaceStyle: object;
   player: RevealCardPlayer | null;
   theme: ThemeTokens;
@@ -21,6 +23,7 @@ type RevealCardFrontFaceProps = {
 
 export function RevealCardFrontFace({
   chargeProgress,
+  copy,
   frontFaceStyle,
   player,
   theme,
@@ -31,6 +34,13 @@ export function RevealCardFrontFace({
     shadowOpacity: 0.2 + chargeProgress.value * 0.6,
     shadowRadius: 8 + chargeProgress.value * 18,
     transform: [{ scale: 1 + chargeProgress.value * 0.07 }],
+  }));
+  const progressFillStyle = useAnimatedStyle(() => ({
+    width: 16 + chargeProgress.value * 160,
+    opacity: 0.36 + chargeProgress.value * 0.64,
+  }));
+  const hintStyle = useAnimatedStyle(() => ({
+    opacity: 0.72 + chargeProgress.value * 0.28,
   }));
 
   return (
@@ -79,6 +89,36 @@ export function RevealCardFrontFace({
             ]}>
             {player.name}
           </Text>
+
+          <Animated.Text
+            style={[
+              styles.frontHintText,
+              hintStyle,
+              {
+                color: visuals.hintTextColor,
+                fontFamily: theme.semantic.typography.bodyFamily,
+                fontWeight: theme.semantic.typography.bodyWeight,
+              },
+            ]}>
+            {copy.holdHintLabel}
+          </Animated.Text>
+
+          <View
+            style={[
+              styles.holdProgressTrack,
+              {
+                backgroundColor: visuals.holdProgressTrackBackgroundColor,
+                borderColor: visuals.holdProgressTrackBorderColor,
+              },
+            ]}>
+            <Animated.View
+              style={[
+                styles.holdProgressFill,
+                progressFillStyle,
+                { backgroundColor: visuals.holdProgressFillColor },
+              ]}
+            />
+          </View>
         </>
       ) : (
         <Text

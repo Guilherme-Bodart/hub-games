@@ -71,8 +71,8 @@ export function SettingsLanguageCard({
             onPress={() => onSelectLanguage(option.locale)}
             variant={option.selected ? 'primary' : 'secondary'}
             size="lg"
-            color={option.selected ? '#F1D35F' : '#D9DDE4'}
-            textColor={option.selected ? '#1E2358' : '#8A95AB'}
+            color={option.selected ? '#F58C83' : '#E7ECF4'}
+            textColor={option.selected ? '#1E2358' : '#7E88A0'}
             style={styles.languageButton}
           />
         ))}

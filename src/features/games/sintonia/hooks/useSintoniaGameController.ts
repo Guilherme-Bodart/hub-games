@@ -212,7 +212,6 @@ export function useSintoniaGameController({
     realtimeStatus,
     round,
     roundError,
-    locale,
     viewportWidth,
     isSecretWaitingOthers: secretPhase.isSecretWaitingOthers,
     setShellPhase,

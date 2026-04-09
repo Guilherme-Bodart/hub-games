@@ -94,13 +94,13 @@ export function CatalogHeader({
             icon="shuffle-outline"
             accessibilityLabel={t('catalog.shuffleNickname')}
             onPress={onShuffleNickname}
-            style={styles.actionButton}
+            iconSize={20}
           />
           <IconCircleButton
             icon="settings-outline"
             accessibilityLabel={settingsLabel}
             onPress={onOpenSettings}
-            style={styles.actionButton}
+            iconSize={20}
           />
         </View>
       </View>
@@ -132,18 +132,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     flexShrink: 0,
-  },
-  actionButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#F8FAFF',
-    borderColor: '#CCD5E4',
-    shadowColor: '#000000',
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 4,
   },
   nicknameTapTarget: {
     flex: 1,

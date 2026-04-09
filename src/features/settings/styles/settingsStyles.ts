@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
   page: {
     flex: 1,
     paddingHorizontal: 22,
-    paddingTop: 8,
+    paddingTop: 14,
     gap: 14,
   },
   languageCard: {
@@ -17,8 +17,8 @@ export const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.9)',
     backgroundColor: 'rgba(255,255,255,0.85)',
     paddingHorizontal: 16,
-    paddingVertical: 16,
-    gap: 10,
+    paddingVertical: 18,
+    gap: 12,
   },
   languageTitleRow: {
     flexDirection: 'row',
@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     width: 6,
     height: 20,
     borderRadius: 999,
-    backgroundColor: '#776AE8',
+    backgroundColor: '#F58C83',
   },
   languageTitle: {
     color: '#222552',
@@ -49,7 +49,7 @@ export const styles = StyleSheet.create({
   },
   optionStack: {
     gap: 10,
-    marginTop: 6,
+    marginTop: 8,
 
   },
   languageButton: {

@@ -433,18 +433,9 @@ export const styles = StyleSheet.create({
     minHeight: 88,
     position: 'relative',
   },
-  orderingDragGlow: {
-    ...StyleSheet.absoluteFillObject,
-    borderWidth: 1.6,
-    borderRadius: 12,
-    shadowOpacity: 0.64,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 10,
-    zIndex: 9,
-  },
   flipShell: {
     minHeight: 62,
+    position: 'relative',
   },
   flipFace: {
     borderWidth: 1.4,
@@ -493,6 +484,16 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 13,
   },
+  dragHandleWrap: {
+    marginTop: 5,
+    minWidth: 22,
+    height: 16,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
   avatarText: {
     fontSize: 18,
   },
@@ -514,6 +515,31 @@ export const styles = StyleSheet.create({
   },
   rulesText: {
     fontSize: 14,
+    lineHeight: 20,
+  },
+  rulesIntroText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  rulesStepsWrap: {
+    gap: 10,
+  },
+  rulesStepCard: {
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 4,
+  },
+  rulesStepNumber: {
+    fontSize: 12,
+    lineHeight: 14,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  rulesStepText: {
+    fontSize: 14,
+    lineHeight: 19,
   },
 });
 

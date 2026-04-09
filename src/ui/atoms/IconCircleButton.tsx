@@ -25,7 +25,7 @@ export function IconCircleButton({
   accessibilityLabel,
   tone = 'neutral',
   size = 44,
-  iconSize = 18,
+  iconSize = 20,
   disabled = false,
   style,
 }: IconCircleButtonProps) {

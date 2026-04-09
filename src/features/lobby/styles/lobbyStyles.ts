@@ -62,6 +62,18 @@ export const styles = StyleSheet.create({
     alignItems: 'stretch',
     gap: 8,
   },
+  roomCodeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  roomCodeLabel: {
+    fontSize: 11,
+    lineHeight: 13,
+    letterSpacing: 1.1,
+    textTransform: 'uppercase',
+  },
   roomCodeActions: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -72,7 +84,7 @@ export const styles = StyleSheet.create({
   roomCodeButtons: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
     flexShrink: 0,
   },
   roomCodeTilesWrap: {
@@ -354,6 +366,14 @@ export const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
+  },
+  bottomPrimaryButtonDisabled: {
+    borderColor: '#D6DCE8',
+    borderBottomColor: '#C5CDDB',
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
   loadingWrap: {
     flex: 1,

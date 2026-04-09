@@ -23,6 +23,7 @@ type SintoniaSecretRevealCardProps = {
   revealedLabel: string;
   nextLabel: string;
   readyLabel: string;
+  lockedActionLabel: string;
   onPressIn: () => void;
   onPressOut: () => void;
   onAdvance: () => void;
@@ -44,16 +45,14 @@ export function SintoniaSecretRevealCard({
   revealedLabel,
   nextLabel,
   readyLabel,
+  lockedActionLabel,
   onPressIn,
   onPressOut,
   onAdvance,
 }: SintoniaSecretRevealCardProps) {
   const isActionLocked = !isWaitingOthers && !canAdvance;
-  const revealButtonLabel = holdHintLabel.toLowerCase().includes('segure')
-    ? 'SEGURE PARA REVELAR'
-    : 'HOLD TO REVEAL';
   const actionLabel = isActionLocked
-    ? revealButtonLabel
+    ? lockedActionLabel
     : hasMoreLocalPlayers
       ? nextLabel
       : readyLabel;

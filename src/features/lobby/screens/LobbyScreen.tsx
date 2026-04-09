@@ -117,6 +117,7 @@ export default function LobbyScreen() {
           onOpenSettings={headerPanelProps.onOpenSettings}
           isRemoteLobby={headerPanelProps.isRemoteLobby}
           roomCode={headerPanelProps.roomCode}
+          roomCodeLabel={headerPanelProps.roomCodeLabel}
           isRoomCodeHidden={headerPanelProps.isRoomCodeHidden}
           onCopyRoomCode={headerPanelProps.onCopyCode}
           onToggleRoomCodeHidden={headerPanelProps.onToggleRoomCodeVisibility}

@@ -2,8 +2,8 @@ import {
   GAME_COVER_ASSETS,
   GAME_COVER_ASPECT_RATIOS,
 } from '@/src/features/games/gameCoverAssets';
-import { GamePlugin } from '@/src/features/games/types';
 import { SintoniaGameScreen } from '@/src/features/games/sintonia/screens/SintoniaGameScreen';
+import { GamePlugin } from '@/src/features/games/types';
 
 export const sintoniaGamePlugin: GamePlugin = {
   manifest: {

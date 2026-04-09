@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,18 +9,16 @@ import {
   SintoniaBottomDock,
   SintoniaRulesModal,
   SintoniaSecretRevealCard,
-  SintoniaThemeStatusSection,
 } from '@/src/features/games/sintonia/components';
-import { secretPhaseStyles as secretStyles } from '@/src/features/games/sintonia/styles/secretPhaseStyles';
 import { useSintoniaGameController } from '@/src/features/games/sintonia/hooks/useSintoniaGameController';
+import { secretPhaseStyles as secretStyles } from '@/src/features/games/sintonia/styles/secretPhaseStyles';
 import { styles } from '@/src/features/games/sintonia/styles/sintoniaStyles';
 import { GameRuntimeScreenProps } from '@/src/features/games/types';
 import { useI18n } from '@/src/i18n';
 import { useTheme } from '@/src/theme';
 import { withAlpha } from '@/src/theme/utils';
-import { Card, GameScreenShell, GameTopBar } from '@/src/ui/atoms';
 import { triggerGameFeedback } from '@/src/ui/feedback';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Card, GameScreenShell } from '@/src/ui/atoms';
 
 export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRuntimeScreenProps) {
   const { theme } = useTheme();
@@ -34,14 +33,8 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
     t,
   });
 
-  const syncingSubtitle =
-    locale === 'pt'
-      ? 'Aguardando sincronização da rodada em tempo real.'
-      : 'Waiting for real-time round sync.';
-  const unavailableSubtitle =
-    locale === 'pt'
-      ? 'Não foi possível carregar a rodada. Tente iniciar novamente.'
-      : 'Could not load the round. Try starting again.';
+  const syncingSubtitle = t('sintonia.syncingSubtitle');
+  const unavailableSubtitle = t('sintonia.unavailableSubtitle');
 
   if (game.isRemoteRealtime && !game.round) {
     return (
@@ -68,6 +61,13 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
   }
 
   const isSecretPhase = game.phase === 'secrets';
+  const headerStatusLabel =
+    game.phase === 'revealing'
+      ? t('sintonia.revealingProgress', {
+          current: game.revealedCount,
+          total: game.orderedPlayers.length,
+        })
+      : t('sintonia.playersBadge', { count: game.orderedPlayers.length });
 
   return (
     <>
@@ -104,9 +104,8 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
             <SecretPhaseHeader
               theme={theme}
               title={t('sintonia.title')}
-              roundLabel={t('sintonia.roundLiveLabel')}
+              roundLabel={game.phaseHeaderLabel}
               players={game.round.players}
-              playersCountLabel={t('sintonia.playersCountCompact', { count: game.round.players.length })}
               readyStatusLabel={t('sintonia.secretReadyProgress', {
                 ready: game.secretReadyPlayersCount,
                 total: game.secretTotalPlayersCount,
@@ -143,10 +142,7 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               isLocalReady={game.isLocalDeviceReady}
               isWaitingOthers={game.isSecretWaitingOthers}
               hasMoreLocalPlayers={game.hasMoreLocalSecretPlayers}
-              canAdvance={
-                !game.isLocalDeviceReady &&
-                (!game.currentSecretPlayer || game.isCurrentSecretViewed)
-              }
+              canAdvance={!game.isLocalDeviceReady && (!game.currentSecretPlayer || game.isCurrentSecretViewed)}
               phaseSubtitle={t('sintonia.secretPhaseSubtitle')}
               holdHintLabel={t('sintonia.secretHoldToReveal')}
               chargingLabel={t('sintonia.secretCharging')}
@@ -155,6 +151,7 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               revealedLabel={t('sintonia.secretRevealedTag')}
               nextLabel={t('sintonia.secretNextPlayer')}
               readyLabel={t('sintonia.secretReadyAction')}
+              lockedActionLabel={t('sintonia.secretHoldCardAction')}
               onPressIn={game.handleSecretPlayerPressIn}
               onPressOut={game.handleSecretPlayerPressOut}
               onAdvance={game.advanceSecretCard}
@@ -162,14 +159,14 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
           </>
         ) : (
           <>
-            <GameTopBar
+            <SecretPhaseHeader
+              theme={theme}
               title={t('sintonia.title')}
-              subtitle={game.phaseBadgeLabel}
-              showStatus
-              statusTone={game.topBarStatusTone}
-              onPressRight={() => game.setRulesVisible(true)}
-              rightSymbolName={{ ios: 'info.circle', android: 'info', web: 'info' }}
-              style={styles.topBarSpacing}
+              roundLabel={game.phaseHeaderLabel}
+              players={game.round.players}
+              readyStatusLabel={headerStatusLabel}
+              onPressInfo={() => game.setRulesVisible(true)}
+              infoLabel={t('sintonia.rulesTitle')}
             />
 
             {game.realtimeError ? (
@@ -185,18 +182,48 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               </View>
             ) : null}
 
-            <SintoniaThemeStatusSection
+            <SecretThemeScaleCard
               theme={theme}
+              scaleTitle={t('sintonia.themeScaleTitle')}
+              scaleStartLabel={game.round.themeScaleLow}
+              scaleEndLabel={game.round.themeScaleHigh}
               roundTheme={game.round.theme}
-              titleFlickerStyle={game.titleFlickerStyle}
-              themeShineStyle={game.themeShineStyle}
-              themeGlowStyle={game.themeGlowStyle}
-              voiceNoticeLabel={t('sintonia.voiceNotice')}
-              hostHintLabel={t('sintonia.hostControlHint')}
-              realtimeError={null}
-              canAdvancePhase={game.canAdvancePhase}
-              showVoiceNotice
             />
+
+            <View
+              style={[
+                styles.voiceNotice,
+                {
+                  borderColor: theme.semantic.border.subtle,
+                  backgroundColor: withAlpha(theme.semantic.bg.surface, 0.7),
+                },
+              ]}>
+              <Text
+                style={[
+                  styles.voiceNoticeText,
+                  {
+                    color: theme.semantic.text.secondary,
+                    fontFamily: theme.semantic.typography.bodyFamily,
+                    fontWeight: theme.semantic.typography.bodyWeight,
+                  },
+                ]}>
+                {t('sintonia.voiceNotice')}
+              </Text>
+            </View>
+
+            {!game.canAdvancePhase ? (
+              <Text
+                style={[
+                  styles.hostHintText,
+                  {
+                    color: theme.semantic.status.warning,
+                    fontFamily: theme.semantic.typography.bodyFamily,
+                    fontWeight: theme.semantic.typography.bodyWeight,
+                  },
+                ]}>
+                {t('sintonia.hostControlHint')}
+              </Text>
+            ) : null}
 
             <SintoniaBoardSection
               orderedPlayers={game.orderedPlayers}
@@ -206,11 +233,7 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               isCompactViewport={game.isCompactViewport}
               playersSectionLabel={game.playersSectionLabel}
               playersBadgeLabel={t('sintonia.playersBadge', { count: game.orderedPlayers.length })}
-              emptyCardsLabel={
-                locale === 'pt'
-                  ? 'Aguardando jogadores para iniciar esta rodada.'
-                  : 'Waiting for players to start this round.'
-              }
+              emptyCardsLabel={t('sintonia.emptyRoundWaiting')}
               hiddenNumberLabel={t('sintonia.hiddenNumber')}
               isDragEnabled={game.phase === 'ordering'}
               onOrderingCardMeasure={game.handleOrderingCardMeasure}
@@ -233,4 +256,3 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
     </>
   );
 }
-

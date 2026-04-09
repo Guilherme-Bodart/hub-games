@@ -1,6 +1,8 @@
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { BottomActionDock } from '@/src/ui/atoms';
+import { useTheme } from '@/src/theme';
+import { styles as lobbyStyles } from '@/src/features/lobby/styles/lobbyStyles';
 
 type LobbyStartDockProps = {
   label: string;
@@ -23,6 +25,10 @@ export function LobbyStartDock({
   buttonColor,
   buttonTextColor,
 }: LobbyStartDockProps) {
+  const { theme } = useTheme();
+  const resolvedButtonColor = disabled ? '#E1E6F0' : buttonColor;
+  const resolvedButtonTextColor = disabled ? '#74809A' : buttonTextColor;
+
   return (
     <BottomActionDock
       style={style}
@@ -32,9 +38,16 @@ export function LobbyStartDock({
         onPress: onStart,
         disabled,
         variant: 'primary',
-        color: buttonColor,
-        textColor: buttonTextColor,
-        style: startButtonStyle,
+        color: resolvedButtonColor,
+        textColor: resolvedButtonTextColor,
+        style: [
+          disabled
+            ? lobbyStyles.bottomPrimaryButtonDisabled
+            : {
+                shadowColor: theme.semantic.button.primary.bg,
+              },
+          startButtonStyle,
+        ],
       }}
     />
   );

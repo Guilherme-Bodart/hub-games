@@ -1,8 +1,8 @@
+import { Ionicons } from '@expo/vector-icons';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { LayoutChangeEvent, PanResponder, Text, View } from 'react-native';
 import Animated, {
   Easing,
-  Extrapolation,
   Layout,
   interpolate,
   useAnimatedStyle,
@@ -63,11 +63,6 @@ export const OrderingCard = memo(function OrderingCard({
     shadowRadius: 8 + dragActive.value * 14,
     elevation: 2 + dragActive.value * 10,
   }));
-  const dragGlowStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(dragActive.value, [0, 1], [0, 1], Extrapolation.CLAMP),
-    transform: [{ scale: interpolate(dragActive.value, [0, 1], [0.98, 1.02], Extrapolation.CLAMP) }],
-  }));
-
   const frontFaceStyle = useAnimatedStyle(() => ({
     transform: [
       { perspective: 900 },
@@ -194,17 +189,6 @@ export const OrderingCard = memo(function OrderingCard({
         dragStyle,
       ]}
       {...panResponder.panHandlers}>
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          styles.orderingDragGlow,
-          {
-            borderColor: withAlpha(theme.semantic.button.primary.bg, 0.95),
-            shadowColor: theme.semantic.button.primary.bg,
-          },
-          dragGlowStyle,
-        ]}
-      />
       <View style={styles.flipShell}>
         <Animated.View
           style={[
@@ -220,15 +204,15 @@ export const OrderingCard = memo(function OrderingCard({
               style={[
                 styles.orderBadge,
                 {
-                  borderColor: withAlpha(theme.semantic.button.primary.bg, 0.95),
-                  backgroundColor: withAlpha(theme.semantic.button.primary.bg, 0.22),
+                  borderColor: withAlpha(theme.semantic.text.secondary, 0.32),
+                  backgroundColor: withAlpha(theme.semantic.text.secondary, 0.12),
                 },
               ]}>
               <Text
                 style={[
                   styles.orderBadgeText,
                   {
-                    color: theme.semantic.button.primary.bg,
+                    color: theme.semantic.text.primary,
                     fontFamily: theme.semantic.typography.numberFamily,
                     fontWeight: theme.semantic.typography.numberWeight,
                   },
@@ -236,6 +220,22 @@ export const OrderingCard = memo(function OrderingCard({
                 {index + 1}
               </Text>
             </View>
+            {isDragEnabled ? (
+              <View
+                style={[
+                  styles.dragHandleWrap,
+                  {
+                    borderColor: withAlpha(theme.semantic.text.secondary, 0.18),
+                    backgroundColor: withAlpha(theme.semantic.bg.surface, 0.92),
+                  },
+                ]}>
+                <Ionicons
+                  name="move-outline"
+                  size={15}
+                  color={withAlpha(theme.semantic.text.secondary, 0.82)}
+                />
+              </View>
+            ) : null}
           </View>
           <View style={styles.cardMainRow}>
             <View
@@ -292,15 +292,15 @@ export const OrderingCard = memo(function OrderingCard({
               style={[
                 styles.orderBadge,
                 {
-                  borderColor: withAlpha(theme.semantic.button.primary.bg, 0.95),
-                  backgroundColor: withAlpha(theme.semantic.button.primary.bg, 0.22),
+                  borderColor: withAlpha(theme.semantic.text.secondary, 0.32),
+                  backgroundColor: withAlpha(theme.semantic.text.secondary, 0.12),
                 },
               ]}>
               <Text
                 style={[
                   styles.orderBadgeText,
                   {
-                    color: theme.semantic.button.primary.bg,
+                    color: theme.semantic.text.primary,
                     fontFamily: theme.semantic.typography.numberFamily,
                     fontWeight: theme.semantic.typography.numberWeight,
                   },
@@ -308,6 +308,22 @@ export const OrderingCard = memo(function OrderingCard({
                 {index + 1}
               </Text>
             </View>
+            {isDragEnabled ? (
+              <View
+                style={[
+                  styles.dragHandleWrap,
+                  {
+                    borderColor: withAlpha(theme.semantic.text.secondary, 0.18),
+                    backgroundColor: withAlpha(theme.semantic.bg.surface, 0.92),
+                  },
+                ]}>
+                <Ionicons
+                  name="move-outline"
+                  size={15}
+                  color={withAlpha(theme.semantic.text.secondary, 0.82)}
+                />
+              </View>
+            ) : null}
           </View>
           <View style={styles.cardMainRow}>
             <View

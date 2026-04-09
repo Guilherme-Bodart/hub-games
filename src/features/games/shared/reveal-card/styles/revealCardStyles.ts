@@ -116,6 +116,12 @@ export const revealCardStyles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.92,
   },
+  frontHintText: {
+    fontSize: 14,
+    lineHeight: 18,
+    textAlign: 'center',
+    maxWidth: '88%',
+  },
   hostBadge: {
     position: 'absolute',
     top: 18,
@@ -209,6 +215,19 @@ export const revealCardStyles = StyleSheet.create({
     lineHeight: 34,
     textAlign: 'center',
     maxWidth: '92%',
+  },
+  holdProgressTrack: {
+    width: 180,
+    height: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  holdProgressFill: {
+    height: 6,
+    borderRadius: 999,
+    marginLeft: 2,
   },
   revealSurface: {
     minWidth: 230,

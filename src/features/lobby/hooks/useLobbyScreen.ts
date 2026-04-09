@@ -39,6 +39,7 @@ type UseLobbyScreenResult = {
     onOpenSettings: () => void;
     isRemoteLobby: boolean;
     roomCode: string;
+    roomCodeLabel: string;
     isRoomCodeHidden: boolean;
     onCopyCode: () => void;
     onToggleRoomCodeVisibility: () => void;
@@ -260,6 +261,7 @@ export function useLobbyScreen(): UseLobbyScreenResult {
       onOpenSettings: () => setSettingsVisible(true),
       isRemoteLobby: lobby?.mode === 'remote',
       roomCode: lobby?.roomCode ?? '',
+      roomCodeLabel: t('lobby.roomCodeLabel'),
       isRoomCodeHidden,
       onCopyCode,
       onToggleRoomCodeVisibility,

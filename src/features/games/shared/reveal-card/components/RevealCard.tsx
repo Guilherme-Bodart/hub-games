@@ -113,6 +113,7 @@ export function RevealCard({
         <View style={styles.flipCanvas}>
           <RevealCardFrontFace
             chargeProgress={chargeProgress}
+            copy={copy}
             frontFaceStyle={frontFaceStyle}
             player={player}
             theme={theme}

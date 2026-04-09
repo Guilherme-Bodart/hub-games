@@ -1,18 +1,16 @@
-import { Pressable, Text, View } from 'react-native';
-import { SymbolView } from 'expo-symbols';
+import { Text, View } from 'react-native';
 
 import { SintoniaPlayer } from '@/src/features/games/sintonia/types';
 import { secretPhaseStyles as styles } from '@/src/features/games/sintonia/styles/secretPhaseStyles';
 import { ThemeTokens } from '@/src/theme/types';
 import { withAlpha } from '@/src/theme/utils';
-import { AvatarSprite } from '@/src/ui/atoms';
+import { AvatarSprite, IconCircleButton } from '@/src/ui/atoms';
 
 type SecretPhaseHeaderProps = {
   theme: ThemeTokens;
   title: string;
   roundLabel: string;
   players: SintoniaPlayer[];
-  playersCountLabel: string;
   readyStatusLabel: string;
   onPressInfo: () => void;
   infoLabel: string;
@@ -25,7 +23,6 @@ export function SecretPhaseHeader({
   title,
   roundLabel,
   players,
-  playersCountLabel,
   readyStatusLabel,
   onPressInfo,
   infoLabel,
@@ -61,23 +58,11 @@ export function SecretPhaseHeader({
       </View>
 
       <View style={styles.phaseHeaderRight}>
-        <Pressable
-          accessibilityRole="button"
+        <IconCircleButton
+          icon="information-circle-outline"
           accessibilityLabel={infoLabel}
           onPress={onPressInfo}
-          style={[
-            styles.infoButton,
-            {
-              borderColor: withAlpha(theme.semantic.border.subtle, 0.96),
-              backgroundColor: withAlpha(theme.semantic.bg.surface, 0.96),
-            },
-          ]}>
-          <SymbolView
-            name={{ ios: 'info.circle', android: 'info', web: 'info' }}
-            size={16}
-            tintColor={withAlpha(theme.semantic.text.secondary, 0.92)}
-          />
-        </Pressable>
+        />
 
         <View style={styles.playerStack}>
           {visiblePlayers.map((player, index) => (
@@ -86,7 +71,6 @@ export function SecretPhaseHeader({
               style={[
                 styles.playerBubble,
                 {
-                  marginLeft: index === 0 ? 0 : -8,
                   borderColor: withAlpha(theme.semantic.bg.app, 0.95),
                   backgroundColor: withAlpha(theme.semantic.bg.surface, 0.96),
                 },

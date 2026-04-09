@@ -35,13 +35,17 @@ export const secretPhaseStyles = StyleSheet.create({
   playerStack: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-end',
+    flexWrap: 'wrap',
+    columnGap: 6,
+    rowGap: 6,
+    maxWidth: 170,
   },
   playerBubble: {
     width: 28,
     height: 28,
     borderRadius: 999,
     borderWidth: 2,
-    marginLeft: -8,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -65,14 +69,6 @@ export const secretPhaseStyles = StyleSheet.create({
   readyBadgeText: {
     fontSize: 12,
     lineHeight: 14,
-  },
-  infoButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 999,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   scaleCard: {
     borderWidth: 1,

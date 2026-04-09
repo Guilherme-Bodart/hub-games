@@ -11,6 +11,7 @@ type LobbyHeaderPanelProps = {
   onOpenSettings: () => void;
   isRemoteLobby: boolean;
   roomCode: string;
+  roomCodeLabel: string;
   isRoomCodeHidden: boolean;
   onCopyRoomCode: () => void;
   onToggleRoomCodeHidden: () => void;
@@ -34,6 +35,7 @@ export function LobbyHeaderPanel({
   onOpenSettings,
   isRemoteLobby,
   roomCode,
+  roomCodeLabel,
   isRoomCodeHidden,
   onCopyRoomCode,
   onToggleRoomCodeHidden,
@@ -85,6 +87,20 @@ export function LobbyHeaderPanel({
       <View style={styles.sessionMetaPanel}>
         {isRemoteLobby ? (
           <View style={styles.roomCodeWrap}>
+            <View style={styles.roomCodeHeader}>
+              <Text
+                style={[
+                  styles.roomCodeLabel,
+                  {
+                    color: withAlpha(theme.semantic.text.secondary, 0.8),
+                    fontFamily: theme.semantic.typography.bodyFamily,
+                    fontWeight: theme.semantic.typography.bodyWeight,
+                  },
+                ]}>
+                {roomCodeLabel}
+              </Text>
+            </View>
+
             <View style={styles.roomCodeActions}>
               <View style={[styles.roomCodeTilesWrap, { backgroundColor: 'transparent' }]}>
                 {(isRoomCodeHidden ? hiddenCodeMask.repeat(roomCode.length) : roomCode).split('').map((char, index) => {

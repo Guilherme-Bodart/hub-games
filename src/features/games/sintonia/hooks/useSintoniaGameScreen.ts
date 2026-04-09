@@ -20,7 +20,6 @@ type UseSintoniaGameScreenParams = {
   realtimeStatus: string;
   round: SintoniaRound | null;
   roundError: boolean;
-  locale: string;
   viewportWidth: number;
   isSecretWaitingOthers: boolean;
   setShellPhase?: (phase: string) => void;
@@ -35,7 +34,6 @@ export function useSintoniaGameScreen({
   realtimeStatus,
   round,
   roundError,
-  locale,
   viewportWidth,
   isSecretWaitingOthers,
   setShellPhase,
@@ -56,13 +54,21 @@ export function useSintoniaGameScreen({
               : t('sintonia.failureTitle'),
     [phase, roundResult, t]
   );
+  const phaseHeaderLabel = useMemo(
+    () =>
+      phase === 'secrets'
+        ? t('sintonia.phaseLabelReveal')
+        : phase === 'ordering'
+          ? t('sintonia.phaseLabelOrdering')
+          : phase === 'revealing'
+            ? t('sintonia.phaseLabelChecking')
+            : t('sintonia.phaseLabelResult'),
+    [phase, t]
+  );
 
-  const playersSectionLabel = locale === 'pt' ? 'Jogadores' : 'Players';
+  const playersSectionLabel = t('common.players');
 
-  const dragDirectionHint =
-    locale === 'pt'
-      ? 'Arraste para os lados e para cima/baixo para reposicionar'
-      : 'Drag sideways or up/down to reposition';
+  const dragDirectionHint = t('sintonia.orderingDragHint');
 
   const dockHelperText =
     phase === 'secrets'
@@ -72,12 +78,8 @@ export function useSintoniaGameScreen({
       : phase === 'ordering'
         ? dragDirectionHint
         : phase === 'revealing'
-          ? locale === 'pt'
-            ? 'Aguarde a revelação.'
-            : 'Wait for reveal.'
-          : locale === 'pt'
-            ? 'Rodada finalizada. Pronto para outra?'
-            : 'Round finished. Ready for another one?';
+          ? t('sintonia.revealingWait')
+          : t('sintonia.roundFinishedPrompt');
 
   const canAdvancePhase = !isRemoteRealtime || canControlCriticalActions;
 
@@ -151,6 +153,7 @@ export function useSintoniaGameScreen({
     rulesVisible,
     setRulesVisible,
     phaseBadgeLabel,
+    phaseHeaderLabel,
     playersSectionLabel,
     dockHelperText,
     canAdvancePhase,
