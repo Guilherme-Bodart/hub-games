@@ -2,18 +2,18 @@ import { StyleSheet } from 'react-native';
 
 export const cluesPhaseStyles = StyleSheet.create({
   section: {
-    gap: 16,
+    gap: 18,
   },
   heroPanel: {
     borderWidth: 1,
-    borderRadius: 32,
+    borderRadius: 30,
     paddingHorizontal: 20,
     paddingVertical: 20,
-    gap: 18,
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 7 },
-    elevation: 6,
+    gap: 16,
+    shadowOpacity: 0.1,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
   },
   heroHeader: {
     flexDirection: 'row',
@@ -23,7 +23,7 @@ export const cluesPhaseStyles = StyleSheet.create({
   },
   heroCopy: {
     flex: 1,
-    gap: 5,
+    gap: 4,
   },
   heroEyebrow: {
     fontSize: 11,
@@ -32,18 +32,18 @@ export const cluesPhaseStyles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   heroTitle: {
-    fontSize: 36,
-    lineHeight: 38,
+    fontSize: 34,
+    lineHeight: 36,
   },
   heroHint: {
-    fontSize: 14,
-    lineHeight: 18,
+    fontSize: 13,
+    lineHeight: 17,
   },
   progressBadge: {
-    minHeight: 36,
-    minWidth: 74,
+    minHeight: 34,
+    minWidth: 70,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 5,
     borderRadius: 999,
     borderWidth: 1,
     alignItems: 'center',
@@ -59,7 +59,7 @@ export const cluesPhaseStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   progressStepItem: {
     width: 58,
@@ -96,7 +96,7 @@ export const cluesPhaseStyles = StyleSheet.create({
     paddingTop: 2,
   },
   rosterSection: {
-    gap: 10,
+    gap: 8,
   },
   rosterHeader: {
     gap: 4,
@@ -109,12 +109,12 @@ export const cluesPhaseStyles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   rosterTitle: {
-    fontSize: 16,
-    lineHeight: 19,
+    fontSize: 15,
+    lineHeight: 18,
   },
   progressTrack: {
     width: '100%',
-    height: 16,
+    height: 14,
     borderRadius: 999,
     borderWidth: 1,
     overflow: 'hidden',
@@ -127,19 +127,19 @@ export const cluesPhaseStyles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 10,
+    gap: 12,
   },
   cardCell: {
     minWidth: 0,
   },
   playerCard: {
     borderWidth: 1,
-    borderRadius: 22,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    gap: 10,
+    borderRadius: 24,
+    paddingHorizontal: 15,
+    paddingVertical: 14,
+    gap: 9,
     shadowOpacity: 0.06,
-    shadowRadius: 10,
+    shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
@@ -186,19 +186,19 @@ export const cluesPhaseStyles = StyleSheet.create({
   },
   playerStatusInline: {
     fontSize: 12,
-    lineHeight: 15,
+    lineHeight: 14,
   },
   emphasisLabel: {
     fontSize: 16,
-    lineHeight: 20,
+    lineHeight: 19,
     minHeight: 24,
   },
   historyBlock: {
     borderWidth: 1,
-    borderRadius: 18,
+    borderRadius: 16,
     paddingHorizontal: 10,
-    paddingVertical: 9,
-    gap: 6,
+    paddingVertical: 8,
+    gap: 5,
   },
   historyLabel: {
     fontSize: 10,
@@ -225,27 +225,27 @@ export const cluesPhaseStyles = StyleSheet.create({
     width: '100%',
   },
   composerStage: {
-    paddingTop: 8,
+    paddingTop: 4,
   },
   composerCard: {
     borderWidth: 1,
-    borderRadius: 22,
+    borderRadius: 24,
     paddingHorizontal: 14,
     paddingVertical: 14,
     gap: 12,
   },
   composerHelper: {
-    fontSize: 15,
-    lineHeight: 19,
+    fontSize: 14,
+    lineHeight: 18,
   },
   composerInput: {
     marginTop: 0,
   },
   passiveDockPill: {
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 18,
     paddingHorizontal: 14,
-    paddingVertical: 14,
+    paddingVertical: 12,
   },
   passiveDockPillText: {
     fontSize: 13,

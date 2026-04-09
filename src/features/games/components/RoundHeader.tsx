@@ -1,10 +1,9 @@
-import { Pressable, Text, View } from 'react-native';
-import { SymbolView } from 'expo-symbols';
+import { Text, View } from 'react-native';
 
 import { roundHeaderStyles as styles } from '@/src/features/games/styles/roundHeaderStyles';
 import { ThemeTokens } from '@/src/theme/types';
 import { withAlpha } from '@/src/theme/utils';
-import { AvatarSprite } from '@/src/ui/atoms';
+import { AvatarSprite, IconCircleButton } from '@/src/ui/atoms';
 
 type RoundHeaderPlayer = {
   id: string;
@@ -63,23 +62,15 @@ export function RoundHeader({
       </View>
 
       <View style={styles.phaseHeaderRight}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={infoLabel}
+        <IconCircleButton
+          icon="information-circle-outline"
           onPress={onPressInfo}
-          style={[
-            styles.infoButton,
-            {
-              borderColor: withAlpha(theme.semantic.border.subtle, 0.96),
-              backgroundColor: withAlpha(theme.semantic.bg.surface, 0.96),
-            },
-          ]}>
-          <SymbolView
-            name={{ ios: 'info.circle', android: 'info', web: 'info' }}
-            size={14}
-            tintColor={withAlpha(theme.semantic.text.secondary, 0.92)}
-          />
-        </Pressable>
+          accessibilityLabel={infoLabel}
+          tone="neutral"
+          size={44}
+          iconSize={18}
+          style={styles.infoButton}
+        />
 
         <View style={styles.playerStack}>
           {visiblePlayers.map((player, index) => (

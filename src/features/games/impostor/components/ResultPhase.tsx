@@ -1,9 +1,9 @@
-import { Text, Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 import { ResultVoteMapBlock } from '@/src/features/games/impostor/components/ResultVoteMapBlock';
-import { ImpostorRound } from '@/src/features/games/impostor/types';
 import { impostorPhaseStyles as styles } from '@/src/features/games/impostor/styles/impostorPhaseStyles';
+import { ImpostorRound } from '@/src/features/games/impostor/types';
 import { ThemeTokens } from '@/src/theme/types';
 import { withAlpha } from '@/src/theme/utils';
 import { AvatarSprite, Button, Card } from '@/src/ui/atoms';
@@ -82,13 +82,14 @@ export function ImpostorResultPhase({
   onBack,
   canStartNewRound,
 }: ImpostorResultPhaseProps) {
+  const stateColor = bannerWinnerIsImpostor ? theme.semantic.status.error : theme.semantic.status.success;
+
   return (
     <Card
-      title={copy.result}
       style={[
         styles.resultCard,
         {
-          backgroundColor: withAlpha('#FFFFFF', 0.94),
+          backgroundColor: withAlpha('#FFFFFF', 0.95),
           borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
         },
       ]}>
@@ -113,32 +114,18 @@ export function ImpostorResultPhase({
           styles.resultStateBanner,
           resultFlickerStyle,
           {
-            borderColor: bannerWinnerIsImpostor ? theme.semantic.status.error : theme.semantic.status.success,
-            backgroundColor: bannerWinnerIsImpostor
-              ? `${theme.semantic.status.error}26`
-              : `${theme.semantic.status.success}26`,
+            borderColor: withAlpha(stateColor, 0.52),
+            backgroundColor: withAlpha(stateColor, 0.14),
           },
         ]}>
-        <Text
-          style={[
-            styles.resultStateTitle,
-            {
-              color: bannerWinnerIsImpostor ? theme.semantic.status.error : theme.semantic.status.success,
-            },
-          ]}>
+        <Text style={[styles.resultStateTitle, { color: stateColor }]}>
           {resultStage < 1 ? copy.suspense : bannerWinnerIsImpostor ? copy.defeatBanner : copy.victoryBanner}
         </Text>
-        <Text
-          style={[
-            styles.resultStateSubtitle,
-            {
-              color: bannerWinnerIsImpostor ? theme.semantic.status.error : theme.semantic.status.success,
-            },
-          ]}>
+        <Text style={[styles.resultStateSubtitle, { color: stateColor }]}>
           {resultStage < 1
             ? isPt
-              ? 'interferencia...'
-              : 'interference...'
+              ? 'Interferencia...'
+              : 'Interference...'
             : bannerWinnerIsImpostor
               ? copy.winnerI
               : copy.winnerC}
@@ -161,7 +148,7 @@ export function ImpostorResultPhase({
             <View style={styles.resultImpostorRow}>
               {impostorPlayers.map((player) => (
                 <View key={`result-impostor-${player.id}`} style={styles.resultImpostorCard}>
-                  <AvatarSprite avatarId={player.avatarId} size={48} />
+                  <AvatarSprite avatarId={player.avatarId} size={52} />
                   <Text style={[styles.resultImpostorName, { color: theme.semantic.text.primary }]}>
                     {player.name}
                   </Text>
@@ -186,22 +173,18 @@ export function ImpostorResultPhase({
               {copy.revealBlockTitle}
             </Text>
             <View style={styles.resultPromptRow}>
-              <Text style={[styles.resultBlockLabel, { color: theme.semantic.text.secondary }]}>{copy.civilWord}</Text>
-              <Text style={[styles.resultPromptValue, { color: theme.semantic.text.primary }]}>{round.civilPrompt}</Text>
+              <Text style={[styles.resultBlockLabel, { color: theme.semantic.text.secondary }]}>
+                {copy.civilWord}
+              </Text>
+              <Text style={[styles.resultPromptValue, { color: theme.semantic.text.primary }]}>
+                {round.civilPrompt}
+              </Text>
             </View>
             <View style={styles.resultPromptRow}>
               <Text style={[styles.resultBlockLabel, { color: theme.semantic.text.secondary }]}>
                 {round.mode === 'words' ? copy.impostorHintWord : copy.impostorSecret}
               </Text>
-              <Text
-                style={[
-                  styles.resultPromptValue,
-                  {
-                    color: bannerWinnerIsImpostor ? theme.semantic.status.error : theme.semantic.text.primary,
-                  },
-                ]}>
-                {round.impostorPrompt}
-              </Text>
+              <Text style={[styles.resultPromptValue, { color: stateColor }]}>{round.impostorPrompt}</Text>
             </View>
           </View>
         </Animated.View>
@@ -221,8 +204,8 @@ export function ImpostorResultPhase({
       {resultStage >= resultActionsAt ? (
         <Animated.View entering={FadeInUp.duration(420)}>
           <View style={styles.resultActions}>
-            <Button label={copy.newRound} onPress={onNewRound} disabled={!canStartNewRound} />
-            <Button label={copy.back} variant="ghost" onPress={onBack} />
+            <Button label={copy.newRound} onPress={onNewRound} disabled={!canStartNewRound} size="lg" />
+            <Button label={copy.back} variant="secondary" onPress={onBack} size="lg" />
           </View>
         </Animated.View>
       ) : null}

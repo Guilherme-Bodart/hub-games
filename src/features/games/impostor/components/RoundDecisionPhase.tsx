@@ -54,7 +54,7 @@ export function ImpostorRoundDecisionPhase({
                     color: theme.semantic.text.primary,
                     fontFamily: theme.semantic.typography.titleFamily,
                     fontWeight: theme.semantic.typography.titleWeight,
-                    fontSize: 18,
+                    fontSize: 20,
                   }}>
                   {player.name}
                 </Text>
@@ -100,7 +100,7 @@ export function ImpostorRoundDecisionPhase({
                               : theme.semantic.text.muted,
                         },
                       ]}>
-                      {isPt ? 'Voltar para mais uma rodada curta' : 'Go back for one more short round'}
+                      {isPt ? 'Continuar investigando' : 'Keep investigating'}
                     </Text>
                   </Pressable>
                   <Pressable
@@ -144,7 +144,7 @@ export function ImpostorRoundDecisionPhase({
                               : theme.semantic.text.muted,
                         },
                       ]}>
-                      {isPt ? 'Avancar para a fase de suspeitos' : 'Advance to suspect voting'}
+                      {isPt ? 'Avan\u00E7ar para a vota\u00E7\u00E3o' : 'Move to voting'}
                     </Text>
                   </Pressable>
                 </View>

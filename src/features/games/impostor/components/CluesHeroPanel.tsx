@@ -30,19 +30,19 @@ const resolveStepColors = (
 ) => {
   if (state === 'submitted') {
     return {
-      bg: withAlpha(theme.semantic.button.primary.bg, 0.14),
-      border: withAlpha(theme.semantic.button.primary.bg, 0.2),
-      text: theme.semantic.button.primary.bg,
-      ring: withAlpha(theme.semantic.button.primary.bg, 0.24),
+      bg: withAlpha(theme.semantic.status.success, 0.14),
+      border: withAlpha(theme.semantic.status.success, 0.18),
+      text: '#1F8E70',
+      ring: withAlpha(theme.semantic.status.success, 0.22),
     };
   }
 
   if (state === 'typing') {
     return {
-      bg: withAlpha(theme.semantic.status.warning, 0.14),
-      border: withAlpha(theme.semantic.status.warning, 0.2),
-      text: '#996C16',
-      ring: withAlpha(theme.semantic.status.warning, 0.24),
+      bg: withAlpha(theme.semantic.button.primary.bg, 0.14),
+      border: withAlpha(theme.semantic.button.primary.bg, 0.2),
+      text: theme.semantic.button.primary.bg,
+      ring: withAlpha(theme.semantic.button.primary.bg, 0.24),
     };
   }
 
@@ -69,9 +69,9 @@ export function CluesHeroPanel({
       style={[
         styles.heroPanel,
         {
-          backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.94),
-          borderColor: withAlpha(theme.semantic.button.primary.bg, 0.16),
-          shadowColor: theme.semantic.button.primary.bg,
+          backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.96),
+          borderColor: withAlpha(theme.semantic.border.subtle, 0.94),
+          shadowColor: theme.semantic.shadow.base,
         },
       ]}>
       <View style={styles.heroHeader}>
@@ -120,8 +120,8 @@ export function CluesHeroPanel({
             style={[
               styles.progressBadge,
               {
-                backgroundColor: withAlpha(theme.semantic.button.primary.bg, 0.12),
-                borderColor: withAlpha(theme.semantic.button.primary.bg, 0.22),
+                backgroundColor: withAlpha(theme.semantic.bg.surface, 0.94),
+                borderColor: withAlpha(theme.semantic.border.subtle, 0.96),
               },
             ]}>
             <Text
@@ -144,7 +144,7 @@ export function CluesHeroPanel({
           styles.progressTrack,
           {
             backgroundColor: theme.semantic.bg.surface,
-            borderColor: withAlpha(theme.semantic.button.primary.bg, 0.18),
+            borderColor: withAlpha(theme.semantic.border.subtle, 0.96),
           },
         ]}>
         <View

@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 
-import { RevealCard } from '@/src/features/games/shared/reveal-card';
 import { revealPhaseStyles as styles } from '@/src/features/games/impostor/styles/revealPhaseStyles';
 import { ImpostorRound } from '@/src/features/games/impostor/types';
+import { RevealCard } from '@/src/features/games/shared/reveal-card';
 import { ThemeTokens } from '@/src/theme/types';
 import { withAlpha } from '@/src/theme/utils';
 import { Badge, Button } from '@/src/ui/atoms';
@@ -77,7 +77,6 @@ export function ImpostorRevealPhase({
   return (
     <View style={styles.singleCardStage}>
       <View style={styles.metaRow}>
-        <Badge label={copy.reveal} variant="info" />
         <Badge label={currentPlayerLabel} variant="neutral" />
       </View>
 
@@ -143,6 +142,7 @@ export function ImpostorRevealPhase({
           onPress={hasMoreRevealPlayers ? onAdvanceRevealPlayer : onGoClues}
           disabled={!hasMoreRevealPlayers && isRemote && !canControl}
           size="lg"
+          style={styles.actionButton}
         />
         <Text
           style={[
@@ -153,15 +153,15 @@ export function ImpostorRevealPhase({
               fontWeight: theme.semantic.typography.bodyWeight,
             },
           ]}>
-            {hasMoreRevealPlayers
-              ? isPt
-                ? 'Depois de memorizar, passe o celular para o próximo jogador.'
-                : 'After memorizing, pass the phone to the next player.'
-              : isRemote && !canControl
-                ? copy.hostOnly
-                : isPt
-                  ? 'Quando o último jogador terminar, siga para as pistas.'
-                  : 'Once the last player is done, continue to clues.'}
+          {hasMoreRevealPlayers
+            ? isPt
+              ? 'Memorizou? Passe para o pr\u00F3ximo jogador.'
+              : 'After memorizing, pass the phone to the next player.'
+            : isRemote && !canControl
+              ? copy.hostOnly
+              : isPt
+                ? 'Quando terminar, sigam para as pistas.'
+                : 'Once the last player is done, continue to clues.'}
         </Text>
       </View>
     </View>

@@ -214,7 +214,7 @@ describe('Impostor logic', () => {
   it('gives impostors a broad hint instead of the exact civil word in words mode', () => {
     const entry = pickImpostorPromptEntry('words', 'pt', () => 0);
 
-    expect(entry.civilPrompt).toBe('Hamburguer');
+    expect(entry.civilPrompt).toBe('Hambúrguer');
     expect(entry.impostorPrompt).toBe('Comida');
     expect(entry.impostorPrompt).not.toBe(entry.civilPrompt);
   });

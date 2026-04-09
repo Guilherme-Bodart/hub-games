@@ -177,7 +177,7 @@ export function useImpostorRoundEffects({
       setResultRouletteTick((current) => current + 1);
     }, 120);
 
-    const maxStage = round.mode === 'questions' ? 5 : 4;
+    const maxStage = 5;
     const timeouts: ReturnType<typeof setTimeout>[] = [];
 
     for (let stage = 1; stage <= maxStage; stage += 1) {
