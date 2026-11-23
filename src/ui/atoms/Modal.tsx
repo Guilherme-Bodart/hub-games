@@ -17,6 +17,7 @@ import { withAlpha } from '@/src/theme/utils';
 type ModalProps = PropsWithChildren<{
   visible: boolean;
   title?: string;
+  subtitle?: string;
   onClose: () => void;
   variant?: 'alert' | 'fullscreen';
   closeStyle?: 'solid' | 'ghost';
@@ -26,6 +27,7 @@ type ModalProps = PropsWithChildren<{
 export function Modal({
   visible,
   title,
+  subtitle,
   onClose,
   variant = 'alert',
   closeStyle = 'solid',
@@ -120,6 +122,18 @@ export function Modal({
                 },
               ]}>
               {title}
+            </Text>
+          ) : null}
+          {subtitle ? (
+            <Text
+              style={{
+                color: theme.semantic.text.secondary,
+                fontFamily: theme.semantic.typography.bodyFamily,
+                fontWeight: theme.semantic.typography.bodyWeight,
+                fontSize: 13,
+                lineHeight: 18,
+              }}>
+              {subtitle}
             </Text>
           ) : null}
           {children}

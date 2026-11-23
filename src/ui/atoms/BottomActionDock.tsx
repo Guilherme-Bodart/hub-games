@@ -20,6 +20,7 @@ type BottomActionDockProps = {
   primaryAction: DockAction;
   secondaryAction?: DockAction;
   helperText?: string;
+  layout?: 'stacked' | 'row';
   style?: StyleProp<ViewStyle>;
 };
 
@@ -27,6 +28,7 @@ export function BottomActionDock({
   primaryAction,
   secondaryAction,
   helperText,
+  layout = 'stacked',
   style,
 }: BottomActionDockProps) {
   const { theme } = useTheme();

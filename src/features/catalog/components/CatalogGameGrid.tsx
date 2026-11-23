@@ -103,6 +103,13 @@ function CatalogGameTile({
                 tintColor="#2B2A46"
               />
             ))}
+            {game.requiresVoice ? (
+              <SymbolView
+                name={{ ios: 'mic.fill', android: 'mic', web: 'mic' }}
+                size={12}
+                tintColor="#D97706"
+              />
+            ) : null}
           </View>
           <View style={styles.gamePlayersBadge}>
             <SymbolView

@@ -28,6 +28,7 @@ export type GameCatalogMeta = {
   players: { min: number; max: number };
   mode: GameMode;
   status: GameStatus;
+  requiresVoice?: boolean;
   actionAuthorityRules?: Record<string, GameActionAuthorityRule>;
 };
 

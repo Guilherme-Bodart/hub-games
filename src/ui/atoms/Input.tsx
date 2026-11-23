@@ -1,4 +1,4 @@
-import { StyleProp, StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native';
+import { ReturnKeyTypeOptions, StyleProp, StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native';
 import { useState } from 'react';
 
 import { useTheme } from '@/src/theme';
@@ -9,6 +9,10 @@ type InputProps = {
   errorText?: string;
   value: string;
   onChangeText: (text: string) => void;
+  onSubmitEditing?: () => void;
+  returnKeyType?: ReturnKeyTypeOptions;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  maxLength?: number;
   placeholder?: string;
   disabled?: boolean;
   testID?: string;
@@ -22,6 +26,10 @@ export function Input({
   errorText,
   value,
   onChangeText,
+  onSubmitEditing,
+  returnKeyType,
+  autoCapitalize = 'none',
+  maxLength,
   placeholder,
   disabled = false,
   testID,
@@ -57,9 +65,12 @@ export function Input({
         testID={testID}
         value={value}
         onChangeText={onChangeText}
+        onSubmitEditing={onSubmitEditing}
+        returnKeyType={returnKeyType}
+        maxLength={maxLength}
         editable={!disabled}
         autoCorrect={false}
-        autoCapitalize="none"
+        autoCapitalize={autoCapitalize}
         spellCheck={false}
         accessibilityLabel={accessibilityLabel ?? label}
         onFocus={() => setIsFocused(true)}

@@ -16,6 +16,9 @@ type GameTopBarProps = {
   showStatus?: boolean;
   statusTone?: GameTopBarTone;
   statusLabel?: string;
+  onPressLeft?: () => void;
+  leftSymbolName?: GameTopBarSymbolName;
+  leftAccessibilityLabel?: string;
   onPressRight?: () => void;
   rightLabel?: string;
   rightSymbolName?: GameTopBarSymbolName;
@@ -37,6 +40,9 @@ export function GameTopBar({
   showStatus = true,
   statusTone = 'success',
   statusLabel,
+  onPressLeft,
+  leftSymbolName = { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
+  leftAccessibilityLabel = 'Voltar',
   onPressRight,
   rightLabel = '?',
   rightSymbolName,
@@ -83,6 +89,31 @@ export function GameTopBar({
         end={{ x: 0.5, y: 1 }}
         style={styles.topGloss}
       />
+      {onPressLeft ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={leftAccessibilityLabel}
+          onPress={onPressLeft}
+          style={({ pressed }) => [
+            styles.iconButton,
+            {
+              width: theme.semantic.layout.minTouchTarget,
+              height: theme.semantic.layout.minTouchTarget,
+              borderRadius: theme.semantic.layout.radius.full,
+              borderWidth: theme.semantic.layout.borderWidth.subtle,
+              borderColor: 'rgba(0,0,0,0.12)',
+              backgroundColor: '#FFFFFF',
+              shadowColor: '#000000',
+              shadowOpacity: 0.22,
+              shadowRadius: 5,
+              shadowOffset: { width: 2, height: 2 },
+              elevation: 5,
+              opacity: pressed ? theme.semantic.motion.feedback.pressedOpacity : 1,
+            },
+          ]}>
+          <SymbolView name={leftSymbolName} size={18} tintColor="#2B2A46" />
+        </Pressable>
+      ) : null}
       <View style={styles.titleWrap}>
         <Text
           numberOfLines={1}

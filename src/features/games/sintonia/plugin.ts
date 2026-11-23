@@ -20,6 +20,7 @@ export const sintoniaGamePlugin: GamePlugin = {
     players: { min: 2, max: 10 },
     mode: 'both',
     status: 'ready',
+    requiresVoice: true,
     actionAuthorityRules: {
       ordering: {
         defaultMode: 'host-only',
