@@ -1,12 +1,14 @@
 import { StyleSheet, View } from 'react-native';
 
 import { useI18n } from '@/src/i18n';
+import { type GameAccentPalette } from '@/src/theme';
 import { Button, Input, Modal } from '@/src/ui/atoms';
 
 type LobbyAddPlayerModalProps = {
   visible: boolean;
   name: string;
   error: string | null;
+  gameAccent?: GameAccentPalette;
   onClose: () => void;
   onChangeName: (value: string) => void;
   onConfirm: () => void;
@@ -16,6 +18,7 @@ export function LobbyAddPlayerModal({
   visible,
   name,
   error,
+  gameAccent,
   onClose,
   onChangeName,
   onConfirm,
@@ -39,7 +42,10 @@ export function LobbyAddPlayerModal({
         <Button
           label={locale === 'pt' ? 'Adicionar' : 'Add'}
           onPress={onConfirm}
-          variant="secondary"
+          variant="primary"
+          color={gameAccent?.primary}
+          plinthColor={gameAccent?.plinth}
+          textColor={gameAccent?.textOnPrimary}
           size="md"
           style={styles.confirmButton}
         />

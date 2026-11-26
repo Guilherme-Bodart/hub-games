@@ -1,5 +1,13 @@
-import { ReturnKeyTypeOptions, StyleProp, StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native';
 import { useState } from 'react';
+import {
+  ReturnKeyTypeOptions,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { useTheme } from '@/src/theme';
 
@@ -80,20 +88,14 @@ export function Input({
         style={[
           styles.input,
           {
-            backgroundColor: theme.semantic.input.bg,
+            backgroundColor: disabled ? theme.semantic.bg.subtle : theme.semantic.input.bg,
             borderColor,
+            borderWidth: isFocused || hasError ? 1.5 : 1,
             color: theme.semantic.input.text,
             fontFamily: theme.semantic.typography.bodyFamily,
             fontWeight: theme.semantic.typography.bodyWeight,
-            borderRadius: theme.semantic.layout.radius.lg,
-            borderWidth: theme.semantic.layout.borderWidth.subtle,
-            minHeight: theme.semantic.layout.minTouchTarget,
+            borderRadius: theme.semantic.layout.radius.md,
             opacity: disabled ? theme.semantic.motion.feedback.disabledOpacity : 1,
-            shadowColor: '#000000',
-            shadowOpacity: 0.06,
-            shadowRadius: 6,
-            shadowOffset: { width: 0, height: 2 },
-            elevation: 2,
           },
         ]}
       />
@@ -116,18 +118,19 @@ export function Input({
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 12,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 6,
   },
   input: {
+    minHeight: 48,
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingVertical: 11,
     fontSize: 16,
   },
   helper: {
     fontSize: 12,
-    marginTop: 8,
+    lineHeight: 16,
+    marginTop: 6,
   },
 });

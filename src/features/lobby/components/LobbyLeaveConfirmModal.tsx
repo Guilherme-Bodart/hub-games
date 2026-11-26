@@ -35,7 +35,7 @@ export function LobbyLeaveConfirmModal({
         <Button
           label={t('common.leave')}
           onPress={onConfirmLeave}
-          variant="ghost"
+          variant="destructive"
           size="md"
           style={styles.leaveButton}
         />

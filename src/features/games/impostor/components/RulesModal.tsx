@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 
-import { roundHeaderStyles as styles } from '@/src/features/games/styles/roundHeaderStyles';
+import { impostorPhaseStyles as styles } from '@/src/features/games/impostor/styles/impostorPhaseStyles';
+import { getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
 import { Modal } from '@/src/ui/atoms';
 
 type ImpostorRulesModalProps = {
@@ -26,6 +26,7 @@ export function ImpostorRulesModal({
   onClose,
   theme,
 }: ImpostorRulesModalProps) {
+  const accent = getGameAccent('impostor-neon');
   const steps = [stepOne, stepTwo, stepThree];
 
   return (
@@ -42,36 +43,42 @@ export function ImpostorRulesModal({
         {objective}
       </Text>
 
-      <View style={{ gap: 10 }}>
+      <View style={styles.rulesStepsList}>
         {steps.map((step, index) => (
           <View
             key={`rule-step-${index}`}
-            style={{
-              borderWidth: 1,
-              borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
-              backgroundColor: withAlpha(theme.semantic.bg.surface, 0.9),
-              borderRadius: 18,
-              paddingHorizontal: 14,
-              paddingVertical: 12,
-              gap: 4,
-            }}>
-            <Text
-              style={{
-                color: theme.semantic.button.primary.bg,
-                fontFamily: theme.semantic.typography.bodyFamily,
-                fontWeight: theme.semantic.typography.bodyWeight,
-                fontSize: 11,
-                lineHeight: 13,
-                letterSpacing: 0.8,
-                textTransform: 'uppercase',
-              }}>
-              {`0${index + 1}`}
-            </Text>
+            style={[
+              styles.rulesStepCard,
+              {
+                borderColor: theme.semantic.border.hairline,
+                backgroundColor: theme.semantic.bg.subtle,
+              },
+            ]}>
+            <View
+              style={[
+                styles.rulesStepBadge,
+                {
+                  backgroundColor: accent.tint,
+                  borderColor: accent.primary,
+                },
+              ]}>
+              <Text
+                style={[
+                  styles.rulesStepNumber,
+                  {
+                    color: accent.primary,
+                    fontFamily: theme.semantic.typography.numberFamily,
+                    fontWeight: theme.semantic.typography.numberWeight,
+                  },
+                ]}>
+                {`0${index + 1}`}
+              </Text>
+            </View>
             <Text
               style={[
                 styles.rulesText,
                 {
-                  color: theme.semantic.text.secondary,
+                  color: theme.semantic.text.primary,
                   fontFamily: theme.semantic.typography.bodyFamily,
                   fontWeight: theme.semantic.typography.bodyWeight,
                 },

@@ -1,13 +1,13 @@
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { Button } from '@/src/ui/atoms';
-import type { Locale } from '@/src/i18n';
-import { useTheme } from '@/src/theme';
-import { withAlpha } from '@/src/theme/utils';
 import { styles } from '@/src/features/settings/styles/settingsStyles';
+import type { Locale } from '@/src/i18n';
+import { HUB_DEFAULT_ACCENT, useTheme } from '@/src/theme';
+import { Card } from '@/src/ui/atoms';
 
 type SettingsLanguageOptionView = {
   locale: Locale;
+  shortLabel: string;
   label: string;
   selected: boolean;
 };
@@ -28,55 +28,77 @@ export function SettingsLanguageCard({
   const { theme } = useTheme();
 
   return (
-    <View
-      style={[
-        styles.languageCard,
-        {
-          borderColor: withAlpha(theme.semantic.bg.surface, 0.9),
-          backgroundColor: withAlpha(theme.semantic.bg.surface, 0.86),
-        },
-      ]}>
-      <View style={styles.languageTitleRow}>
-        <View style={styles.languageAccent} />
-        <Text
-          style={[
-            styles.languageTitle,
-            {
-              color: theme.semantic.text.primary,
-              fontFamily: theme.semantic.typography.titleFamily,
-              fontWeight: theme.semantic.typography.titleWeight,
-            },
-          ]}>
-          {title.toUpperCase()}
-        </Text>
-      </View>
-
-      <Text
+    <Card title={title} subtitle={subtitle} variant="elevated">
+      <View
         style={[
-          styles.languageSubtitle,
+          styles.pillTrack,
           {
-            color: theme.semantic.text.muted,
-            fontFamily: theme.semantic.typography.bodyFamily,
-            fontWeight: theme.semantic.typography.bodyWeight,
+            backgroundColor: theme.semantic.bg.subtle,
+            borderColor: theme.semantic.border.hairline,
           },
         ]}>
-        {subtitle}
-      </Text>
-
-      <View style={styles.optionStack}>
         {options.map((option) => (
-          <Button
+          <Pressable
             key={option.locale}
-            label={option.label}
             onPress={() => onSelectLanguage(option.locale)}
-            variant={option.selected ? 'primary' : 'secondary'}
-            size="lg"
-            color={option.selected ? '#F58C83' : '#E7ECF4'}
-            textColor={option.selected ? '#1E2358' : '#7E88A0'}
-            style={styles.languageButton}
-          />
+            accessibilityRole="button"
+            accessibilityState={{ selected: option.selected }}
+            accessibilityLabel={option.label}
+            style={[
+              styles.pillOptionPlinth,
+              {
+                backgroundColor: option.selected
+                  ? HUB_DEFAULT_ACCENT.plinth
+                  : 'transparent',
+                paddingBottom: option.selected ? 3 : 0,
+              },
+            ]}>
+            {({ pressed }) => (
+              <View
+                style={[
+                  styles.pillOptionFace,
+                  {
+                    backgroundColor: option.selected
+                      ? HUB_DEFAULT_ACCENT.primary
+                      : 'transparent',
+                    borderColor: option.selected
+                      ? HUB_DEFAULT_ACCENT.plinth
+                      : 'transparent',
+                    transform: [{ translateY: pressed && option.selected ? 2 : 0 }],
+                    opacity: pressed && !option.selected ? 0.72 : 1,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    styles.pillShortCode,
+                    {
+                      color: option.selected
+                        ? HUB_DEFAULT_ACCENT.textOnPrimary
+                        : theme.semantic.text.muted,
+                      fontFamily: theme.semantic.typography.numberFamily,
+                    },
+                  ]}>
+                  {option.shortLabel}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.pillLabel,
+                    {
+                      color: option.selected
+                        ? HUB_DEFAULT_ACCENT.textOnPrimary
+                        : theme.semantic.text.primary,
+                      fontFamily: theme.semantic.typography.titleFamily,
+                      fontWeight: theme.semantic.typography.titleWeight,
+                    },
+                  ]}>
+                  {option.label}
+                </Text>
+              </View>
+            )}
+          </Pressable>
         ))}
       </View>
-    </View>
+    </Card>
   );
 }

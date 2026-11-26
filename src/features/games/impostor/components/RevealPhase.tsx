@@ -3,9 +3,9 @@ import { Text, View } from 'react-native';
 import { revealPhaseStyles as styles } from '@/src/features/games/impostor/styles/revealPhaseStyles';
 import { ImpostorRound } from '@/src/features/games/impostor/types';
 import { RevealCard } from '@/src/features/games/shared/reveal-card';
+import { ELEVATION_STYLES, getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
-import { Badge, Button } from '@/src/ui/atoms';
+import { Button } from '@/src/ui/atoms';
 
 type RevealPhaseProps = {
   round: ImpostorRound;
@@ -19,6 +19,7 @@ type RevealPhaseProps = {
   localRevealPlayers: ImpostorRound['players'];
   canControl: boolean;
   isRemote: boolean;
+  onInteractionChange?: (active: boolean) => void;
   onPressRevealIn: (playerId: string) => void;
   onPressRevealOut: (playerId: string) => void;
   onAdvanceRevealPlayer: () => void;
@@ -37,11 +38,13 @@ export function ImpostorRevealPhase({
   localRevealPlayers,
   canControl,
   isRemote,
+  onInteractionChange,
   onPressRevealIn,
   onPressRevealOut,
   onAdvanceRevealPlayer,
   onGoClues,
 }: RevealPhaseProps) {
+  const accent = getGameAccent('impostor-neon');
   const currentPlayerLabel = currentRevealPlayer
     ? `${copy.revealPlayerProgress} ${revealPlayerIndex + 1}/${Math.max(localRevealPlayers.length, 1)}`
     : copy.revealWaitingLabel;
@@ -51,9 +54,10 @@ export function ImpostorRevealPhase({
       <View
         style={[
           styles.emptyState,
+          ELEVATION_STYLES.card,
           {
-            backgroundColor: withAlpha(theme.semantic.bg.surface, 0.94),
-            borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
+            backgroundColor: theme.semantic.bg.surface,
+            borderColor: theme.semantic.border.hairline,
           },
         ]}>
         <Text
@@ -77,42 +81,63 @@ export function ImpostorRevealPhase({
   return (
     <View style={styles.singleCardStage}>
       <View style={styles.metaRow}>
-        <Badge label={currentPlayerLabel} variant="neutral" />
+        <View
+          style={[
+            styles.progressPill,
+            {
+              backgroundColor: accent.tint,
+              borderColor: accent.primary,
+            },
+          ]}>
+          <Text
+            style={[
+              styles.progressPillText,
+              {
+                color: accent.plinth,
+                fontFamily: theme.semantic.typography.numberFamily,
+                fontWeight: theme.semantic.typography.numberWeight,
+              },
+            ]}>
+            {currentPlayerLabel}
+          </Text>
+        </View>
       </View>
 
-      <Text
-        style={[
-          styles.passLabel,
-          {
-            color: theme.semantic.text.muted,
-            fontFamily: theme.semantic.typography.bodyFamily,
-            fontWeight: theme.semantic.typography.bodyWeight,
-          },
-        ]}>
-        {copy.revealPassLabel}
-      </Text>
-      <Text
-        style={[
-          styles.playerName,
-          {
-            color: theme.semantic.text.primary,
-            fontFamily: theme.semantic.typography.titleFamily,
-            fontWeight: theme.semantic.typography.titleWeight,
-          },
-        ]}>
-        {currentRevealPlayer.name}
-      </Text>
-      <Text
-        style={[
-          styles.playerHint,
-          {
-            color: theme.semantic.text.secondary,
-            fontFamily: theme.semantic.typography.bodyFamily,
-            fontWeight: theme.semantic.typography.bodyWeight,
-          },
-        ]}>
-        {copy.revealStageHint}
-      </Text>
+      <View style={styles.headerBlock}>
+        <Text
+          style={[
+            styles.passLabel,
+            {
+              color: accent.primary,
+              fontFamily: theme.semantic.typography.bodyFamily,
+              fontWeight: theme.semantic.typography.bodyWeight,
+            },
+          ]}>
+          {copy.revealPassLabel}
+        </Text>
+        <Text
+          style={[
+            styles.playerName,
+            {
+              color: theme.semantic.text.primary,
+              fontFamily: theme.semantic.typography.titleFamily,
+              fontWeight: theme.semantic.typography.titleWeight,
+            },
+          ]}>
+          {currentRevealPlayer.name}
+        </Text>
+        <Text
+          style={[
+            styles.playerHint,
+            {
+              color: theme.semantic.text.secondary,
+              fontFamily: theme.semantic.typography.bodyFamily,
+              fontWeight: theme.semantic.typography.bodyWeight,
+            },
+          ]}>
+          {copy.revealStageHint}
+        </Text>
+      </View>
 
       <RevealCard
         key={`reveal-card-${currentRevealPlayer.id}-${revealPlayerIndex}`}
@@ -130,6 +155,7 @@ export function ImpostorRevealPhase({
         }}
         isLocalReady={false}
         isRevealed={heldRevealId === currentRevealPlayer.id}
+        onInteractionChange={onInteractionChange}
         onPressIn={() => onPressRevealIn(currentRevealPlayer.id)}
         onPressOut={() => onPressRevealOut(currentRevealPlayer.id)}
         player={currentRevealPlayer}
@@ -139,6 +165,8 @@ export function ImpostorRevealPhase({
       <View style={styles.actionPanel}>
         <Button
           label={actionLabel}
+          color={accent.primary}
+          plinthColor={accent.plinth}
           onPress={hasMoreRevealPlayers ? onAdvanceRevealPlayer : onGoClues}
           disabled={!hasMoreRevealPlayers && isRemote && !canControl}
           size="lg"
@@ -155,7 +183,7 @@ export function ImpostorRevealPhase({
           ]}>
           {hasMoreRevealPlayers
             ? isPt
-              ? 'Memorizou? Passe para o pr\u00F3ximo jogador.'
+              ? 'Memorizou? Passe para o próximo jogador.'
               : 'After memorizing, pass the phone to the next player.'
             : isRemote && !canControl
               ? copy.hostOnly

@@ -835,6 +835,10 @@ export const addRemotePlayer = async (
 
   const totalPlayersForDevice = Object.keys(targetDevice.players).length;
 
+  if (lobby.settings?.sessionAllowLocalPlayers === false && totalPlayersForDevice >= 1) {
+    throw new Error('Esta sala está no modo Apenas Online (1 jogador por celular).');
+  }
+
   if (totalPlayersForDevice >= MAX_DEVICE_PLAYERS) {
     throw new Error('Device player limit reached.');
   }
@@ -852,7 +856,7 @@ export const addRemotePlayer = async (
       id: playerId,
       name: playerName.trim(),
       avatarId: pickAvatarId(usedAvatarIds),
-      isReady: false,
+      isReady: true,
       isHost: false,
       deviceId,
     },

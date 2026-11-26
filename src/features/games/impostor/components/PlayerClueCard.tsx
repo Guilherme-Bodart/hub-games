@@ -10,8 +10,8 @@ import Animated, {
 import { PlayerClueCardTone } from '@/src/features/games/impostor/hooks/useImpostorCluesPhaseViewModel';
 import { cluesPhaseStyles as styles } from '@/src/features/games/impostor/styles/cluesPhaseStyles';
 import { ImpostorRound } from '@/src/features/games/impostor/types';
+import { ELEVATION_STYLES, GameAccentPalette, getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
 import { AvatarSprite } from '@/src/ui/atoms';
 
 type PlayerClueCardProps = {
@@ -26,226 +26,213 @@ type PlayerClueCardProps = {
   theme: ThemeTokens;
 };
 
-const resolveTone = (tone: PlayerClueCardTone, theme: ThemeTokens) => {
+const resolveTone = (tone: PlayerClueCardTone, theme: ThemeTokens, accent: GameAccentPalette) => {
   if (tone === 'submitted') {
     return {
-      borderColor: withAlpha(theme.semantic.status.success, 0.24),
-      cardBg: withAlpha('#FFFFFF', 0.94),
-      shadowColor: withAlpha(theme.semantic.status.success, 0.24),
-      avatarBg: withAlpha(theme.semantic.status.success, 0.1),
-      avatarBorder: withAlpha(theme.semantic.status.success, 0.16),
-      statusBg: withAlpha(theme.semantic.status.success, 0.12),
-      statusBorder: withAlpha(theme.semantic.status.success, 0.18),
-      statusText: '#1F8E70',
-      emphasisText: theme.semantic.button.primary.bg,
-      historyBg: withAlpha(theme.semantic.status.success, 0.05),
-      historyBorder: withAlpha(theme.semantic.status.success, 0.08),
-      historyChipBg: withAlpha(theme.semantic.status.success, 0.08),
-      historyChipBorder: withAlpha(theme.semantic.status.success, 0.1),
+      borderColor: theme.semantic.status.success,
+      avatarBg: theme.semantic.badge.successBg,
+      avatarBorder: theme.semantic.status.success,
+      statusBg: theme.semantic.badge.successBg,
+      statusBorder: theme.semantic.status.success,
+      statusText: theme.semantic.badge.successText,
+      emphasisText: theme.semantic.text.primary,
     };
   }
 
   if (tone === 'typing') {
     return {
-      borderColor: withAlpha(theme.semantic.button.primary.bg, 0.24),
-      cardBg: withAlpha('#FFFFFF', 0.94),
-      shadowColor: withAlpha(theme.semantic.button.primary.bg, 0.22),
-      avatarBg: withAlpha(theme.semantic.button.primary.bg, 0.12),
-      avatarBorder: withAlpha(theme.semantic.button.primary.bg, 0.16),
-      statusBg: withAlpha(theme.semantic.button.primary.bg, 0.12),
-      statusBorder: withAlpha(theme.semantic.button.primary.bg, 0.18),
-      statusText: theme.semantic.button.primary.bg,
-      emphasisText: theme.semantic.text.primary,
-      historyBg: withAlpha(theme.semantic.text.muted, 0.08),
-      historyBorder: withAlpha(theme.semantic.text.muted, 0.1),
-      historyChipBg: withAlpha(theme.semantic.text.muted, 0.08),
-      historyChipBorder: withAlpha(theme.semantic.text.muted, 0.1),
+      borderColor: accent.primary,
+      avatarBg: accent.tint,
+      avatarBorder: accent.primary,
+      statusBg: accent.tint,
+      statusBorder: accent.primary,
+      statusText: accent.plinth,
+      emphasisText: accent.primary,
     };
   }
 
   return {
-    borderColor: withAlpha(theme.semantic.border.subtle, 0.95),
-    cardBg: withAlpha('#FFFFFF', 0.92),
-    shadowColor: withAlpha(theme.semantic.shadow.base, 0.12),
-    avatarBg: withAlpha(theme.semantic.text.muted, 0.1),
-    avatarBorder: withAlpha(theme.semantic.border.subtle, 0.9),
-    statusBg: withAlpha(theme.semantic.text.muted, 0.1),
-    statusBorder: withAlpha(theme.semantic.border.subtle, 0.95),
-    statusText: theme.semantic.text.secondary,
+    borderColor: theme.semantic.border.hairline,
+    avatarBg: theme.semantic.bg.subtle,
+    avatarBorder: theme.semantic.border.hairline,
+    statusBg: theme.semantic.bg.subtle,
+    statusBorder: theme.semantic.border.hairline,
+    statusText: theme.semantic.text.muted,
     emphasisText: theme.semantic.text.secondary,
-    historyBg: withAlpha(theme.semantic.text.muted, 0.07),
-    historyBorder: withAlpha(theme.semantic.text.muted, 0.1),
-    historyChipBg: withAlpha(theme.semantic.bg.surface, 0.85),
-    historyChipBorder: withAlpha(theme.semantic.border.subtle, 0.95),
   };
 };
 
-export const PlayerClueCard = memo(function PlayerClueCard({
-  player,
-  clue,
-  previousClues,
-  playerLabel,
-  statusLabel,
-  emphasisLabel,
-  historyLabel,
-  tone,
-  theme,
-}: PlayerClueCardProps) {
-  const hasClue = Boolean(clue);
-  const flipProgress = useSharedValue(1);
-  const emphasisPulse = useSharedValue(1);
-  const wasClueVisibleRef = useRef(hasClue);
-  const palette = resolveTone(tone, theme);
+export const PlayerClueCard = memo(
+  function PlayerClueCard({
+    player,
+    clue,
+    previousClues,
+    playerLabel,
+    statusLabel,
+    emphasisLabel,
+    historyLabel,
+    tone,
+    theme,
+  }: PlayerClueCardProps) {
+    const accent = getGameAccent('impostor-neon');
+    const hasClue = Boolean(clue);
+    const flipProgress = useSharedValue(1);
+    const emphasisPulse = useSharedValue(1);
+    const wasClueVisibleRef = useRef(hasClue);
+    const palette = resolveTone(tone, theme, accent);
 
-  useEffect(() => {
-    if (hasClue && !wasClueVisibleRef.current) {
-      flipProgress.value = 0;
-      flipProgress.value = withTiming(1, { duration: 420 });
-    }
+    useEffect(() => {
+      if (hasClue && !wasClueVisibleRef.current) {
+        flipProgress.value = 0;
+        flipProgress.value = withTiming(1, { duration: 420 });
+      }
+      wasClueVisibleRef.current = hasClue;
+    }, [flipProgress, hasClue]);
 
-    wasClueVisibleRef.current = hasClue;
-  }, [flipProgress, hasClue]);
+    useEffect(() => {
+      if (tone === 'typing' && !hasClue) {
+        emphasisPulse.value = 1;
+        emphasisPulse.value = withRepeat(withTiming(0.62, { duration: 540 }), -1, true);
+        return;
+      }
+      emphasisPulse.value = withTiming(1, { duration: 180 });
+    }, [emphasisPulse, hasClue, tone]);
 
-  useEffect(() => {
-    if (tone === 'typing' && !hasClue) {
-      emphasisPulse.value = 1;
-      emphasisPulse.value = withRepeat(withTiming(0.58, { duration: 540 }), -1, true);
-      return;
-    }
+    const flipStyle = useAnimatedStyle(() => ({
+      transform: [{ perspective: 840 }, { rotateY: `${(1 - flipProgress.value) * 90}deg` }],
+      opacity: 0.54 + flipProgress.value * 0.46,
+    }));
 
-    emphasisPulse.value = withTiming(1, { duration: 180 });
-  }, [emphasisPulse, hasClue, tone]);
+    const emphasisStyle = useAnimatedStyle(() => ({
+      opacity: tone === 'typing' && !hasClue ? emphasisPulse.value : 1,
+      transform: [{ scale: tone === 'typing' && !hasClue ? 0.98 + emphasisPulse.value * 0.02 : 1 }],
+    }));
 
-  const flipStyle = useAnimatedStyle(() => ({
-    transform: [{ perspective: 840 }, { rotateY: `${(1 - flipProgress.value) * 90}deg` }],
-    opacity: 0.54 + flipProgress.value * 0.46,
-  }));
-
-  const emphasisStyle = useAnimatedStyle(() => ({
-    opacity: tone === 'typing' && !hasClue ? emphasisPulse.value : 1,
-    transform: [{ scale: tone === 'typing' && !hasClue ? 0.98 + emphasisPulse.value * 0.02 : 1 }],
-  }));
-
-  return (
-    <Animated.View
-      style={[
-        styles.playerCard,
-        flipStyle,
-        {
-          borderColor: palette.borderColor,
-          backgroundColor: palette.cardBg,
-          shadowColor: palette.shadowColor,
-        },
-      ]}>
-      <View style={styles.playerTopRow}>
-        <View
-          style={[
-            styles.avatarWrap,
-            {
-              backgroundColor: palette.avatarBg,
-              borderColor: palette.avatarBorder,
-            },
-          ]}>
-          <AvatarSprite avatarId={player.avatarId} size={26} />
-        </View>
-
-        <View style={styles.playerMeta}>
-          {playerLabel ? (
-            <Text style={[styles.playerMetaLabel, { color: theme.semantic.text.muted }]}>{playerLabel}</Text>
-          ) : null}
-          <Text
-            numberOfLines={1}
+    return (
+      <Animated.View
+        style={[
+          styles.playerCard,
+          ELEVATION_STYLES.card,
+          flipStyle,
+          {
+            borderColor: palette.borderColor,
+            backgroundColor: theme.semantic.bg.surface,
+          },
+        ]}>
+        <View style={styles.playerTopRow}>
+          <View
             style={[
-              styles.playerName,
-              {
-                color: theme.semantic.text.secondary,
-                fontFamily: theme.semantic.typography.bodyFamily,
-                fontWeight: theme.semantic.typography.bodyWeight,
-              },
+              styles.avatarWrap,
+              { backgroundColor: palette.avatarBg, borderColor: palette.avatarBorder },
             ]}>
-            {player.name}
-          </Text>
-        </View>
+            <AvatarSprite avatarId={player.avatarId} size={26} />
+          </View>
 
-        <Text
-          style={[
-            styles.playerStatusInline,
-            {
-              color: palette.statusText,
-              fontFamily: theme.semantic.typography.bodyFamily,
-              fontWeight: theme.semantic.typography.bodyWeight,
-            },
-          ]}>
-          {statusLabel}
-        </Text>
-      </View>
+          <View style={styles.playerMeta}>
+            {playerLabel ? (
+              <Text style={[styles.playerMetaLabel, { color: theme.semantic.text.muted }]}>
+                {playerLabel}
+              </Text>
+            ) : null}
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.playerName,
+                {
+                  color: theme.semantic.text.primary,
+                  fontFamily: theme.semantic.typography.titleFamily,
+                  fontWeight: theme.semantic.typography.titleWeight,
+                },
+              ]}>
+              {player.name}
+            </Text>
+          </View>
 
-      {emphasisLabel ? (
-        <Animated.Text
-          style={[
-            styles.emphasisLabel,
-            emphasisStyle,
-            {
-              color: palette.emphasisText,
-              fontFamily: theme.semantic.typography.titleFamily,
-              fontWeight: theme.semantic.typography.titleWeight,
-            },
-          ]}>
-          {emphasisLabel}
-        </Animated.Text>
-      ) : null}
-
-      {previousClues.length ? (
-        <View
-          style={[
-            styles.historyBlock,
-            {
-              backgroundColor: palette.historyBg,
-              borderColor: palette.historyBorder,
-            },
-          ]}>
-          <Text
+          <View
             style={[
-              styles.historyLabel,
-              {
-                color: theme.semantic.text.muted,
-                fontFamily: theme.semantic.typography.bodyFamily,
-                fontWeight: theme.semantic.typography.bodyWeight,
-              },
+              styles.statusPill,
+              { backgroundColor: palette.statusBg, borderColor: palette.statusBorder },
             ]}>
-            {historyLabel}
-          </Text>
-          <View style={styles.historyList}>
-            {previousClues.map((oldClue, index) => (
-              <View
-                key={`${player.id}-history-${index}`}
-                style={[
-                  styles.historyChip,
-                  {
-                    backgroundColor: palette.historyChipBg,
-                    borderColor: palette.historyChipBorder,
-                  },
-                ]}>
-                <Text
-                  style={[
-                    styles.historyChipText,
-                    {
-                      color: theme.semantic.text.secondary,
-                      fontFamily: theme.semantic.typography.bodyFamily,
-                      fontWeight: theme.semantic.typography.bodyWeight,
-                    },
-                  ]}>
-                  {oldClue}
-                </Text>
-              </View>
-            ))}
+            <Text
+              style={[
+                styles.playerStatusInline,
+                {
+                  color: palette.statusText,
+                  fontFamily: theme.semantic.typography.bodyFamily,
+                  fontWeight: theme.semantic.typography.bodyWeight,
+                },
+              ]}>
+              {statusLabel}
+            </Text>
           </View>
         </View>
-      ) : null}
-    </Animated.View>
-  );
-}, (prevProps, nextProps) => {
-  return (
+
+        {emphasisLabel ? (
+          <Animated.Text
+            style={[
+              styles.emphasisLabel,
+              emphasisStyle,
+              {
+                color: palette.emphasisText,
+                fontFamily: theme.semantic.typography.titleFamily,
+                fontWeight: theme.semantic.typography.titleWeight,
+              },
+            ]}>
+            {emphasisLabel}
+          </Animated.Text>
+        ) : null}
+
+        {previousClues.length ? (
+          <View
+            style={[
+              styles.historyBlock,
+              {
+                backgroundColor: theme.semantic.bg.subtle,
+                borderColor: theme.semantic.border.hairline,
+              },
+            ]}>
+            <Text
+              style={[
+                styles.historyLabel,
+                {
+                  color: theme.semantic.text.muted,
+                  fontFamily: theme.semantic.typography.bodyFamily,
+                  fontWeight: theme.semantic.typography.bodyWeight,
+                },
+              ]}>
+              {historyLabel}
+            </Text>
+            <View style={styles.historyList}>
+              {previousClues.map((oldClue, index) => (
+                <View
+                  key={`${player.id}-history-${index}`}
+                  style={[
+                    styles.historyChip,
+                    {
+                      backgroundColor: theme.semantic.bg.surface,
+                      borderColor: theme.semantic.border.hairline,
+                    },
+                  ]}>
+                  <Text
+                    style={[
+                      styles.historyChipText,
+                      {
+                        color: theme.semantic.text.secondary,
+                        fontFamily: theme.semantic.typography.bodyFamily,
+                        fontWeight: theme.semantic.typography.bodyWeight,
+                      },
+                    ]}>
+                    {oldClue}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
+      </Animated.View>
+    );
+  },
+  (prevProps, nextProps) =>
     prevProps.player.id === nextProps.player.id &&
     prevProps.player.name === nextProps.player.name &&
     prevProps.player.avatarId === nextProps.player.avatarId &&
@@ -258,5 +245,4 @@ export const PlayerClueCard = memo(function PlayerClueCard({
     prevProps.previousClues.length === nextProps.previousClues.length &&
     prevProps.previousClues.every((value, index) => value === nextProps.previousClues[index]) &&
     prevProps.theme === nextProps.theme
-  );
-});
+);

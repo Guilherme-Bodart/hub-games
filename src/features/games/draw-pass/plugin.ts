@@ -1,12 +1,12 @@
 import { GAME_COVER_ASSETS } from '@/src/features/games/gameCoverAssets';
 import { GamePlugin } from '@/src/features/games/types';
-import { DrawPassScreen } from '@/src/features/games/draw-pass/DrawPassScreen';
+import { DrawPassScreen } from '@/src/features/games/draw-pass/screens/DrawPassScreen';
 
 export const drawPassPlugin: GamePlugin = {
   manifest: {
     id: 'draw-pass',
     coverGlyph: 'DRW',
-    coverTone: '#6BB8E6',
+    coverTone: '#0EA5E9',
     coverImage: GAME_COVER_ASSETS.DRAW_PASS,
     title: { pt: 'Desenha e Passa', en: 'Draw & Pass' },
     subtitle: {

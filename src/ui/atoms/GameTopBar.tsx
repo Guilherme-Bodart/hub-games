@@ -1,11 +1,17 @@
 import { SymbolView } from 'expo-symbols';
 import { ComponentProps, useEffect } from 'react';
 import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
+import Animated, {
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
-import { useTheme } from '@/src/theme';
+import { ELEVATION_STYLES, useTheme } from '@/src/theme';
 import { withAlpha } from '@/src/theme/utils';
+import { useReducedMotion } from '@/src/ui/motion';
 
 type GameTopBarTone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 type GameTopBarSymbolName = ComponentProps<typeof SymbolView>['name'];
@@ -26,14 +32,6 @@ type GameTopBarProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-const resolveToneColor = (tone: GameTopBarTone, fallback: string, themeStatus: Record<string, string>) => {
-  if (tone === 'neutral') {
-    return fallback;
-  }
-
-  return themeStatus[tone];
-};
-
 export function GameTopBar({
   title,
   subtitle,
@@ -46,49 +44,43 @@ export function GameTopBar({
   onPressRight,
   rightLabel = '?',
   rightSymbolName,
-  rightAccessibilityLabel = 'abrir opcoes',
+  rightAccessibilityLabel = 'Abrir opções',
   style,
 }: GameTopBarProps) {
   const { theme } = useTheme();
-  const pulse = useSharedValue(0.64);
-  const toneColor = resolveToneColor(statusTone, theme.semantic.text.muted, theme.semantic.status);
+  const reduceMotion = useReducedMotion();
+  const pulse = useSharedValue(1);
+  const toneColor =
+    statusTone === 'neutral' ? theme.semantic.text.muted : theme.semantic.status[statusTone];
 
   useEffect(() => {
-    pulse.value = withRepeat(withTiming(1, { duration: 860 }), -1, true);
-  }, [pulse]);
+    if (reduceMotion) {
+      cancelAnimation(pulse);
+      pulse.value = 1;
+      return;
+    }
+
+    pulse.value = 0.65;
+    pulse.value = withRepeat(withTiming(1, { duration: 900 }), -1, true);
+    return () => cancelAnimation(pulse);
+  }, [pulse, reduceMotion]);
 
   const pulseStyle = useAnimatedStyle(() => ({
     opacity: pulse.value,
-    transform: [{ scale: 0.84 + pulse.value * 0.2 }],
+    transform: [{ scale: reduceMotion ? 1 : 0.88 + pulse.value * 0.14 }],
   }));
 
   return (
     <View
       style={[
         styles.container,
+        ELEVATION_STYLES.card,
         {
-          borderRadius: 24,
-          borderWidth: theme.semantic.layout.borderWidth.subtle,
-          borderColor: '#D9E2EF',
-          backgroundColor: '#FFFFFF',
-          paddingHorizontal: theme.semantic.layout.spacing.md,
-          paddingVertical: theme.semantic.layout.spacing.md,
-          gap: theme.semantic.layout.spacing.sm,
-          shadowColor: '#000000',
-          shadowOpacity: 0.08,
-          shadowRadius: 10,
-          shadowOffset: { width: 0, height: 4 },
-          elevation: 4,
+          backgroundColor: theme.semantic.bg.surface,
+          borderColor: theme.semantic.border.hairline,
         },
         style,
       ]}>
-      <LinearGradient
-        pointerEvents="none"
-        colors={['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.04)']}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={styles.topGloss}
-      />
       {onPressLeft ? (
         <Pressable
           accessibilityRole="button"
@@ -97,30 +89,22 @@ export function GameTopBar({
           style={({ pressed }) => [
             styles.iconButton,
             {
-              width: theme.semantic.layout.minTouchTarget,
-              height: theme.semantic.layout.minTouchTarget,
-              borderRadius: theme.semantic.layout.radius.full,
-              borderWidth: theme.semantic.layout.borderWidth.subtle,
-              borderColor: 'rgba(0,0,0,0.12)',
-              backgroundColor: '#FFFFFF',
-              shadowColor: '#000000',
-              shadowOpacity: 0.22,
-              shadowRadius: 5,
-              shadowOffset: { width: 2, height: 2 },
-              elevation: 5,
-              opacity: pressed ? theme.semantic.motion.feedback.pressedOpacity : 1,
+              backgroundColor: theme.semantic.bg.subtle,
+              borderColor: theme.semantic.border.hairline,
+              opacity: pressed ? 0.72 : 1,
             },
           ]}>
-          <SymbolView name={leftSymbolName} size={18} tintColor="#2B2A46" />
+          <SymbolView name={leftSymbolName} size={18} tintColor={theme.semantic.text.primary} />
         </Pressable>
       ) : null}
+
       <View style={styles.titleWrap}>
         <Text
           numberOfLines={1}
           style={[
             styles.title,
             {
-              color: '#23254D',
+              color: theme.semantic.text.primary,
               fontFamily: theme.semantic.typography.titleFamily,
               fontWeight: theme.semantic.typography.titleWeight,
             },
@@ -133,7 +117,7 @@ export function GameTopBar({
             style={[
               styles.subtitle,
               {
-                color: '#5B6585',
+                color: theme.semantic.text.secondary,
                 fontFamily: theme.semantic.typography.bodyFamily,
                 fontWeight: theme.semantic.typography.bodyWeight,
               },
@@ -144,55 +128,37 @@ export function GameTopBar({
       </View>
 
       <View style={styles.rightActions}>
-        {showStatus
-          ? statusLabel ? (
-              <View
+        {showStatus ? (
+          statusLabel ? (
+            <View
+              style={[
+                styles.statusPill,
+                {
+                  borderColor: withAlpha(toneColor, 0.28),
+                  backgroundColor: withAlpha(toneColor, 0.12),
+                },
+              ]}>
+              <Animated.View
+                style={[styles.statusDot, pulseStyle, { backgroundColor: toneColor }]}
+              />
+              <Text
+                numberOfLines={1}
                 style={[
-                  styles.statusPill,
+                  styles.statusPillLabel,
                   {
-                    borderColor: withAlpha(toneColor, 0.3),
-                    backgroundColor: withAlpha(toneColor, 0.14),
-                    borderWidth: theme.semantic.layout.borderWidth.subtle,
-                    borderRadius: theme.semantic.layout.radius.full,
-                    paddingHorizontal: theme.semantic.layout.spacing.sm,
-                    paddingVertical: theme.semantic.layout.spacing.xs,
+                    color: theme.semantic.text.primary,
+                    fontFamily: theme.semantic.typography.bodyFamily,
+                    fontWeight: theme.semantic.typography.bodyWeight,
                   },
                 ]}>
-                <Animated.View
-                  style={[
-                    styles.statusDot,
-                    pulseStyle,
-                    {
-                      backgroundColor: toneColor,
-                      shadowColor: toneColor,
-                    },
-                  ]}
-                />
-                <Text
-                  style={[
-                    styles.statusPillLabel,
-                    {
-                      color: '#2B2A46',
-                      fontFamily: theme.semantic.typography.bodyFamily,
-                      fontWeight: theme.semantic.typography.bodyWeight,
-                    },
-                  ]}>
-                  {statusLabel}
-                </Text>
-              </View>
-            ) : (
-              <Animated.View
-                style={[
-                  styles.statusDot,
-                  pulseStyle,
-                  {
-                    backgroundColor: toneColor,
-                    shadowColor: toneColor,
-                  },
-                ]}
-              />
-            )
-          : null}
+                {statusLabel}
+              </Text>
+            </View>
+          ) : (
+            <Animated.View style={[styles.statusDot, pulseStyle, { backgroundColor: toneColor }]} />
+          )
+        ) : null}
+
         {onPressRight ? (
           <Pressable
             accessibilityRole="button"
@@ -201,32 +167,23 @@ export function GameTopBar({
             style={({ pressed }) => [
               styles.iconButton,
               {
-                width: theme.semantic.layout.minTouchTarget,
-                height: theme.semantic.layout.minTouchTarget,
-                borderRadius: theme.semantic.layout.radius.full,
-                borderWidth: theme.semantic.layout.borderWidth.subtle,
-                borderColor: 'rgba(0,0,0,0.12)',
-                backgroundColor: '#FFFFFF',
-                shadowColor: '#000000',
-                shadowOpacity: 0.3,
-                shadowRadius: 6,
-                shadowOffset: { width: 4, height: 4 },
-                elevation: 7,
-                opacity: pressed ? theme.semantic.motion.feedback.pressedOpacity : 1,
+                backgroundColor: theme.semantic.bg.subtle,
+                borderColor: theme.semantic.border.hairline,
+                opacity: pressed ? 0.72 : 1,
               },
             ]}>
             {rightSymbolName ? (
               <SymbolView
                 name={rightSymbolName}
                 size={18}
-                tintColor="#2B2A46"
+                tintColor={theme.semantic.text.primary}
               />
             ) : (
               <Text
                 style={[
                   styles.iconLabel,
                   {
-                    color: '#2B2A46',
+                    color: theme.semantic.text.primary,
                     fontFamily: theme.semantic.typography.numberFamily,
                     fontWeight: theme.semantic.typography.numberWeight,
                   },
@@ -243,14 +200,15 @@ export function GameTopBar({
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
-    overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  topGloss: {
-    ...StyleSheet.absoluteFill,
+    borderRadius: 20,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 10,
+    overflow: 'visible',
   },
   titleWrap: {
     flex: 1,
@@ -258,12 +216,12 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   title: {
-    fontSize: 24,
-    lineHeight: 26,
-    letterSpacing: 0.3,
+    fontSize: 20,
+    lineHeight: 24,
+    letterSpacing: 0.2,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 12,
     lineHeight: 16,
   },
   rightActions: {
@@ -275,26 +233,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   statusDot: {
-    width: 12,
-    height: 12,
+    width: 9,
+    height: 9,
     borderRadius: 999,
-    shadowOpacity: 0.26,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
   },
   statusPillLabel: {
     fontSize: 12,
-    lineHeight: 14,
+    lineHeight: 15,
   },
   iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 999,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconLabel: {
-    fontSize: 18,
+    fontSize: 16,
     lineHeight: 18,
   },
 });

@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import { OrderingCard } from '@/src/features/games/sintonia/components/OrderingCard';
-import { SintoniaPlayer, SintoniaRevealFeedback } from '@/src/features/games/sintonia/types';
 import { styles } from '@/src/features/games/sintonia/styles/sintoniaStyles';
+import { SintoniaPlayer, SintoniaRevealFeedback } from '@/src/features/games/sintonia/types';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
 import { Badge } from '@/src/ui/atoms';
 
 type SintoniaBoardSectionProps = {
@@ -36,6 +36,8 @@ export function SintoniaBoardSection({
   onOrderingCardMeasure,
   onDropPlayer,
 }: SintoniaBoardSectionProps) {
+  const [isDraggingCard, setIsDraggingCard] = useState(false);
+
   return (
     <>
       <View style={styles.playersMetaRow}>
@@ -57,8 +59,8 @@ export function SintoniaBoardSection({
         style={[
           styles.cardsViewport,
           {
-            borderColor: withAlpha(theme.semantic.border.subtle, 0.7),
-            backgroundColor: withAlpha(theme.semantic.bg.surface, 0.5),
+            borderColor: theme.semantic.border.hairline,
+            backgroundColor: theme.semantic.bg.subtle,
           },
         ]}>
         {!orderedPlayers.length ? (
@@ -77,7 +79,11 @@ export function SintoniaBoardSection({
           </View>
         ) : null}
 
-        <ScrollView contentContainerStyle={styles.orderingGrid} showsVerticalScrollIndicator={false} bounces>
+        <ScrollView
+          scrollEnabled={!isDraggingCard}
+          contentContainerStyle={styles.orderingGrid}
+          showsVerticalScrollIndicator={false}
+          bounces>
           {orderedPlayers.map((player, index) => (
             <OrderingCard
               key={player.id}
@@ -89,6 +95,7 @@ export function SintoniaBoardSection({
               revealFeedback={revealedById[player.id] ?? 'hidden'}
               isDragEnabled={isDragEnabled}
               onDrop={onDropPlayer}
+              onDragStateChange={setIsDraggingCard}
               hiddenNumberLabel={hiddenNumberLabel}
             />
           ))}

@@ -2,8 +2,8 @@ import { Pressable, Text, View } from 'react-native';
 
 import { impostorPhaseStyles as styles } from '@/src/features/games/impostor/styles/impostorPhaseStyles';
 import { ImpostorRound } from '@/src/features/games/impostor/types';
+import { ELEVATION_STYLES, getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
 import { AvatarSprite, Button } from '@/src/ui/atoms';
 
 type VotingPhaseProps = {
@@ -43,14 +43,41 @@ export function ImpostorVotingPhase({
   onConfirmVote,
   isConfirmDisabled,
 }: VotingPhaseProps) {
+  const accent = getGameAccent('impostor-neon');
+  const isBoardInteractive = Boolean(activeVotingPlayerId && votingRevealDone && !isVoteSelectionLocked);
+
   return (
     <View style={styles.voteStage}>
       {activeVotingPlayerId ? (
-        <View style={styles.activeVoterCard}>
-          <Text style={[styles.activeVoterLabel, { color: theme.semantic.text.secondary }]}>
+        <View
+          style={[
+            styles.activeVoterCard,
+            ELEVATION_STYLES.card,
+            {
+              backgroundColor: theme.semantic.bg.surface,
+              borderColor: theme.semantic.border.hairline,
+            },
+          ]}>
+          <Text
+            style={[
+              styles.activeVoterLabel,
+              {
+                color: accent.primary,
+                fontFamily: theme.semantic.typography.bodyFamily,
+                fontWeight: theme.semantic.typography.bodyWeight,
+              },
+            ]}>
             {copy.turnOf}
           </Text>
-          <Text style={[styles.activeVoterName, { color: theme.semantic.text.primary }]}>
+          <Text
+            style={[
+              styles.activeVoterName,
+              {
+                color: theme.semantic.text.primary,
+                fontFamily: theme.semantic.typography.titleFamily,
+                fontWeight: theme.semantic.typography.titleWeight,
+              },
+            ]}>
             {round.players.find((player) => player.id === activeVotingPlayerId)?.name || '-'}
           </Text>
           <View style={styles.voteProgressDots}>
@@ -66,20 +93,28 @@ export function ImpostorVotingPhase({
                       borderColor: submitted
                         ? theme.semantic.status.success
                         : active
-                          ? theme.semantic.button.primary.bg
-                          : theme.semantic.border.subtle,
+                          ? accent.primary
+                          : theme.semantic.border.strong,
                       backgroundColor: submitted
-                        ? withAlpha(theme.semantic.status.success, 0.84)
+                        ? theme.semantic.status.success
                         : active
-                          ? withAlpha(theme.semantic.button.primary.bg, 0.22)
-                          : 'transparent',
+                          ? accent.tint
+                          : theme.semantic.bg.subtle,
                     },
                   ]}
                 />
               );
             })}
           </View>
-          <Text style={{ color: theme.semantic.text.secondary, fontSize: 12 }}>
+          <Text
+            style={[
+              styles.activeVoterMeta,
+              {
+                color: theme.semantic.text.secondary,
+                fontFamily: theme.semantic.typography.bodyFamily,
+                fontWeight: theme.semantic.typography.bodyWeight,
+              },
+            ]}>
             {`${localVotesSubmittedCount}/${localVotingPlayers.length} ${isPt ? 'votos locais' : 'local votes'}`}
           </Text>
         </View>
@@ -89,8 +124,8 @@ export function ImpostorVotingPhase({
         style={[
           styles.voteBoardWrap,
           {
-            borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
-            backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.86),
+            borderColor: theme.semantic.border.hairline,
+            backgroundColor: theme.semantic.bg.subtle,
           },
         ]}>
         <View style={styles.voteGrid}>
@@ -102,32 +137,30 @@ export function ImpostorVotingPhase({
                   accessibilityRole="button"
                   accessibilityLabel={`${isPt ? 'Selecionar suspeito' : 'Select suspect'}: ${player.name}`}
                   accessibilityState={{
-                    disabled: !activeVotingPlayerId || !votingRevealDone || isVoteSelectionLocked,
+                    disabled: !isBoardInteractive,
                     selected,
                   }}
-                  disabled={!activeVotingPlayerId || !votingRevealDone || isVoteSelectionLocked}
+                  disabled={!isBoardInteractive}
                   onPress={() => onToggleSuspect(player.id)}
                   style={[
-                    styles.playerCard,
                     styles.votePlayerCard,
-                    selected ? styles.voteSelectedCard : null,
+                    selected ? ELEVATION_STYLES.floating : ELEVATION_STYLES.card,
                     {
-                      borderColor: selected ? theme.semantic.status.error : theme.semantic.border.subtle,
-                      borderWidth: selected ? 1.8 : 1.25,
-                      backgroundColor: theme.semantic.bg.surface,
-                      shadowColor: theme.semantic.shadow.base,
-                      transform: [{ scale: selected ? 1.03 : 1 }],
-                      opacity: activeVotingPlayerId && votingRevealDone && !isVoteSelectionLocked ? 1 : 0.4,
+                      borderColor: selected ? accent.primary : theme.semantic.border.hairline,
+                      backgroundColor: selected ? accent.tint : theme.semantic.bg.surface,
+                      opacity: isBoardInteractive ? 1 : 0.45,
                     },
                   ]}>
                   <View style={styles.votePlayerRow}>
-                    <AvatarSprite avatarId={player.avatarId} size={28} />
-                    <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+                    <AvatarSprite avatarId={player.avatarId} size={30} />
+                    <View style={styles.votePlayerMeta}>
                       <Text
                         style={[
                           styles.votePlayerRole,
                           {
-                            color: selected ? theme.semantic.status.error : theme.semantic.text.muted,
+                            color: selected ? accent.primary : theme.semantic.text.muted,
+                            fontFamily: theme.semantic.typography.bodyFamily,
+                            fontWeight: theme.semantic.typography.bodyWeight,
                           },
                         ]}>
                         {selected ? (isPt ? 'Suspeito' : 'Suspect') : isPt ? 'Jogador' : 'Player'}
@@ -135,7 +168,14 @@ export function ImpostorVotingPhase({
                       <Text
                         numberOfLines={1}
                         ellipsizeMode="tail"
-                        style={[styles.votePlayerName, { color: theme.semantic.text.primary }]}>
+                        style={[
+                          styles.votePlayerName,
+                          {
+                            color: theme.semantic.text.primary,
+                            fontFamily: theme.semantic.typography.titleFamily,
+                            fontWeight: theme.semantic.typography.titleWeight,
+                          },
+                        ]}>
                         {player.name}
                       </Text>
                     </View>
@@ -151,14 +191,28 @@ export function ImpostorVotingPhase({
             style={[
               styles.votePrivacyOverlay,
               {
-                backgroundColor: withAlpha(theme.semantic.bg.app, 0.9),
-                borderColor: withAlpha(theme.semantic.border.subtle, 0.98),
+                backgroundColor: theme.semantic.bg.surface,
+                borderColor: theme.semantic.border.hairline,
               },
             ]}>
-            <Text style={[styles.votePrivacyText, { color: theme.semantic.text.secondary }]}>
+            <Text
+              style={[
+                styles.votePrivacyText,
+                {
+                  color: theme.semantic.text.secondary,
+                  fontFamily: theme.semantic.typography.bodyFamily,
+                  fontWeight: theme.semantic.typography.bodyWeight,
+                },
+              ]}>
               {copy.votePrivacyHint}
             </Text>
-            <Button label={copy.unlockVote} onPress={onUnlockVote} size="lg" />
+            <Button
+              label={copy.unlockVote}
+              color={accent.primary}
+              plinthColor={accent.plinth}
+              onPress={onUnlockVote}
+              size="lg"
+            />
           </View>
         ) : null}
       </View>
@@ -173,13 +227,24 @@ export function ImpostorVotingPhase({
               ? 'Aguardando votos locais'
               : 'Waiting for local votes'
         }
+        color={accent.primary}
+        plinthColor={accent.plinth}
         disabled={isConfirmDisabled}
         onPress={onConfirmVote}
         size="lg"
-        style={{ width: '100%' }}
+        style={styles.fullWidthButton}
       />
+
       {allLocalVotingSubmitted ? (
-        <Text style={{ color: theme.semantic.text.muted }}>
+        <Text
+          style={[
+            styles.voteWaitingText,
+            {
+              color: theme.semantic.text.muted,
+              fontFamily: theme.semantic.typography.bodyFamily,
+              fontWeight: theme.semantic.typography.bodyWeight,
+            },
+          ]}>
           {isPt
             ? 'Votos locais enviados. Aguardando os outros aparelhos...'
             : 'Local votes sent. Waiting for the other devices...'}

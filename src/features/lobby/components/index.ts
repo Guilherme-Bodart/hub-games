@@ -2,6 +2,7 @@
 export { LobbyAddPlayerCard } from '@/src/features/lobby/components/LobbyAddPlayerCard';
 export { LobbyHeaderPanel } from '@/src/features/lobby/components/LobbyHeaderPanel';
 export { LobbyPlayersSection } from '@/src/features/lobby/components/LobbyPlayersSection';
+export { LobbyImpostorSettingsSection } from '@/src/features/lobby/components/LobbyImpostorSettingsSection';
 export { LobbySettingsModal } from '@/src/features/lobby/components/LobbySettingsModal';
 export { LobbyAddPlayerModal } from '@/src/features/lobby/components/LobbyAddPlayerModal';
 export { LobbyLeaveConfirmModal } from '@/src/features/lobby/components/LobbyLeaveConfirmModal';

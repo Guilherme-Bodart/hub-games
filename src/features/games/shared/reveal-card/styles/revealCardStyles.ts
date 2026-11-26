@@ -1,6 +1,43 @@
 import { StyleSheet } from 'react-native';
 
 export const revealCardStyles = StyleSheet.create({
+  touchRoot: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 4,
+  },
+  cardStage: {
+    width: '86%',
+    maxWidth: 316,
+    height: 336,
+    alignSelf: 'center',
+    position: 'relative',
+    overflow: 'visible',
+  },
+  cardFaceShell: {
+    ...StyleSheet.absoluteFill,
+    borderRadius: 26,
+    borderWidth: 2,
+    overflow: 'hidden',
+    backfaceVisibility: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  faceInnerReset: {
+    opacity: 1,
+  },
+  foilBandWrap: {
+    position: 'absolute',
+    top: -120,
+    bottom: -120,
+    width: 140,
+    zIndex: 4,
+  },
+  foilBand: {
+    flex: 1,
+    width: '100%',
+  },
   avatarHalo: {
     width: 112,
     height: 112,

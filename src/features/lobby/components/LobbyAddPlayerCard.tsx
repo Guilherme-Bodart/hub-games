@@ -1,88 +1,88 @@
+import { Ionicons } from '@expo/vector-icons';
 import { memo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export const LobbyAddPlayerCard = memo(function LobbyAddPlayerCard({
-  onPress,
-  accessibilityLabel,
-}: {
+import { type GameAccentPalette, useTheme } from '@/src/theme';
+
+type LobbyAddPlayerCardProps = {
+  label: string;
+  gameAccent: GameAccentPalette;
   onPress: () => void;
   accessibilityLabel: string;
-}) {
+};
+
+export const LobbyAddPlayerCard = memo(function LobbyAddPlayerCard({
+  label,
+  gameAccent,
+  onPress,
+  accessibilityLabel,
+}: LobbyAddPlayerCardProps) {
+  const { theme } = useTheme();
+
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress}
-      style={({ pressed }) => [styles.outer, pressed ? styles.outerPressed : null]}>
-      <View style={styles.inner}>
-        <View pointerEvents="none" style={styles.innerInsetHighlight} />
-        <View style={styles.plusIconWrap}>
-          <View style={styles.plusVertical} />
-          <View style={styles.plusHorizontal} />
-        </View>
+      style={({ pressed }) => [
+        styles.card,
+        {
+          backgroundColor: theme.semantic.bg.surface,
+          borderColor: theme.semantic.border.strong,
+          opacity: pressed ? 0.85 : 1,
+          transform: [{ scale: pressed ? 0.98 : 1 }],
+        },
+      ]}>
+      <View
+        style={[
+          styles.iconCircle,
+          {
+            backgroundColor: gameAccent.tint,
+            borderColor: theme.semantic.border.hairline,
+          },
+        ]}>
+        <Ionicons name="add" size={26} color={gameAccent.primary} />
       </View>
+      <Text
+        numberOfLines={2}
+        style={[
+          styles.label,
+          {
+            color: theme.semantic.text.primary,
+            fontFamily: theme.semantic.typography.titleFamily,
+            fontWeight: theme.semantic.typography.titleWeight,
+          },
+        ]}>
+        {label}
+      </Text>
     </Pressable>
   );
 });
 
 const styles = StyleSheet.create({
-  outer: {
-    minHeight: 112,
-    height: '100%',
+  card: {
+    minHeight: 164,
     width: '100%',
-    borderRadius: 18,
+    borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: '#D5E0EF',
-    backgroundColor: '#EEF3FA',
+    borderStyle: 'dashed',
+    paddingHorizontal: 14,
+    paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 6,
-    position: 'relative',
+    gap: 10,
   },
-  outerPressed: {
-    opacity: 0.88,
-    transform: [{ scale: 0.985 }],
-  },
-  inner: {
-    position: 'absolute',
-    top: 2,
-    left: 2,
-    right: 2,
-    bottom: 2,
-    borderRadius: 16,
-    backgroundColor: '#D8E2EF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  innerInsetHighlight: {
-    ...StyleSheet.absoluteFill,
-    borderRadius: 16,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255,255,255,0.72)',
-  },
-  plusIconWrap: {
-    width: 42,
-    height: 42,
+  iconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  plusVertical: {
-    position: 'absolute',
-    width: 6,
-    height: 28,
-    borderRadius: 999,
-    backgroundColor: '#9FAECC',
-  },
-  plusHorizontal: {
-    position: 'absolute',
-    width: 28,
-    height: 6,
-    borderRadius: 999,
-    backgroundColor: '#9FAECC',
+  label: {
+    fontSize: 14,
+    lineHeight: 18,
+    textAlign: 'center',
   },
 });

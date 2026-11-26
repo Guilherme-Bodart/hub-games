@@ -3,12 +3,19 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   content: {
     gap: 16,
-    paddingBottom: 28,
+    paddingBottom: 32,
+  },
+  cluesContent: {
+    paddingBottom: 40,
   },
   emptyWrap: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+  },
+  emptyActions: {
+    gap: 10,
+    marginTop: 6,
   },
   errorStrip: {
     borderWidth: 1,
@@ -17,17 +24,13 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   errorText: {
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: 13,
+    lineHeight: 19,
   },
   root: {
     gap: 14,
   },
   safeArea: {
     flex: 1,
-  },
-  screenBackdrop: {
-    ...StyleSheet.absoluteFill,
-    overflow: 'hidden',
   },
 });

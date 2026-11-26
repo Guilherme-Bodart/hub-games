@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`Neon design system snapshots Button snapshot [{ name: 'blueberrySky', label: 'Blueberry Sky' }] 1`] = `
+exports[`Neon design system snapshots Button snapshot [{ name: 'studioParty', label: 'Studio Party' }] 1`] = `
 <View
-  accessibilityLabel="Play - Blueberry Sky"
+  accessibilityLabel="Play - Studio Party"
   accessibilityRole="button"
   accessibilityState={
     {
@@ -24,7 +24,9 @@ exports[`Neon design system snapshots Button snapshot [{ name: 'blueberrySky', l
   accessible={true}
   collapsable={false}
   focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -32,245 +34,78 @@ exports[`Neon design system snapshots Button snapshot [{ name: 'blueberrySky', l
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    {
-      "alignItems": "center",
-      "backgroundColor": "#5C84FF",
-      "borderBottomColor": "#3B63DE",
-      "borderBottomWidth": 4,
-      "borderColor": "#436BE6",
-      "borderRadius": 18,
-      "borderWidth": 1.2,
-      "elevation": 3,
-      "justifyContent": "center",
-      "minHeight": 50,
-      "opacity": 1,
-      "overflow": "hidden",
-      "paddingHorizontal": 16,
-      "paddingVertical": 10,
-      "shadowColor": "#000000",
-      "shadowOffset": {
-        "height": 3,
-        "width": 0,
+    [
+      {
+        "borderRadius": 16,
       },
-      "shadowOpacity": 0.12,
-      "shadowRadius": 8,
-    }
+      {
+        "shadowColor": "#181C3A",
+        "shadowOffset": {
+          "height": 4,
+          "width": 0,
+        },
+        "shadowOpacity": 0.07,
+        "shadowRadius": 12,
+      },
+      {
+        "backgroundColor": "#3D4CE0",
+        "opacity": 1,
+        "paddingBottom": 4,
+      },
+      undefined,
+    ]
   }
 >
   <View
     style={
-      {
-        "alignItems": "center",
-        "flexDirection": "row",
-        "justifyContent": "center",
-      }
+      [
+        {
+          "alignItems": "center",
+          "borderRadius": 16,
+          "borderWidth": 1,
+          "flexDirection": "row",
+          "justifyContent": "center",
+          "paddingHorizontal": 18,
+          "paddingVertical": 10,
+        },
+        {
+          "backgroundColor": "#5B6CFF",
+          "borderColor": "#4C5DF0",
+          "minHeight": 46,
+          "transform": [
+            {
+              "translateY": 0,
+            },
+          ],
+        },
+      ]
     }
   >
     <Text
+      numberOfLines={1}
       style={
         [
           {
-            "fontSize": 19,
-            "letterSpacing": 1,
-            "lineHeight": 20,
+            "letterSpacing": 0.3,
+            "textAlign": "center",
           },
           {
-            "color": "#20255C",
+            "color": "#FFFFFF",
             "fontFamily": "Baloo2_700Bold",
+            "fontSize": 17,
             "fontWeight": "400",
-            "opacity": 1,
-            "textTransform": "uppercase",
+            "lineHeight": 22,
           },
         ]
       }
     >
-      Play - Blueberry Sky
+      Play - Studio Party
     </Text>
   </View>
 </View>
 `;
 
-exports[`Neon design system snapshots Button snapshot [{ name: 'coralPop', label: 'Coral Pop' }] 1`] = `
-<View
-  accessibilityLabel="Play - Coral Pop"
-  accessibilityRole="button"
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": false,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    {
-      "alignItems": "center",
-      "backgroundColor": "#F47D74",
-      "borderBottomColor": "#D35C53",
-      "borderBottomWidth": 4,
-      "borderColor": "#DB645B",
-      "borderRadius": 18,
-      "borderWidth": 1.2,
-      "elevation": 3,
-      "justifyContent": "center",
-      "minHeight": 50,
-      "opacity": 1,
-      "overflow": "hidden",
-      "paddingHorizontal": 16,
-      "paddingVertical": 10,
-      "shadowColor": "#000000",
-      "shadowOffset": {
-        "height": 3,
-        "width": 0,
-      },
-      "shadowOpacity": 0.12,
-      "shadowRadius": 8,
-    }
-  }
->
-  <View
-    style={
-      {
-        "alignItems": "center",
-        "flexDirection": "row",
-        "justifyContent": "center",
-      }
-    }
-  >
-    <Text
-      style={
-        [
-          {
-            "fontSize": 19,
-            "letterSpacing": 1,
-            "lineHeight": 20,
-          },
-          {
-            "color": "#20255C",
-            "fontFamily": "Baloo2_700Bold",
-            "fontWeight": "400",
-            "opacity": 1,
-            "textTransform": "uppercase",
-          },
-        ]
-      }
-    >
-      Play - Coral Pop
-    </Text>
-  </View>
-</View>
-`;
-
-exports[`Neon design system snapshots Button snapshot [{ name: 'mintJam', label: 'Mint Jam' }] 1`] = `
-<View
-  accessibilityLabel="Play - Mint Jam"
-  accessibilityRole="button"
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": false,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    {
-      "alignItems": "center",
-      "backgroundColor": "#27C4A8",
-      "borderBottomColor": "#06A387",
-      "borderBottomWidth": 4,
-      "borderColor": "#0EAB8F",
-      "borderRadius": 18,
-      "borderWidth": 1.2,
-      "elevation": 3,
-      "justifyContent": "center",
-      "minHeight": 50,
-      "opacity": 1,
-      "overflow": "hidden",
-      "paddingHorizontal": 16,
-      "paddingVertical": 10,
-      "shadowColor": "#000000",
-      "shadowOffset": {
-        "height": 3,
-        "width": 0,
-      },
-      "shadowOpacity": 0.12,
-      "shadowRadius": 8,
-    }
-  }
->
-  <View
-    style={
-      {
-        "alignItems": "center",
-        "flexDirection": "row",
-        "justifyContent": "center",
-      }
-    }
-  >
-    <Text
-      style={
-        [
-          {
-            "fontSize": 19,
-            "letterSpacing": 1,
-            "lineHeight": 20,
-          },
-          {
-            "color": "#20255C",
-            "fontFamily": "Baloo2_700Bold",
-            "fontWeight": "400",
-            "opacity": 1,
-            "textTransform": "uppercase",
-          },
-        ]
-      }
-    >
-      Play - Mint Jam
-    </Text>
-  </View>
-</View>
-`;
-
-exports[`Neon design system snapshots Card snapshot [{ name: 'blueberrySky', label: 'Blueberry Sky' }] 1`] = `
+exports[`Neon design system snapshots Card snapshot [{ name: 'studioParty', label: 'Studio Party' }] 1`] = `
 <View
   style={
     [
@@ -279,21 +114,22 @@ exports[`Neon design system snapshots Card snapshot [{ name: 'blueberrySky', lab
         "position": "relative",
       },
       {
+        "shadowColor": "#181C3A",
+        "shadowOffset": {
+          "height": 4,
+          "width": 0,
+        },
+        "shadowOpacity": 0.07,
+        "shadowRadius": 12,
+      },
+      {
         "backgroundColor": "#FFFFFF",
-        "borderColor": "#DCE3EF",
-        "borderRadius": 24,
+        "borderColor": "#E2E8F4",
+        "borderRadius": 20,
         "borderWidth": 1,
-        "elevation": 5,
         "gap": 8,
         "opacity": 1,
         "padding": 16,
-        "shadowColor": "#000000",
-        "shadowOffset": {
-          "height": 6,
-          "width": 0,
-        },
-        "shadowOpacity": 0.12,
-        "shadowRadius": 14,
       },
       undefined,
     ]
@@ -310,12 +146,12 @@ exports[`Neon design system snapshots Card snapshot [{ name: 'blueberrySky', lab
       style={
         [
           {
-            "fontSize": 20,
-            "letterSpacing": 0.3,
+            "fontSize": 19,
+            "letterSpacing": 0.2,
             "lineHeight": 24,
           },
           {
-            "color": "#23254D",
+            "color": "#181C3A",
             "fontFamily": "Baloo2_700Bold",
             "fontWeight": "400",
           },
@@ -332,7 +168,7 @@ exports[`Neon design system snapshots Card snapshot [{ name: 'blueberrySky', lab
             "lineHeight": 18,
           },
           {
-            "color": "#556082",
+            "color": "#525C7A",
             "fontFamily": "Nunito_700Bold",
             "fontWeight": "400",
           },
@@ -345,169 +181,18 @@ exports[`Neon design system snapshots Card snapshot [{ name: 'blueberrySky', lab
 </View>
 `;
 
-exports[`Neon design system snapshots Card snapshot [{ name: 'coralPop', label: 'Coral Pop' }] 1`] = `
-<View
-  style={
-    [
-      {
-        "overflow": "visible",
-        "position": "relative",
-      },
-      {
-        "backgroundColor": "#FFFFFF",
-        "borderColor": "#DCE3EF",
-        "borderRadius": 24,
-        "borderWidth": 1,
-        "elevation": 5,
-        "gap": 8,
-        "opacity": 1,
-        "padding": 16,
-        "shadowColor": "#000000",
-        "shadowOffset": {
-          "height": 6,
-          "width": 0,
-        },
-        "shadowOpacity": 0.12,
-        "shadowRadius": 14,
-      },
-      undefined,
-    ]
-  }
->
-  <View
-    style={
-      {
-        "gap": 4,
-      }
-    }
-  >
-    <Text
-      style={
-        [
-          {
-            "fontSize": 20,
-            "letterSpacing": 0.3,
-            "lineHeight": 24,
-          },
-          {
-            "color": "#23254D",
-            "fontFamily": "Baloo2_700Bold",
-            "fontWeight": "400",
-          },
-        ]
-      }
-    >
-      Impostor
-    </Text>
-    <Text
-      style={
-        [
-          {
-            "fontSize": 13,
-            "lineHeight": 18,
-          },
-          {
-            "color": "#556082",
-            "fontFamily": "Nunito_700Bold",
-            "fontWeight": "400",
-          },
-        ]
-      }
-    >
-      Round checkpoint UI tokenized.
-    </Text>
-  </View>
-</View>
-`;
-
-exports[`Neon design system snapshots Card snapshot [{ name: 'mintJam', label: 'Mint Jam' }] 1`] = `
-<View
-  style={
-    [
-      {
-        "overflow": "visible",
-        "position": "relative",
-      },
-      {
-        "backgroundColor": "#FFFFFF",
-        "borderColor": "#DCE3EF",
-        "borderRadius": 24,
-        "borderWidth": 1,
-        "elevation": 5,
-        "gap": 8,
-        "opacity": 1,
-        "padding": 16,
-        "shadowColor": "#000000",
-        "shadowOffset": {
-          "height": 6,
-          "width": 0,
-        },
-        "shadowOpacity": 0.12,
-        "shadowRadius": 14,
-      },
-      undefined,
-    ]
-  }
->
-  <View
-    style={
-      {
-        "gap": 4,
-      }
-    }
-  >
-    <Text
-      style={
-        [
-          {
-            "fontSize": 20,
-            "letterSpacing": 0.3,
-            "lineHeight": 24,
-          },
-          {
-            "color": "#23254D",
-            "fontFamily": "Baloo2_700Bold",
-            "fontWeight": "400",
-          },
-        ]
-      }
-    >
-      Impostor
-    </Text>
-    <Text
-      style={
-        [
-          {
-            "fontSize": 13,
-            "lineHeight": 18,
-          },
-          {
-            "color": "#556082",
-            "fontFamily": "Nunito_700Bold",
-            "fontWeight": "400",
-          },
-        ]
-      }
-    >
-      Round checkpoint UI tokenized.
-    </Text>
-  </View>
-</View>
-`;
-
-exports[`Neon design system snapshots Input snapshot [{ name: 'blueberrySky', label: 'Blueberry Sky' }] 1`] = `
+exports[`Neon design system snapshots Input snapshot [{ name: 'studioParty', label: 'Studio Party' }] 1`] = `
 <View>
   <Text
     style={
       [
         {
-          "fontSize": 12,
-          "letterSpacing": 0.5,
-          "marginBottom": 8,
-          "textTransform": "uppercase",
+          "fontSize": 13,
+          "lineHeight": 18,
+          "marginBottom": 6,
         },
         {
-          "color": "#556082",
+          "color": "#525C7A",
           "fontFamily": "Nunito_700Bold",
           "fontWeight": "400",
         },
@@ -525,163 +210,25 @@ exports[`Neon design system snapshots Input snapshot [{ name: 'blueberrySky', la
     onChangeText={[Function]}
     onFocus={[Function]}
     placeholder="Type your name"
-    placeholderTextColor="#98A3BF"
+    placeholderTextColor="#7A85A3"
     spellCheck={false}
     style={
       [
         {
           "fontSize": 16,
+          "minHeight": 48,
           "paddingHorizontal": 14,
-          "paddingVertical": 12,
+          "paddingVertical": 11,
         },
         {
           "backgroundColor": "#FFFFFF",
-          "borderColor": "#D4DDEB",
-          "borderRadius": 16,
+          "borderColor": "#C7D2E6",
+          "borderRadius": 14,
           "borderWidth": 1,
-          "color": "#23254D",
-          "elevation": 2,
+          "color": "#181C3A",
           "fontFamily": "Nunito_700Bold",
           "fontWeight": "400",
-          "minHeight": 44,
           "opacity": 1,
-          "shadowColor": "#000000",
-          "shadowOffset": {
-            "height": 2,
-            "width": 0,
-          },
-          "shadowOpacity": 0.06,
-          "shadowRadius": 6,
-        },
-      ]
-    }
-    value="Player01"
-  />
-</View>
-`;
-
-exports[`Neon design system snapshots Input snapshot [{ name: 'coralPop', label: 'Coral Pop' }] 1`] = `
-<View>
-  <Text
-    style={
-      [
-        {
-          "fontSize": 12,
-          "letterSpacing": 0.5,
-          "marginBottom": 8,
-          "textTransform": "uppercase",
-        },
-        {
-          "color": "#556082",
-          "fontFamily": "Nunito_700Bold",
-          "fontWeight": "400",
-        },
-      ]
-    }
-  >
-    Nickname
-  </Text>
-  <TextInput
-    accessibilityLabel="Nickname"
-    autoCapitalize="none"
-    autoCorrect={false}
-    editable={true}
-    onBlur={[Function]}
-    onChangeText={[Function]}
-    onFocus={[Function]}
-    placeholder="Type your name"
-    placeholderTextColor="#98A3BF"
-    spellCheck={false}
-    style={
-      [
-        {
-          "fontSize": 16,
-          "paddingHorizontal": 14,
-          "paddingVertical": 12,
-        },
-        {
-          "backgroundColor": "#FFFFFF",
-          "borderColor": "#D4DDEB",
-          "borderRadius": 16,
-          "borderWidth": 1,
-          "color": "#23254D",
-          "elevation": 2,
-          "fontFamily": "Nunito_700Bold",
-          "fontWeight": "400",
-          "minHeight": 44,
-          "opacity": 1,
-          "shadowColor": "#000000",
-          "shadowOffset": {
-            "height": 2,
-            "width": 0,
-          },
-          "shadowOpacity": 0.06,
-          "shadowRadius": 6,
-        },
-      ]
-    }
-    value="Player01"
-  />
-</View>
-`;
-
-exports[`Neon design system snapshots Input snapshot [{ name: 'mintJam', label: 'Mint Jam' }] 1`] = `
-<View>
-  <Text
-    style={
-      [
-        {
-          "fontSize": 12,
-          "letterSpacing": 0.5,
-          "marginBottom": 8,
-          "textTransform": "uppercase",
-        },
-        {
-          "color": "#556082",
-          "fontFamily": "Nunito_700Bold",
-          "fontWeight": "400",
-        },
-      ]
-    }
-  >
-    Nickname
-  </Text>
-  <TextInput
-    accessibilityLabel="Nickname"
-    autoCapitalize="none"
-    autoCorrect={false}
-    editable={true}
-    onBlur={[Function]}
-    onChangeText={[Function]}
-    onFocus={[Function]}
-    placeholder="Type your name"
-    placeholderTextColor="#98A3BF"
-    spellCheck={false}
-    style={
-      [
-        {
-          "fontSize": 16,
-          "paddingHorizontal": 14,
-          "paddingVertical": 12,
-        },
-        {
-          "backgroundColor": "#FFFFFF",
-          "borderColor": "#D4DDEB",
-          "borderRadius": 16,
-          "borderWidth": 1,
-          "color": "#23254D",
-          "elevation": 2,
-          "fontFamily": "Nunito_700Bold",
-          "fontWeight": "400",
-          "minHeight": 44,
-          "opacity": 1,
-          "shadowColor": "#000000",
-          "shadowOffset": {
-            "height": 2,
-            "width": 0,
-          },
-          "shadowOpacity": 0.06,
-          "shadowRadius": 6,
         },
       ]
     }

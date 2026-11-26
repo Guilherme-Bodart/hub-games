@@ -1,25 +1,23 @@
-import { DarkTheme, Theme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
-import {
-  Baloo2_700Bold,
-} from '@expo-google-fonts/baloo-2';
-import {
-  Nunito_700Bold,
-  Nunito_800ExtraBold,
-  useFonts,
-} from '@expo-google-fonts/nunito';
+import { DefaultTheme, Theme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
+import { Baloo2_700Bold } from '@expo-google-fonts/baloo-2';
+import { Nunito_700Bold, Nunito_800ExtraBold, useFonts } from '@expo-google-fonts/nunito';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import 'react-native-reanimated';
-import '../global.css';
 
 import { AppStartupLoadingScreen } from '@/src/bootstrap/AppStartupLoadingScreen';
 import { preloadWarmBootAssets } from '@/src/bootstrap/warmBoot';
-import { ensureFirebaseAnonymousAuth, subscribeFirebaseConnection } from '@/src/integrations/firebase';
 import { useLobbySessionStore } from '@/src/features/lobby';
-import { FirebaseConnectionState } from '@/src/integrations/firebase';
+import { usePreferencesStore } from '@/src/features/settings/preferencesStore';
 import { I18nProvider, useI18n } from '@/src/i18n';
+import {
+  ensureFirebaseAnonymousAuth,
+  FirebaseConnectionState,
+  subscribeFirebaseConnection,
+} from '@/src/integrations/firebase';
 import { ThemeProvider, useTheme } from '@/src/theme';
 import { triggerGameFeedback } from '@/src/ui/feedback';
 import { MotionProvider, useReducedMotion } from '@/src/ui/motion';
@@ -27,7 +25,7 @@ import { MotionProvider, useReducedMotion } from '@/src/ui/motion';
 export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
-  initialRouteName: '(tabs)',
+  anchor: '(tabs)',
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -43,6 +41,7 @@ export default function RootLayout() {
   const previousConnectionState = useRef<FirebaseConnectionState | null>(null);
   const didRestoreRemoteSessionRef = useRef(false);
   const restoreRemoteSessionIfAny = useLobbySessionStore((state) => state.restoreRemoteSessionIfAny);
+  const hydratePreferences = usePreferencesStore((state) => state.hydrate);
 
   useEffect(() => {
     if (error) {
@@ -58,7 +57,7 @@ export default function RootLayout() {
     let active = true;
 
     const warmBoot = async () => {
-      await preloadWarmBootAssets();
+      await Promise.all([preloadWarmBootAssets(), hydratePreferences()]);
 
       if (active) {
         setBootReady(true);
@@ -70,14 +69,14 @@ export default function RootLayout() {
     return () => {
       active = false;
     };
-  }, [loaded]);
+  }, [hydratePreferences, loaded]);
 
   useEffect(() => {
     if (!loaded) {
       return;
     }
 
-    SplashScreen.hideAsync();
+    void SplashScreen.hideAsync();
   }, [loaded]);
 
   useEffect(() => {
@@ -113,10 +112,10 @@ export default function RootLayout() {
           console.log(`[firebase-auth] anonymous uid=${uid.slice(0, 8)}...`);
         }
       })
-      .catch((error) => {
+      .catch((authError) => {
         if (__DEV__) {
           console.log(
-            `[firebase-auth] failed: ${error instanceof Error ? error.message : 'unknown error'}`
+            `[firebase-auth] failed: ${authError instanceof Error ? authError.message : 'unknown error'}`
           );
         }
       });
@@ -150,20 +149,20 @@ export default function RootLayout() {
   );
 }
 
-function RootLayoutNav({ connectionState }: { connectionState: FirebaseConnectionState }) {
+function RootLayoutNav({ connectionState: _connectionState }: { connectionState: FirebaseConnectionState }) {
   const { theme } = useTheme();
   const { t } = useI18n();
   const reduceMotion = useReducedMotion();
 
   const navigationTheme = useMemo<Theme>(
     () => ({
-      ...DarkTheme,
-      dark: true,
+      ...DefaultTheme,
+      dark: false,
       colors: {
-        ...DarkTheme.colors,
+        ...DefaultTheme.colors,
         background: theme.semantic.bg.app,
         card: theme.semantic.bg.surface,
-        border: theme.semantic.border.subtle,
+        border: theme.semantic.border.hairline,
         text: theme.semantic.text.primary,
         primary: theme.semantic.button.primary.bg,
         notification: theme.semantic.status.error,
@@ -174,12 +173,14 @@ function RootLayoutNav({ connectionState }: { connectionState: FirebaseConnectio
 
   return (
     <NavigationThemeProvider value={navigationTheme}>
-      <View style={{ flex: 1 }}>
+      <StatusBar style="dark" />
+      <View style={{ flex: 1, backgroundColor: theme.semantic.bg.app }}>
         <Stack
           screenOptions={{
             animation: reduceMotion ? 'none' : 'fade_from_bottom',
             contentStyle: { backgroundColor: theme.semantic.bg.app },
             headerStyle: { backgroundColor: theme.semantic.bg.surface },
+            headerShadowVisible: false,
             headerTintColor: theme.semantic.text.primary,
             headerTitleStyle: {
               fontFamily: theme.semantic.typography.titleFamily,
@@ -187,7 +188,7 @@ function RootLayoutNav({ connectionState }: { connectionState: FirebaseConnectio
             },
           }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="lobby" options={{ title: t('tabs.lobby') }} />
+          <Stack.Screen name="lobby" options={{ headerShown: false }} />
           <Stack.Screen
             name="game/[gameId]"
             options={{ headerShown: false, title: t('tabs.lobby') }}

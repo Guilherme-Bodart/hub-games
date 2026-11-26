@@ -1,8 +1,8 @@
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 
-import { playSfxCue } from '@/src/ui/audio';
-import { SfxCueId } from '@/src/ui/audio';
+import { usePreferencesStore } from '@/src/features/settings/preferencesStore';
+import { playSfxCue, SfxCueId } from '@/src/ui/audio';
 
 export type GameFeedbackEvent =
   | 'reveal'
@@ -14,7 +14,7 @@ export type GameFeedbackEvent =
   | 'confirm'
   | 'error';
 
-type FeedbackHaptic =
+export type FeedbackHaptic =
   | 'selection'
   | 'impactLight'
   | 'impactMedium'
@@ -30,7 +30,7 @@ type FeedbackEventConfig = {
 };
 
 export const GAME_FEEDBACK_MAP: Record<GameFeedbackEvent, FeedbackEventConfig> = {
-  reveal: { haptic: 'selection', soundCue: 'sfx_reveal' },
+  reveal: { haptic: 'impactMedium', soundCue: 'sfx_reveal' },
   submit: { haptic: 'impactLight', soundCue: 'sfx_submit' },
   vote: { haptic: 'impactMedium', soundCue: 'sfx_vote' },
   result: { haptic: 'success', soundCue: 'sfx_result' },
@@ -40,8 +40,12 @@ export const GAME_FEEDBACK_MAP: Record<GameFeedbackEvent, FeedbackEventConfig> =
   error: { haptic: 'error', soundCue: 'sfx_error' },
 };
 
-const runHaptic = (type: FeedbackHaptic): void => {
+export const triggerHaptic = (type: FeedbackHaptic): void => {
   if (type === 'none' || Platform.OS === 'web') {
+    return;
+  }
+
+  if (!usePreferencesStore.getState().hapticsEnabled) {
     return;
   }
 
@@ -88,12 +92,13 @@ export const triggerGameFeedback = (
   options: TriggerFeedbackOptions = {}
 ): FeedbackEventConfig => {
   const config = GAME_FEEDBACK_MAP[event];
+  const { hapticsEnabled, soundEnabled } = usePreferencesStore.getState();
 
-  if (options.haptics !== false) {
-    runHaptic(config.haptic);
+  if (options.haptics !== false && hapticsEnabled) {
+    triggerHaptic(config.haptic);
   }
 
-  if (options.sounds !== false) {
+  if (options.sounds !== false && soundEnabled) {
     void playSfxCue(config.soundCue);
   }
 

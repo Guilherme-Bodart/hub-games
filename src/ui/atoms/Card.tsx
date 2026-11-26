@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { useTheme } from '@/src/theme';
+import { ELEVATION_STYLES, useTheme } from '@/src/theme';
 
 type CardVariant = 'elevated' | 'outlined' | 'filled';
 
@@ -31,19 +31,13 @@ export function Card({
     <View
       style={[
         styles.card,
+        isElevated ? ELEVATION_STYLES.card : ELEVATION_STYLES.flat,
         {
           backgroundColor:
-            variant === 'filled' ? theme.semantic.bg.elevated : theme.semantic.card.bg,
-          borderColor: selected ? theme.semantic.border.focus : theme.semantic.card.border,
-          borderRadius: theme.semantic.layout.radius.xl,
-          borderWidth: selected
-            ? theme.semantic.layout.borderWidth.medium
-            : theme.semantic.layout.borderWidth.subtle,
-          shadowColor: '#000000',
-          shadowOpacity: isElevated ? theme.semantic.elevation.medium.shadowOpacity : 0,
-          shadowRadius: isElevated ? theme.semantic.elevation.medium.shadowRadius : 0,
-          shadowOffset: { width: 0, height: 6 },
-          elevation: isElevated ? theme.semantic.elevation.medium.elevation : 0,
+            variant === 'filled' ? theme.semantic.bg.subtle : theme.semantic.card.bg,
+          borderColor: selected ? theme.semantic.border.focus : theme.semantic.border.hairline,
+          borderRadius: theme.semantic.card.radius,
+          borderWidth: selected ? 2 : 1,
           opacity: disabled ? theme.semantic.motion.feedback.disabledOpacity : 1,
           padding: theme.semantic.layout.spacing.md,
           gap: theme.semantic.layout.spacing.sm,
@@ -94,9 +88,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   title: {
-    fontSize: 20,
+    fontSize: 19,
     lineHeight: 24,
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   subtitle: {
     fontSize: 13,

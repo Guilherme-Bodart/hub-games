@@ -5,6 +5,7 @@ export type ImpostorContentMode = 'words' | 'questions';
 
 export const LOBBY_SETTINGS_KEYS = {
   actionAuthorityMode: 'sessionActionAuthorityMode',
+  allowLocalPlayers: 'sessionAllowLocalPlayers',
   impostorContentMode: 'impostorContentMode',
   impostorTargetPlayers: 'impostorTargetPlayers',
   impostorCount: 'impostorCount',
@@ -13,6 +14,7 @@ export const LOBBY_SETTINGS_KEYS = {
 
 const LEGACY_LOBBY_SETTINGS_KEYS = {
   actionAuthorityMode: 'session.actionAuthorityMode',
+  allowLocalPlayers: 'session.allowLocalPlayers',
   impostorContentMode: 'impostor.contentMode',
   impostorTargetPlayers: 'impostor.targetPlayers',
   impostorCount: 'impostor.impostorCount',
@@ -62,6 +64,7 @@ export const getDefaultLobbyGameSettings = (
   if (gameId === 'impostor-neon') {
     return {
       [LOBBY_SETTINGS_KEYS.actionAuthorityMode]: DEFAULT_ACTION_AUTHORITY_MODE,
+      [LOBBY_SETTINGS_KEYS.allowLocalPlayers]: true,
       [LOBBY_SETTINGS_KEYS.impostorContentMode]: DEFAULT_IMPOSTOR_CONTENT_MODE,
       [LOBBY_SETTINGS_KEYS.impostorTargetPlayers]: IMPOSTOR_MAX_PLAYERS,
       [LOBBY_SETTINGS_KEYS.impostorCount]: 1,
@@ -71,6 +74,7 @@ export const getDefaultLobbyGameSettings = (
 
   return {
     [LOBBY_SETTINGS_KEYS.actionAuthorityMode]: DEFAULT_ACTION_AUTHORITY_MODE,
+    [LOBBY_SETTINGS_KEYS.allowLocalPlayers]: true,
   };
 };
 
@@ -90,6 +94,8 @@ export const normalizeLobbyGameSettings = (
       ? 'collaborative'
       : 'host-only';
   merged[LOBBY_SETTINGS_KEYS.actionAuthorityMode] = actionMode;
+  merged[LOBBY_SETTINGS_KEYS.allowLocalPlayers] =
+    getSettingValue(merged, 'allowLocalPlayers') !== false;
 
   if (gameId !== 'impostor-neon') {
     return merged;
@@ -127,6 +133,9 @@ export const resolveLobbyActionAuthorityMode = (
   getSettingValue(settings, 'actionAuthorityMode') === 'collaborative'
     ? 'collaborative'
     : 'host-only';
+
+export const resolveAllowLocalPlayers = (settings: LobbyGameSettings): boolean =>
+  getSettingValue(settings, 'allowLocalPlayers') !== false;
 
 export const resolveImpostorContentMode = (settings: LobbyGameSettings): ImpostorContentMode =>
   getSettingValue(settings, 'impostorContentMode') === 'questions' ? 'questions' : 'words';

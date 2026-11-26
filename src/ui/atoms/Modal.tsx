@@ -11,8 +11,7 @@ import {
 import { SymbolView } from 'expo-symbols';
 
 import { useI18n } from '@/src/i18n';
-import { useTheme } from '@/src/theme';
-import { withAlpha } from '@/src/theme/utils';
+import { ELEVATION_STYLES, useTheme } from '@/src/theme';
 
 type ModalProps = PropsWithChildren<{
   visible: boolean;
@@ -44,31 +43,23 @@ export function Modal({
         style={[
           styles.overlay,
           {
-            backgroundColor: withAlpha(theme.semantic.text.primary, 0.24),
-            padding: isFullscreen ? 0 : theme.semantic.layout.spacing.lg,
+            backgroundColor: theme.semantic.bg.scrim,
+            padding: isFullscreen ? 0 : theme.semantic.layout.spacing.md,
           },
         ]}>
         <View
           style={[
             styles.content,
+            isFullscreen ? ELEVATION_STYLES.flat : ELEVATION_STYLES.hero,
             {
-              backgroundColor: theme.semantic.bg.overlay,
-              borderColor: theme.semantic.border.subtle,
-              borderRadius: isFullscreen
-                ? 0
-                : theme.semantic.layout.radius.xl,
-              borderWidth: theme.semantic.layout.borderWidth.subtle,
-              padding: theme.semantic.layout.spacing.md,
+              backgroundColor: theme.semantic.bg.surface,
+              borderColor: theme.semantic.border.hairline,
+              borderRadius: isFullscreen ? 0 : theme.semantic.layout.radius.xl,
+              borderWidth: isFullscreen ? 0 : 1,
+              padding: theme.semantic.layout.spacing.lg,
               gap: theme.semantic.layout.spacing.sm,
-              shadowColor: theme.semantic.shadow.base,
-              shadowOpacity: 0.18,
-              shadowRadius: 18,
-              shadowOffset: { width: 0, height: 8 },
-              elevation: 10,
               flex: isFullscreen ? 1 : undefined,
-              width: '100%',
-              maxWidth: isFullscreen ? undefined : 560,
-              alignSelf: 'center',
+              maxWidth: isFullscreen ? undefined : 520,
             },
             style,
           ]}>
@@ -76,34 +67,16 @@ export function Modal({
             onPress={onClose}
             accessibilityRole="button"
             accessibilityLabel={t('settings.close')}
-            style={[
+            style={({ pressed }) => [
               styles.closeArea,
-              closeStyle === 'ghost'
-                ? {
-                    borderColor: 'transparent',
-                    backgroundColor: 'transparent',
-                    borderRadius: theme.semantic.layout.radius.full,
-                    borderWidth: 0,
-                    width: theme.semantic.layout.minTouchTarget,
-                    height: theme.semantic.layout.minTouchTarget,
-                    shadowOpacity: 0,
-                    shadowRadius: 0,
-                    shadowOffset: { width: 0, height: 0 },
-                    elevation: 0,
-                  }
-                : {
-                    borderColor: withAlpha(theme.semantic.shadow.base, 0.12),
-                    backgroundColor: theme.semantic.bg.surface,
-                    borderRadius: 17,
-                    borderWidth: theme.semantic.layout.borderWidth.subtle,
-                    width: 34,
-                    height: 34,
-                    shadowColor: theme.semantic.shadow.base,
-                    shadowOpacity: 0.3,
-                    shadowRadius: 6,
-                    shadowOffset: { width: 4, height: 4 },
-                    elevation: 7,
-                  },
+              {
+                backgroundColor:
+                  closeStyle === 'ghost' ? 'transparent' : theme.semantic.bg.subtle,
+                borderColor:
+                  closeStyle === 'ghost' ? 'transparent' : theme.semantic.border.hairline,
+                borderWidth: closeStyle === 'ghost' ? 0 : 1,
+                opacity: pressed ? 0.72 : 1,
+              },
             ]}>
             <SymbolView
               name={{ ios: 'xmark', android: 'close', web: 'close' }}
@@ -126,13 +99,14 @@ export function Modal({
           ) : null}
           {subtitle ? (
             <Text
-              style={{
-                color: theme.semantic.text.secondary,
-                fontFamily: theme.semantic.typography.bodyFamily,
-                fontWeight: theme.semantic.typography.bodyWeight,
-                fontSize: 13,
-                lineHeight: 18,
-              }}>
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.semantic.text.secondary,
+                  fontFamily: theme.semantic.typography.bodyFamily,
+                  fontWeight: theme.semantic.typography.bodyWeight,
+                },
+              ]}>
               {subtitle}
             </Text>
           ) : null}
@@ -150,20 +124,30 @@ const styles = StyleSheet.create({
   },
   content: {
     position: 'relative',
+    width: '100%',
+    alignSelf: 'center',
     overflow: 'visible',
   },
   closeArea: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    top: 14,
+    right: 14,
     zIndex: 2,
+    width: 36,
+    height: 36,
+    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    fontSize: 22,
+    fontSize: 21,
     lineHeight: 26,
-    letterSpacing: 0.3,
-    paddingRight: 54,
+    letterSpacing: 0.2,
+    paddingRight: 44,
+  },
+  subtitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    paddingRight: 36,
   },
 });

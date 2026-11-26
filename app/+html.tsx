@@ -29,7 +29,7 @@ body,
 }
 
 body {
-  background-color: #0F0F1A;
+  background-color: #F4F6FB;
   -webkit-text-size-adjust: 100%;
   overscroll-behavior: none;
 }`;

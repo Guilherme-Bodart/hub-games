@@ -1,12 +1,12 @@
 import { GAME_COVER_ASSETS } from '@/src/features/games/gameCoverAssets';
 import { GamePlugin } from '@/src/features/games/types';
-import { ForbiddenWordScreen } from '@/src/features/games/forbidden-word/ForbiddenWordScreen';
+import { ForbiddenWordScreen } from '@/src/features/games/forbidden-word/screens/ForbiddenWordScreen';
 
 export const forbiddenWordPlugin: GamePlugin = {
   manifest: {
     id: 'forbidden-word',
     coverGlyph: 'TAB',
-    coverTone: '#F29F4B',
+    coverTone: '#F97316',
     coverImage: GAME_COVER_ASSETS.FORBIDDEN_WORD,
     title: { pt: 'Palavra Proibida', en: 'Forbidden Word' },
     subtitle: {

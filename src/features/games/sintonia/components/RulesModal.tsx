@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 
 import { styles } from '@/src/features/games/sintonia/styles/sintoniaStyles';
+import { getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
 import { Modal } from '@/src/ui/atoms';
 
 type SintoniaRulesModalProps = {
@@ -26,6 +26,7 @@ export function SintoniaRulesModal({
   onClose,
   theme,
 }: SintoniaRulesModalProps) {
+  const accent = getGameAccent('sintonia');
   const steps = [stepOne, stepTwo, stepThree];
 
   return (
@@ -49,26 +50,35 @@ export function SintoniaRulesModal({
             style={[
               styles.rulesStepCard,
               {
-                borderColor: withAlpha(theme.semantic.border.subtle, 0.72),
-                backgroundColor: withAlpha(theme.semantic.bg.surface, 0.72),
+                borderColor: theme.semantic.border.hairline,
+                backgroundColor: theme.semantic.bg.subtle,
               },
             ]}>
-            <Text
+            <View
               style={[
-                styles.rulesStepNumber,
+                styles.rulesStepPill,
                 {
-                  color: withAlpha(theme.semantic.button.primary.bg, 0.92),
-                  fontFamily: theme.semantic.typography.bodyFamily,
-                  fontWeight: theme.semantic.typography.bodyWeight,
+                  backgroundColor: accent.tint,
+                  borderColor: theme.semantic.border.hairline,
                 },
               ]}>
-              {`Passo ${index + 1}`}
-            </Text>
+              <Text
+                style={[
+                  styles.rulesStepNumber,
+                  {
+                    color: accent.primary,
+                    fontFamily: theme.semantic.typography.numberFamily,
+                    fontWeight: theme.semantic.typography.numberWeight,
+                  },
+                ]}>
+                {`Passo ${index + 1}`}
+              </Text>
+            </View>
             <Text
               style={[
                 styles.rulesStepText,
                 {
-                  color: theme.semantic.text.secondary,
+                  color: theme.semantic.text.primary,
                   fontFamily: theme.semantic.typography.bodyFamily,
                   fontWeight: theme.semantic.typography.bodyWeight,
                 },

@@ -1,9 +1,9 @@
-import { Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Text, View } from 'react-native';
 
 import { secretPhaseStyles as styles } from '@/src/features/games/sintonia/styles/secretPhaseStyles';
+import { ELEVATION_STYLES, getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
 
 type SecretThemeScaleCardProps = {
   theme: ThemeTokens;
@@ -20,60 +20,58 @@ export function SecretThemeScaleCard({
   scaleEndLabel,
   roundTheme,
 }: SecretThemeScaleCardProps) {
+  const accent = getGameAccent('sintonia');
+
   return (
     <View
       style={[
         styles.scaleCard,
+        ELEVATION_STYLES.card,
         {
-          borderColor: withAlpha(theme.semantic.border.subtle, 0.9),
-          backgroundColor: withAlpha(theme.semantic.bg.surface, 0.9),
-          shadowColor: withAlpha(theme.semantic.shadow.base, 0.7),
+          borderColor: theme.semantic.border.hairline,
+          backgroundColor: theme.semantic.bg.surface,
         },
       ]}>
-      <LinearGradient
-        pointerEvents="none"
-        colors={[withAlpha('#FFFFFF', 0.6), withAlpha('#FFFFFF', 0)]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={styles.scaleGloss}
-      />
-
-      <Text
-        style={[
-          styles.scaleTitle,
-          {
-            color: withAlpha(theme.semantic.text.secondary, 0.78),
-            fontFamily: theme.semantic.typography.bodyFamily,
-            fontWeight: theme.semantic.typography.bodyWeight,
-          },
-        ]}>
-        {scaleTitle}
-      </Text>
+      <View style={styles.scaleHeaderRow}>
+        <View
+          style={[
+            styles.scaleTitlePill,
+            {
+              backgroundColor: accent.tint,
+              borderColor: theme.semantic.border.hairline,
+            },
+          ]}>
+          <Text
+            style={[
+              styles.scaleTitle,
+              {
+                color: accent.primary,
+                fontFamily: theme.semantic.typography.bodyFamily,
+                fontWeight: theme.semantic.typography.bodyWeight,
+              },
+            ]}>
+            {scaleTitle}
+          </Text>
+        </View>
+      </View>
 
       <View style={styles.scaleAxisRow}>
         <Text
           style={[
             styles.scaleEdgeLabel,
             {
-              color: withAlpha(theme.semantic.button.primary.bg, 0.88),
+              color: accent.primary,
               fontFamily: theme.semantic.typography.titleFamily,
               fontWeight: theme.semantic.typography.titleWeight,
             },
           ]}>
           {scaleStartLabel}
         </Text>
+
         <View style={styles.scaleTrackWrap}>
-          <View
-            style={[
-              styles.scaleTrack,
-              { backgroundColor: withAlpha(theme.semantic.border.subtle, 0.14) },
-            ]}>
+          <View style={[styles.scaleTrack, { backgroundColor: theme.semantic.bg.subtle }]}>
             <LinearGradient
-              colors={[
-                withAlpha(theme.semantic.button.primary.bg, 0.48),
-                withAlpha(theme.semantic.text.secondary, 0.16),
-                withAlpha(theme.semantic.button.accent.bg, 0.56),
-              ]}
+              colors={[accent.primary, theme.semantic.border.strong, theme.semantic.button.accent.bg]}
               start={{ x: 0, y: 0.5 }}
               end={{ x: 1, y: 0.5 }}
               style={styles.scaleTrackGradient}
@@ -82,24 +80,20 @@ export function SecretThemeScaleCard({
               style={[
                 styles.scaleDotHalo,
                 {
-                  borderColor: withAlpha(theme.semantic.text.secondary, 0.22),
-                  backgroundColor: withAlpha(theme.semantic.bg.surface, 0.96),
+                  borderColor: theme.semantic.border.strong,
+                  backgroundColor: theme.semantic.bg.surface,
                 },
               ]}>
-              <View
-                style={[
-                  styles.scaleDot,
-                  { backgroundColor: withAlpha(theme.semantic.text.secondary, 0.74) },
-                ]}
-              />
+              <View style={[styles.scaleDot, { backgroundColor: accent.primary }]} />
             </View>
           </View>
         </View>
+
         <Text
           style={[
             styles.scaleEdgeLabel,
             {
-              color: withAlpha(theme.semantic.button.accent.bg, 0.9),
+              color: theme.semantic.button.accent.bg,
               fontFamily: theme.semantic.typography.titleFamily,
               fontWeight: theme.semantic.typography.titleWeight,
             },
@@ -112,12 +106,12 @@ export function SecretThemeScaleCard({
         style={[
           styles.scaleThemeText,
           {
-            color: withAlpha(theme.semantic.text.primary, 0.95),
+            color: theme.semantic.text.primary,
             fontFamily: theme.semantic.typography.titleFamily,
             fontWeight: theme.semantic.typography.titleWeight,
           },
         ]}>
-        "{roundTheme}"
+        {`"${roundTheme}"`}
       </Text>
     </View>
   );

@@ -1,24 +1,7 @@
 import type { GameCatalogItem } from '@/src/features/catalog/games';
 import type { Locale } from '@/src/i18n';
 
-export type CatalogModeIcon = 'phone-portrait-outline' | 'globe-outline';
-
-export type CatalogModeMeta = {
-  icons: CatalogModeIcon[];
-};
-
-export type CatalogUiPalette = {
-  cardPurple: string;
-  cardCyan: string;
-  cardPink: string;
-  cardBlue: string;
-  clayOrange: string;
-  clayBlue: string;
-};
-
-export type CatalogTileTone = 'purple' | 'cyan' | 'pink' | 'blue';
-
-export type CatalogButtonTone = 'orange' | 'blue';
+export type CatalogCardVariant = 'grid' | 'wide';
 
 export type CatalogState = {
   nickname: string;
@@ -32,8 +15,6 @@ export type CatalogState = {
   roomCodeInput: string;
   roomCodeError: string | null;
   readyGames: GameCatalogItem[];
-  bgStart: string;
-  bgEnd: string;
 };
 
 export type CatalogHandlers = {

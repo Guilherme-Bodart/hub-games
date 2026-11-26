@@ -2,8 +2,8 @@ import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
 import { cluesPhaseStyles as styles } from '@/src/features/games/impostor/styles/cluesPhaseStyles';
+import { ELEVATION_STYLES, GameAccentPalette, getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
 import { AvatarSprite } from '@/src/ui/atoms';
 
 type CluesHeroPanelProps = {
@@ -26,31 +26,29 @@ type CluesHeroPanelProps = {
 
 const resolveStepColors = (
   state: 'submitted' | 'typing' | 'waiting',
-  theme: ThemeTokens
+  theme: ThemeTokens,
+  accent: GameAccentPalette
 ) => {
   if (state === 'submitted') {
     return {
-      bg: withAlpha(theme.semantic.status.success, 0.14),
-      border: withAlpha(theme.semantic.status.success, 0.18),
-      text: '#1F8E70',
-      ring: withAlpha(theme.semantic.status.success, 0.22),
+      bg: theme.semantic.badge.successBg,
+      border: theme.semantic.status.success,
+      text: theme.semantic.badge.successText,
     };
   }
 
   if (state === 'typing') {
     return {
-      bg: withAlpha(theme.semantic.button.primary.bg, 0.14),
-      border: withAlpha(theme.semantic.button.primary.bg, 0.2),
-      text: theme.semantic.button.primary.bg,
-      ring: withAlpha(theme.semantic.button.primary.bg, 0.24),
+      bg: accent.tint,
+      border: accent.primary,
+      text: accent.plinth,
     };
   }
 
   return {
-    bg: withAlpha(theme.semantic.bg.surface, 0.84),
-    border: withAlpha(theme.semantic.border.subtle, 0.95),
-    text: theme.semantic.text.secondary,
-    ring: withAlpha(theme.semantic.border.subtle, 0.9),
+    bg: theme.semantic.bg.subtle,
+    border: theme.semantic.border.hairline,
+    text: theme.semantic.text.muted,
   };
 };
 
@@ -64,14 +62,16 @@ export function CluesHeroPanel({
   progressSteps,
   children,
 }: CluesHeroPanelProps) {
+  const accent = getGameAccent('impostor-neon');
+
   return (
     <View
       style={[
         styles.heroPanel,
+        ELEVATION_STYLES.card,
         {
-          backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.96),
-          borderColor: withAlpha(theme.semantic.border.subtle, 0.94),
-          shadowColor: theme.semantic.shadow.base,
+          backgroundColor: theme.semantic.bg.surface,
+          borderColor: theme.semantic.border.hairline,
         },
       ]}>
       <View style={styles.heroHeader}>
@@ -81,7 +81,7 @@ export function CluesHeroPanel({
               style={[
                 styles.heroEyebrow,
                 {
-                  color: theme.semantic.text.muted,
+                  color: accent.primary,
                   fontFamily: theme.semantic.typography.bodyFamily,
                   fontWeight: theme.semantic.typography.bodyWeight,
                 },
@@ -120,17 +120,17 @@ export function CluesHeroPanel({
             style={[
               styles.progressBadge,
               {
-                backgroundColor: withAlpha(theme.semantic.bg.surface, 0.94),
-                borderColor: withAlpha(theme.semantic.border.subtle, 0.96),
+                backgroundColor: accent.tint,
+                borderColor: accent.primary,
               },
             ]}>
             <Text
               style={[
                 styles.progressBadgeText,
                 {
-                  color: theme.semantic.text.primary,
-                  fontFamily: theme.semantic.typography.titleFamily,
-                  fontWeight: theme.semantic.typography.titleWeight,
+                  color: accent.plinth,
+                  fontFamily: theme.semantic.typography.numberFamily,
+                  fontWeight: theme.semantic.typography.numberWeight,
                 },
               ]}>
               {progressLabel}
@@ -143,15 +143,15 @@ export function CluesHeroPanel({
         style={[
           styles.progressTrack,
           {
-            backgroundColor: theme.semantic.bg.surface,
-            borderColor: withAlpha(theme.semantic.border.subtle, 0.96),
+            backgroundColor: theme.semantic.bg.subtle,
+            borderColor: theme.semantic.border.hairline,
           },
         ]}>
         <View
           style={[
             styles.progressFill,
             {
-              backgroundColor: theme.semantic.button.primary.bg,
+              backgroundColor: accent.primary,
               width: progressWidth,
             },
           ]}
@@ -160,7 +160,7 @@ export function CluesHeroPanel({
 
       <View style={styles.progressStepsRow}>
         {progressSteps.map((step) => {
-          const palette = resolveStepColors(step.state, theme);
+          const palette = resolveStepColors(step.state, theme, accent);
 
           return (
             <View key={step.id} style={styles.progressStepItem}>
@@ -169,7 +169,7 @@ export function CluesHeroPanel({
                   step.size === 'focus' ? styles.progressStepAvatarFocus : styles.progressStepAvatarSide,
                   {
                     backgroundColor: palette.bg,
-                    borderColor: step.isCurrent ? palette.text : palette.ring,
+                    borderColor: palette.border,
                   },
                 ]}>
                 <AvatarSprite avatarId={step.avatarId} size={step.size === 'focus' ? 34 : 22} />
@@ -180,7 +180,9 @@ export function CluesHeroPanel({
                   step.size === 'focus' ? styles.progressStepTextFocus : styles.progressStepTextSide,
                   {
                     color: palette.text,
-                    fontFamily: theme.semantic.typography.bodyFamily,
+                    fontFamily: step.isCurrent
+                      ? theme.semantic.typography.titleFamily
+                      : theme.semantic.typography.bodyFamily,
                     fontWeight: step.isCurrent
                       ? theme.semantic.typography.titleWeight
                       : theme.semantic.typography.bodyWeight,

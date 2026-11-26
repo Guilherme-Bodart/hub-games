@@ -5,7 +5,10 @@ import {
   toggleRemotePlayerReady,
   updateRemoteLobbySettings,
 } from '@/src/features/lobby/firebaseRealtime';
-import { normalizeLobbyGameSettings } from '@/src/features/lobby/gameSettings';
+import {
+  normalizeLobbyGameSettings,
+  resolveAllowLocalPlayers,
+} from '@/src/features/lobby/gameSettings';
 import {
   clearStoredRemoteSessionContext,
   getStoredPreferredNickname,
@@ -154,6 +157,12 @@ export const buildLobbySessionActions = (
 
     const trimmed = name.trim();
     if (!trimmed) {
+      return;
+    }
+
+    const localDevice = lobby.devices.find((device) => device.id === lobby.selectedDeviceId);
+    if (!resolveAllowLocalPlayers(lobby.gameSettings) && (localDevice?.players.length ?? 0) >= 1) {
+      setRealtimeError(set, 'Esta sala está no modo Apenas Online (1 jogador por celular).');
       return;
     }
 

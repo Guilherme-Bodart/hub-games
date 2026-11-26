@@ -1,22 +1,19 @@
+import { useMemo, useState } from 'react';
 import { type DimensionValue, Text, View } from 'react-native';
 import Animated, { FadeInDown, FadeOutUp, Layout } from 'react-native-reanimated';
-import { useMemo, useState } from 'react';
 
-import { LobbyPlayer } from '@/src/features/lobby';
 import { LobbyAddPlayerCard } from '@/src/features/lobby/components/LobbyAddPlayerCard';
 import { LobbyPlayerCard } from '@/src/features/lobby/components/LobbyPlayerCard';
+import type { LobbyPanelCopy, VisibleLobbyPlayer } from '@/src/features/lobby/lobby.types';
 import { styles } from '@/src/features/lobby/styles/lobbyStyles';
 import { useI18n } from '@/src/i18n';
-import { useTheme } from '@/src/theme';
+import { type GameAccentPalette, useTheme } from '@/src/theme';
 import { getDuration } from '@/src/ui/motion';
-
-type VisibleLobbyPlayer = {
-  player: LobbyPlayer;
-  isLocalDevice: boolean;
-};
 
 type LobbyPlayersSectionProps = {
   visiblePlayers: VisibleLobbyPlayer[];
+  gameAccent: GameAccentPalette;
+  panelCopy: LobbyPanelCopy;
   reduceMotion: boolean;
   playerColumns: number;
   playerGap: number;
@@ -31,6 +28,8 @@ type LobbyPlayersSectionProps = {
 
 export function LobbyPlayersSection({
   visiblePlayers,
+  gameAccent,
+  panelCopy,
   reduceMotion,
   playerColumns,
   playerGap,
@@ -48,12 +47,12 @@ export function LobbyPlayersSection({
 
   const playerCellWidth = useMemo<DimensionValue>(() => {
     if (playersListWidth <= 0) {
-      return '48.4%';
+      return '48%';
     }
 
     const gapTotal = playerGap * (playerColumns - 1);
     const measured = Math.floor((playersListWidth - gapTotal) / playerColumns);
-    return Math.max(68, measured);
+    return Math.max(120, measured);
   }, [playerColumns, playerGap, playersListWidth]);
 
   return (
@@ -98,6 +97,11 @@ export function LobbyPlayersSection({
             <LobbyPlayerCard
               player={player}
               isLocalDevice={isLocalDevice}
+              gameAccent={gameAccent}
+              hostLabel={panelCopy.hostLabel}
+              readyPillLabel={panelCopy.readyPill}
+              tapReadyPillLabel={panelCopy.tapReadyPill}
+              waitingPillLabel={panelCopy.waitingPill}
               onToggleReady={() => onToggleReady(player.id, isLocalDevice)}
               onRemove={() => onRemove(player.id)}
             />
@@ -115,6 +119,8 @@ export function LobbyPlayersSection({
               },
             ]}>
             <LobbyAddPlayerCard
+              label={panelCopy.addPlayerLabel}
+              gameAccent={gameAccent}
               onPress={onRequestAddPlayer}
               accessibilityLabel={t('lobby.addPlayerA11y')}
             />
@@ -127,15 +133,15 @@ export function LobbyPlayersSection({
           style={[
             styles.emptyPlayersState,
             {
-              borderColor: 'rgba(0,0,0,0.08)',
-              backgroundColor: 'rgba(255,255,255,0.78)',
+              borderColor: theme.semantic.border.hairline,
+              backgroundColor: theme.semantic.bg.surface,
             },
           ]}>
           <Text
             style={[
               styles.emptyPlayersText,
               {
-                color: '#5C5F7A',
+                color: theme.semantic.text.secondary,
                 fontFamily: theme.semantic.typography.bodyFamily,
                 fontWeight: theme.semantic.typography.bodyWeight,
               },

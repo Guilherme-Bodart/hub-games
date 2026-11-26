@@ -1,37 +1,33 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   CatalogAvatarPickerModal,
   CatalogGameGrid,
   CatalogHeader,
+  CatalogJoinBanner,
   CatalogJoinCodeModal,
 } from '@/src/features/catalog/components';
 import { useCatalogScreen } from '@/src/features/catalog/hooks/useCatalogScreen';
-import { catalogUi, styles } from '@/src/features/catalog/styles/catalogStyles';
+import { styles } from '@/src/features/catalog/styles/catalogStyles';
 import { useI18n } from '@/src/i18n';
-import { Button } from '@/src/ui/atoms';
+import { useTheme } from '@/src/theme';
 
 export default function CatalogScreen() {
   const { t } = useI18n();
-  const { state, handlers } = useCatalogScreen();
+  const { theme } = useTheme();
+  const { locale, state, handlers } = useCatalogScreen();
+
+  const gamesCountLabel =
+    locale === 'pt'
+      ? `${state.readyGames.length} jogos`
+      : `${state.readyGames.length} games`;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <LinearGradient
-        pointerEvents="none"
-        colors={[state.bgStart, state.bgEnd]}
-        start={{ x: 0.1, y: 0 }}
-        end={{ x: 0.9, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <View pointerEvents="none" style={styles.backgroundMilkOverlay} />
-
-      <View style={[styles.pageFrame, styles.pageContent]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }]}>
+      <View style={styles.pageContent}>
         <View style={styles.headerSection}>
           <CatalogHeader
-            title="FESTA HUB"
             nickname={state.nickname}
             avatarId={state.avatarId}
             nicknameDraft={state.nicknameDraft}
@@ -46,11 +42,40 @@ export default function CatalogScreen() {
           />
         </View>
 
-        <ScrollView style={styles.cardsScroll} contentContainerStyle={styles.cardsContent}>
-          <View style={styles.sectionIntro}>
-            <Text style={styles.sectionEyebrow}>{t('catalog.gameShowcase').toUpperCase()}</Text>
-            <Text style={styles.sectionTitle}>{t('catalog.gameShowcaseSubtitle')}</Text>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}>
+          <CatalogJoinBanner
+            locale={locale}
+            accessibilityLabel={t('catalog.openRoomAccessLabel')}
+            onPress={handlers.openJoinCodeModal}
+          />
+
+          <View style={styles.sectionHeader}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                {
+                  color: theme.semantic.text.primary,
+                  fontFamily: theme.semantic.typography.titleFamily,
+                  fontWeight: theme.semantic.typography.titleWeight,
+                },
+              ]}>
+              {t('catalog.gameShowcase')}
+            </Text>
+            <Text
+              style={[
+                styles.sectionCount,
+                {
+                  color: theme.semantic.text.muted,
+                  fontFamily: theme.semantic.typography.bodyFamily,
+                },
+              ]}>
+              {gamesCountLabel}
+            </Text>
           </View>
+
           <CatalogGameGrid
             games={state.readyGames}
             isBusy={state.isCreatingRoom || state.isJoiningRoom}
@@ -59,19 +84,6 @@ export default function CatalogScreen() {
             }}
           />
         </ScrollView>
-
-        <View style={[styles.codeButtonDock, { paddingBottom: 16 }]}>
-          <Button
-            label={t('catalog.openRoom').toUpperCase()}
-            accessibilityLabel={t('catalog.openRoomAccessLabel')}
-            onPress={handlers.openJoinCodeModal}
-            variant="primary"
-            size="lg"
-            color={catalogUi.roomButton}
-            textColor="#20255C"
-            style={styles.codeButtonAtom}
-          />
-        </View>
       </View>
 
       <CatalogJoinCodeModal

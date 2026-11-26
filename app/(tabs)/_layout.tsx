@@ -15,9 +15,13 @@ export default function TabLayout() {
         tabBarInactiveTintColor: theme.semantic.text.muted,
         tabBarStyle: {
           backgroundColor: theme.semantic.bg.surface,
-          borderTopColor: theme.semantic.border.subtle,
+          borderTopColor: theme.semantic.border.hairline,
           display: 'none',
         },
+        sceneStyle: {
+          backgroundColor: theme.semantic.bg.app,
+        },
+        headerShadowVisible: false,
         headerStyle: {
           backgroundColor: theme.semantic.bg.surface,
         },

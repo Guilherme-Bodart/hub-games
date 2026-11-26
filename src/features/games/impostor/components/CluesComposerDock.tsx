@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 
 import { cluesPhaseStyles as styles } from '@/src/features/games/impostor/styles/cluesPhaseStyles';
+import { getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
 import { Button, Input } from '@/src/ui/atoms';
 
 type CluesComposerDockProps = {
@@ -36,21 +36,89 @@ export function CluesComposerDock({
   onSubmitClue,
   onProceedDecision,
 }: CluesComposerDockProps) {
+  const accent = getGameAccent('impostor-neon');
+
   return (
     <View style={styles.composerStage}>
-      {canSubmitClue ? (
-        <View
-          style={[
-            styles.composerCard,
-            {
-              backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.94),
-              borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
-            },
-          ]}>
-          {helperText ? (
+      <View
+        style={[
+          styles.composerCard,
+          {
+            backgroundColor: theme.semantic.bg.subtle,
+            borderColor: theme.semantic.border.hairline,
+          },
+        ]}>
+        {canSubmitClue ? (
+          <>
+            {helperText ? (
+              <Text
+                style={[
+                  styles.composerHelper,
+                  {
+                    color: theme.semantic.text.secondary,
+                    fontFamily: theme.semantic.typography.bodyFamily,
+                    fontWeight: theme.semantic.typography.bodyWeight,
+                  },
+                ]}>
+                {helperText}
+              </Text>
+            ) : null}
+            <Input
+              value={clueInput}
+              onChangeText={onChangeClueInput}
+              label={inputLabel}
+              placeholder={inputPlaceholder}
+              returnKeyType="send"
+              onSubmitEditing={clueInput.trim() ? onSubmitClue : undefined}
+              style={styles.composerInput}
+            />
+            <Button
+              label={submitLabel}
+              color={accent.primary}
+              plinthColor={accent.plinth}
+              onPress={onSubmitClue}
+              disabled={!clueInput.trim()}
+              size="lg"
+              style={styles.actionButton}
+            />
+          </>
+        ) : isClueCycleComplete ? (
+          <>
+            {helperText ? (
+              <Text
+                style={[
+                  styles.composerHelper,
+                  {
+                    color: theme.semantic.text.secondary,
+                    fontFamily: theme.semantic.typography.bodyFamily,
+                    fontWeight: theme.semantic.typography.bodyWeight,
+                  },
+                ]}>
+                {helperText}
+              </Text>
+            ) : null}
+            <Button
+              label={proceedLabel}
+              color={accent.primary}
+              plinthColor={accent.plinth}
+              onPress={onProceedDecision}
+              disabled={isProceedDisabled}
+              size="lg"
+              style={styles.actionButton}
+            />
+          </>
+        ) : (
+          <View
+            style={[
+              styles.passiveDockPill,
+              {
+                backgroundColor: theme.semantic.bg.surface,
+                borderColor: theme.semantic.border.hairline,
+              },
+            ]}>
             <Text
               style={[
-                styles.composerHelper,
+                styles.passiveDockPillText,
                 {
                   color: theme.semantic.text.secondary,
                   fontFamily: theme.semantic.typography.bodyFamily,
@@ -59,78 +127,9 @@ export function CluesComposerDock({
               ]}>
               {helperText}
             </Text>
-          ) : null}
-          <Input
-            value={clueInput}
-            onChangeText={onChangeClueInput}
-            label={inputLabel}
-            placeholder={inputPlaceholder}
-            style={styles.composerInput}
-          />
-          <Button
-            label={submitLabel}
-            onPress={onSubmitClue}
-            disabled={!clueInput.trim()}
-            size="lg"
-            style={styles.actionButton}
-          />
-        </View>
-      ) : (
-        <View
-          style={[
-            styles.composerCard,
-            {
-              backgroundColor: withAlpha(theme.semantic.bg.elevated, 0.92),
-              borderColor: withAlpha(theme.semantic.border.subtle, 0.9),
-            },
-          ]}>
-          {isClueCycleComplete ? (
-            <>
-              {helperText ? (
-                <Text
-                  style={[
-                    styles.composerHelper,
-                    {
-                      color: theme.semantic.text.secondary,
-                      fontFamily: theme.semantic.typography.bodyFamily,
-                      fontWeight: theme.semantic.typography.bodyWeight,
-                    },
-                  ]}>
-                  {helperText}
-                </Text>
-              ) : null}
-              <Button
-                label={proceedLabel}
-                onPress={onProceedDecision}
-                disabled={isProceedDisabled}
-                size="lg"
-                style={styles.actionButton}
-              />
-            </>
-          ) : (
-            <View
-              style={[
-                styles.passiveDockPill,
-                {
-                  backgroundColor: withAlpha(theme.semantic.bg.surface, 0.94),
-                  borderColor: withAlpha(theme.semantic.border.subtle, 0.92),
-                },
-              ]}>
-              <Text
-                style={[
-                  styles.passiveDockPillText,
-                  {
-                    color: theme.semantic.text.muted,
-                    fontFamily: theme.semantic.typography.bodyFamily,
-                    fontWeight: theme.semantic.typography.bodyWeight,
-                  },
-                ]}>
-                {helperText}
-              </Text>
-            </View>
-          )}
-        </View>
-      )}
+          </View>
+        )}
+      </View>
     </View>
   );
 }

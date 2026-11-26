@@ -3,56 +3,111 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#DDE4EE',
+  },
+  scrollView: {
+    flex: 1,
   },
   page: {
-    flex: 1,
-    paddingHorizontal: 22,
-    paddingTop: 14,
-    gap: 14,
-  },
-  languageCard: {
-    borderRadius: 32,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.9)',
-    backgroundColor: 'rgba(255,255,255,0.85)',
     paddingHorizontal: 16,
-    paddingVertical: 18,
-    gap: 12,
+    paddingTop: 16,
+    paddingBottom: 32,
+    gap: 16,
   },
-  languageTitleRow: {
+  pillTrack: {
+    flexDirection: 'row',
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 4,
+    gap: 6,
+    marginTop: 4,
+  },
+  pillOptionPlinth: {
+    flex: 1,
+    borderRadius: 12,
+  },
+  pillOptionFace: {
+    minHeight: 44,
+    borderRadius: 12,
+    borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
   },
-  languageAccent: {
-    width: 6,
-    height: 20,
-    borderRadius: 999,
-    backgroundColor: '#F58C83',
+  pillShortCode: {
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.5,
   },
-  languageTitle: {
-    color: '#222552',
-    fontSize: 24,
-    lineHeight: 26,
-    letterSpacing: 0.6,
-    fontStyle: 'italic',
-    fontFamily: 'Baloo2_700Bold',
-    
+  pillLabel: {
+    fontSize: 15,
+    lineHeight: 19,
   },
-  languageSubtitle: {
-    color: '#8A95AB',
+  prefRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingVertical: 6,
+  },
+  prefRowLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    minWidth: 0,
+  },
+  prefIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  prefCopy: {
+    flex: 1,
+    gap: 2,
+    minWidth: 0,
+  },
+  prefLabel: {
+    fontSize: 16,
+    lineHeight: 20,
+  },
+  prefDescription: {
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  divider: {
+    height: 1,
+    width: '100%',
+    marginVertical: 4,
+  },
+  motionSection: {
+    gap: 10,
+    paddingTop: 6,
+  },
+  segmentedTrack: {
+    flexDirection: 'row',
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 4,
+    gap: 4,
+  },
+  segmentedButton: {
+    flex: 1,
+    minHeight: 38,
+    borderRadius: 10,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  segmentedLabel: {
     fontSize: 13,
     lineHeight: 17,
-    fontFamily: 'Nunito_700Bold',
-    
-  },
-  optionStack: {
-    gap: 10,
-    marginTop: 8,
-
-  },
-  languageButton: {
-    width: '100%',
   },
 });

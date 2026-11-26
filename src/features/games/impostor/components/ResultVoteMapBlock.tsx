@@ -35,24 +35,45 @@ export function ResultVoteMapBlock({
       style={[
         styles.resultBlock,
         {
-          borderColor: theme.semantic.border.subtle,
-          backgroundColor: theme.semantic.bg.surface,
+          borderColor: theme.semantic.border.hairline,
+          backgroundColor: theme.semantic.bg.subtle,
         },
       ]}>
-      <Text style={[styles.resultBlockTitle, { color: theme.semantic.text.primary }]}>{title}</Text>
+      <Text
+        style={[
+          styles.resultBlockTitle,
+          {
+            color: theme.semantic.text.primary,
+            fontFamily: theme.semantic.typography.titleFamily,
+            fontWeight: theme.semantic.typography.titleWeight,
+          },
+        ]}>
+        {title}
+      </Text>
       {entries.map((entry) => (
         <View
           key={`vote-map-${entry.suspect.id}`}
           style={[
             styles.voteMapRow,
             {
-              borderColor: theme.semantic.border.subtle,
-              backgroundColor: theme.semantic.bg.elevated,
+              borderColor: theme.semantic.border.hairline,
+              backgroundColor: theme.semantic.bg.surface,
             },
           ]}>
           <View style={styles.voteMapTarget}>
             <AvatarSprite avatarId={entry.suspect.avatarId} size={28} />
-            <Text style={{ color: theme.semantic.text.primary, fontSize: 13 }}>{entry.suspect.name}</Text>
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.voteMapTargetName,
+                {
+                  color: theme.semantic.text.primary,
+                  fontFamily: theme.semantic.typography.bodyFamily,
+                  fontWeight: theme.semantic.typography.bodyWeight,
+                },
+              ]}>
+              {entry.suspect.name}
+            </Text>
           </View>
           <View style={styles.voteMapVoters}>
             {entry.voters.length ? (
@@ -64,10 +85,18 @@ export function ResultVoteMapBlock({
                 />
               ))
             ) : (
-              <Text style={{ color: theme.semantic.text.muted, fontSize: 12 }}>-</Text>
+              <Text style={[styles.voteMapCount, { color: theme.semantic.text.muted }]}>-</Text>
             )}
           </View>
-          <Text style={{ color: theme.semantic.text.secondary, fontSize: 12 }}>
+          <Text
+            style={[
+              styles.voteMapCount,
+              {
+                color: theme.semantic.text.secondary,
+                fontFamily: theme.semantic.typography.numberFamily,
+                fontWeight: theme.semantic.typography.numberWeight,
+              },
+            ]}>
             {`${entry.voteCount} ${votesCountLabel}`}
           </Text>
         </View>

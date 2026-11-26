@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import {
+  resolveAllowLocalPlayers,
   resolveImpostorClueTurnSeconds,
   resolveImpostorContentMode,
   resolveImpostorCount,
@@ -75,6 +76,9 @@ export function useLobbyDerivedState({
       ?.players.some((player) => player.isHost) ?? false;
 
   const actionAuthorityMode = lobby ? resolveLobbyActionAuthorityMode(lobby.gameSettings) : 'host-only';
+  const supportsOnlineSync = selectedGame?.supportsOnlineSync ?? false;
+  const allowLocalPlayers = lobby ? resolveAllowLocalPlayers(lobby.gameSettings) : true;
+  const hasAnyMultiPlayerDevice = visibleDevices.some((device) => device.players.length > 1);
   const isImpostorLobby = lobby?.gameId === 'impostor-neon';
   const isRemoteImpostorLobby = lobby?.mode === 'remote' && isImpostorLobby;
   const isRemoteSintoniaLobby = lobby?.mode === 'remote' && lobby?.gameId === 'sintonia';
@@ -84,13 +88,13 @@ export function useLobbyDerivedState({
   const impostorClueTurnSeconds = lobby ? resolveImpostorClueTurnSeconds(lobby.gameSettings) : 20;
   const lobbyPlayersLimit = isImpostorLobby ? Math.min(impostorTargetPlayers, maximumPlayers) : maximumPlayers;
   const tooManyPlayers = totalPlayers > lobbyPlayersLimit;
-  const canAddPlayer = totalPlayers < lobbyPlayersLimit;
-  const showAddCard = canAddPlayer && totalPlayers < lobbyPlayersLimit;
+  const canAddPlayer = allowLocalPlayers && totalPlayers < lobbyPlayersLimit;
+  const showAddCard = canAddPlayer;
   const canStartGame = totalPlayers >= minimumPlayers && !tooManyPlayers && readyCount === totalPlayers;
   const canHostStartThisLobby = lobby?.mode === 'remote' ? isLocalHost : true;
   const isSettingsEditable = isLocalHost;
   const isCompactViewport = viewportWidth < 390;
-  const playerColumns = viewportWidth >= 980 ? 6 : viewportWidth >= 760 ? 5 : 4;
+  const playerColumns = viewportWidth >= 900 ? 4 : viewportWidth >= 600 ? 3 : 2;
   const playerGap = 12;
   const nextAutoName = resolveNextAutoPlayerName(locale, totalPlayers);
 
@@ -115,6 +119,9 @@ export function useLobbyDerivedState({
     lobbyTitle,
     isLocalHost,
     actionAuthorityMode,
+    supportsOnlineSync,
+    allowLocalPlayers,
+    hasAnyMultiPlayerDevice,
     isImpostorLobby,
     isRemoteImpostorLobby,
     isRemoteSintoniaLobby,

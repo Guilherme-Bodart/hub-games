@@ -17,9 +17,6 @@ import {
 import { useI18n } from '@/src/i18n';
 import { triggerGameFeedback } from '@/src/ui/feedback';
 
-const CATALOG_BG_START = '#EFF4FA';
-const CATALOG_BG_END = '#DDE6F1';
-
 export const useCatalogScreen = (): UseCatalogScreenResult => {
   const router = useRouter();
   const { t, locale } = useI18n();
@@ -44,26 +41,28 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
   useEffect(() => {
     let active = true;
 
-    void Promise.all([getPreferredNickname(), getOrCreateClientIdentity()]).then(([storedNickname, identity]) => {
-      if (!active) {
-        return;
+    void Promise.all([getPreferredNickname(), getOrCreateClientIdentity()]).then(
+      ([storedNickname, identity]) => {
+        if (!active) {
+          return;
+        }
+
+        setAvatarId(identity.avatarId);
+
+        const normalized = storedNickname.trim();
+        if (normalized) {
+          const sanitized = normalized.slice(0, 20);
+          setNickname(sanitized);
+          setNicknameDraft(sanitized);
+          return;
+        }
+
+        const generated = createRandomNickname();
+        setNickname(generated);
+        setNicknameDraft(generated);
+        void setPreferredNickname(generated);
       }
-
-      setAvatarId(identity.avatarId);
-
-      const normalized = storedNickname.trim();
-      if (normalized) {
-        const sanitized = normalized.slice(0, 20);
-        setNickname(sanitized);
-        setNicknameDraft(sanitized);
-        return;
-      }
-
-      const generated = createRandomNickname();
-      setNickname(generated);
-      setNicknameDraft(generated);
-      void setPreferredNickname(generated);
-    });
+    );
 
     return () => {
       active = false;
@@ -208,8 +207,6 @@ export const useCatalogScreen = (): UseCatalogScreenResult => {
       roomCodeInput,
       roomCodeError,
       readyGames,
-      bgStart: CATALOG_BG_START,
-      bgEnd: CATALOG_BG_END,
     },
     handlers: {
       openSettings,

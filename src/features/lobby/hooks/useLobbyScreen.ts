@@ -1,4 +1,5 @@
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 
@@ -8,21 +9,20 @@ import { useLobbyPlayerModals } from '@/src/features/lobby/hooks/useLobbyPlayerM
 import { useLobbyRoomCodeState } from '@/src/features/lobby/hooks/useLobbyRoomCodeState';
 import { useLobbyStartSequence } from '@/src/features/lobby/hooks/useLobbyStartSequence';
 import type { LobbyPanelCopy, VisibleLobbyPlayer } from '@/src/features/lobby/lobby.types';
-import { useLobbySessionStore } from '@/src/features/lobby/store';
+import { useLobbySessionStore } from '@/src/features/lobby/lobbySessionStore';
 import { useI18n, type Locale } from '@/src/i18n';
-import { useTheme } from '@/src/theme';
+import { type GameAccentPalette, getGameAccent, useTheme } from '@/src/theme';
 import { useReducedMotion } from '@/src/ui/motion';
 
 type UseLobbyScreenResult = {
   locale: Locale;
-  loadingBackgroundColor: string;
   lobby: ReturnType<typeof useLobbySessionStore.getState>['lobby'];
+  gameAccent: GameAccentPalette;
   sessionRestoreStatus: ReturnType<typeof useLobbySessionStore.getState>['sessionRestoreStatus'];
   reduceMotion: boolean;
   settingsVisible: boolean;
   setSettingsVisible: (visible: boolean) => void;
   realtimeError: string | null;
-  realtimeHintColor: string;
   addModalVisible: boolean;
   addPlayerName: string;
   addPlayerError: string | null;
@@ -36,8 +36,10 @@ type UseLobbyScreenResult = {
   headerPanelProps: {
     lobbyTitle: string;
     panelCopy: LobbyPanelCopy;
+    onPressBack: () => void;
     onOpenSettings: () => void;
     isRemoteLobby: boolean;
+    allowLocalPlayers: boolean;
     roomCode: string;
     roomCodeLabel: string;
     isRoomCodeHidden: boolean;
@@ -48,7 +50,6 @@ type UseLobbyScreenResult = {
     copyCodeA11yLabel: string;
     showCodeA11yLabel: string;
     hideCodeA11yLabel: string;
-    isCompactViewport: boolean;
     readyCount: number;
     totalPlayers: number;
     readyLabel: string;
@@ -58,11 +59,10 @@ type UseLobbyScreenResult = {
     clueTimerBadgeLabel: string | null;
   };
   playersSectionProps: {
-    locale: Locale;
+    panelCopy: LobbyPanelCopy;
     visiblePlayers: VisibleLobbyPlayer[];
     showAddCard: boolean;
     playersEmptyHint: string;
-    reduceMotion: boolean;
     playerColumns: number;
     playerGap: number;
     onToggleReady: (playerId: string, isLocalDevice: boolean) => void;
@@ -72,6 +72,9 @@ type UseLobbyScreenResult = {
   settingsModalProps: {
     panelCopy: LobbyPanelCopy;
     isSettingsEditable: boolean;
+    supportsOnlineSync: boolean;
+    allowLocalPlayers: boolean;
+    hasAnyMultiPlayerDevice: boolean;
     actionAuthorityMode: 'host-only' | 'collaborative';
     isImpostorLobby: boolean;
     impostorContentMode: 'words' | 'questions';
@@ -92,6 +95,7 @@ type UseLobbyScreenResult = {
 };
 
 export function useLobbyScreen(): UseLobbyScreenResult {
+  const router = useRouter();
   const { theme } = useTheme();
   const { t, locale } = useI18n();
   const reduceMotion = useReducedMotion();
@@ -110,6 +114,8 @@ export function useLobbyScreen(): UseLobbyScreenResult {
   const endSession = useLobbySessionStore((state) => state.endSession);
 
   const [settingsVisible, setSettingsVisible] = useState(false);
+
+  const gameAccent = useMemo(() => getGameAccent(lobby?.gameId), [lobby?.gameId]);
 
   const derived = useLobbyDerivedState({
     lobby,
@@ -134,9 +140,8 @@ export function useLobbyScreen(): UseLobbyScreenResult {
     addPlayer,
   });
 
-  const { copied, isRoomCodeHidden, onCopyCode, onToggleRoomCodeVisibility } = useLobbyRoomCodeState(
-    { roomCode: lobby?.roomCode ?? null }
-  );
+  const { copied, isRoomCodeHidden, onCopyCode, onToggleRoomCodeVisibility } =
+    useLobbyRoomCodeState({ roomCode: lobby?.roomCode ?? null });
 
   const { countdownValue, beginStartSequence } = useLobbyStartSequence({
     lobby,
@@ -153,17 +158,29 @@ export function useLobbyScreen(): UseLobbyScreenResult {
 
   const { leaveModalVisible, dismissLeaveLobby, confirmLeaveLobby, onBackToCatalog } =
     useLobbyNavigationGuard({
-    lobby,
-    isLocalHost: derived.isLocalHost,
-    clearRemoteStart,
-    endSession,
-    title: t('tabs.lobby'),
-    leaveConfirmMessage: t('lobby.leaveConfirmMessage'),
-    headerFamily: theme.semantic.typography.titleFamily,
-    headerWeight: theme.semantic.typography.titleWeight,
-    headerTextColor: theme.semantic.text.primary,
-    headerBackgroundColor: theme.semantic.bg.surface,
-  });
+      lobby,
+      isLocalHost: derived.isLocalHost,
+      clearRemoteStart,
+      endSession,
+      title: t('tabs.lobby'),
+      leaveConfirmMessage: t('lobby.leaveConfirmMessage'),
+      headerFamily: theme.semantic.typography.titleFamily,
+      headerWeight: theme.semantic.typography.titleWeight,
+      headerTextColor: theme.semantic.text.primary,
+      headerBackgroundColor: theme.semantic.bg.surface,
+    });
+
+  const onPressBack = useCallback(() => {
+    if (!lobby) {
+      onBackToCatalog();
+      return;
+    }
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    onBackToCatalog();
+  }, [lobby, onBackToCatalog, router]);
 
   const handleToggleReady = useCallback(
     (playerId: string, isLocalDevice: boolean) => {
@@ -176,58 +193,25 @@ export function useLobbyScreen(): UseLobbyScreenResult {
     [togglePlayerReady]
   );
 
-  const playersSectionProps: UseLobbyScreenResult['playersSectionProps'] = {
-    locale,
-    visiblePlayers: derived.visiblePlayers,
-    showAddCard: derived.showAddCard,
-    playersEmptyHint: derived.playersEmptyHint,
-    reduceMotion,
-    playerColumns: derived.playerColumns,
-    playerGap: derived.playerGap,
-    onToggleReady: handleToggleReady,
-    onRemovePlayer: (playerId) => removePlayer(playerId),
-    onOpenAddPlayerModal: openAddPlayerModal,
-  };
-
-  const settingsModalProps: UseLobbyScreenResult['settingsModalProps'] = {
-    panelCopy: derived.panelCopy,
-    isSettingsEditable: derived.isSettingsEditable,
-    actionAuthorityMode: derived.actionAuthorityMode,
-    isImpostorLobby: derived.isImpostorLobby,
-    impostorContentMode: derived.impostorContentMode,
-    impostorTargetPlayers: derived.impostorTargetPlayers,
-    impostorCount: derived.impostorCount,
-    impostorClueTurnSeconds: derived.impostorClueTurnSeconds as 10 | 20 | 30,
-    minimumPlayers: derived.minimumPlayers,
-    maximumPlayers: derived.maximumPlayers,
-    totalPlayers: derived.totalPlayers,
-    onUpdateSettings: updateGameSettings,
-  };
-
   const startDockLabel = useMemo(() => {
     if (derived.canStartGame && derived.canHostStartThisLobby) {
       return t('lobby.startGame');
     }
-
     if (derived.tooManyPlayers) {
       return t('lobby.tooManyPlayers', { max: derived.lobbyPlayersLimit });
     }
-
     if (derived.totalPlayers < derived.minimumPlayers) {
       return t('lobby.needMorePlayers', { min: derived.minimumPlayers });
     }
-
     if (!derived.canHostStartThisLobby) {
       return derived.panelCopy.waitingHostStart;
     }
-
     return t('lobby.waiting', { ready: derived.readyCount, total: derived.totalPlayers });
   }, [
     derived.canHostStartThisLobby,
     derived.canStartGame,
     derived.lobbyPlayersLimit,
     derived.minimumPlayers,
-    derived.panelCopy.countdownStarting,
     derived.panelCopy.waitingHostStart,
     derived.readyCount,
     derived.tooManyPlayers,
@@ -237,14 +221,13 @@ export function useLobbyScreen(): UseLobbyScreenResult {
 
   return {
     locale,
-    loadingBackgroundColor: theme.semantic.bg.app,
     lobby,
+    gameAccent,
     sessionRestoreStatus,
     reduceMotion,
     settingsVisible,
     setSettingsVisible,
     realtimeError,
-    realtimeHintColor: theme.semantic.status.warning,
     addModalVisible,
     addPlayerName,
     addPlayerError,
@@ -258,8 +241,10 @@ export function useLobbyScreen(): UseLobbyScreenResult {
     headerPanelProps: {
       lobbyTitle: derived.lobbyTitle,
       panelCopy: derived.panelCopy,
+      onPressBack,
       onOpenSettings: () => setSettingsVisible(true),
       isRemoteLobby: lobby?.mode === 'remote',
+      allowLocalPlayers: derived.allowLocalPlayers,
       roomCode: lobby?.roomCode ?? '',
       roomCodeLabel: t('lobby.roomCodeLabel'),
       isRoomCodeHidden,
@@ -270,7 +255,6 @@ export function useLobbyScreen(): UseLobbyScreenResult {
       copyCodeA11yLabel: t('lobby.copyCode'),
       showCodeA11yLabel: derived.roomCodeLabels.showLabel,
       hideCodeA11yLabel: derived.roomCodeLabels.hideLabel,
-      isCompactViewport: derived.isCompactViewport,
       readyCount: derived.readyCount,
       totalPlayers: derived.totalPlayers,
       readyLabel: t('common.ready'),
@@ -279,8 +263,34 @@ export function useLobbyScreen(): UseLobbyScreenResult {
       impostorContentModeLabel: derived.impostorContentModeLabel,
       clueTimerBadgeLabel: derived.clueTimerBadgeLabel,
     },
-    playersSectionProps,
-    settingsModalProps,
+    playersSectionProps: {
+      panelCopy: derived.panelCopy,
+      visiblePlayers: derived.visiblePlayers,
+      showAddCard: derived.showAddCard,
+      playersEmptyHint: derived.playersEmptyHint,
+      playerColumns: derived.playerColumns,
+      playerGap: derived.playerGap,
+      onToggleReady: handleToggleReady,
+      onRemovePlayer: (playerId) => removePlayer(playerId),
+      onOpenAddPlayerModal: openAddPlayerModal,
+    },
+    settingsModalProps: {
+      panelCopy: derived.panelCopy,
+      isSettingsEditable: derived.isSettingsEditable,
+      supportsOnlineSync: derived.supportsOnlineSync,
+      allowLocalPlayers: derived.allowLocalPlayers,
+      hasAnyMultiPlayerDevice: derived.hasAnyMultiPlayerDevice,
+      actionAuthorityMode: derived.actionAuthorityMode,
+      isImpostorLobby: derived.isImpostorLobby,
+      impostorContentMode: derived.impostorContentMode,
+      impostorTargetPlayers: derived.impostorTargetPlayers,
+      impostorCount: derived.impostorCount,
+      impostorClueTurnSeconds: derived.impostorClueTurnSeconds as 10 | 20 | 30,
+      minimumPlayers: derived.minimumPlayers,
+      maximumPlayers: derived.maximumPlayers,
+      totalPlayers: derived.totalPlayers,
+      onUpdateSettings: updateGameSettings,
+    },
     startDockProps: {
       label: countdownValue !== null ? t('lobby.waitingSimple') : startDockLabel,
       helperText:
@@ -288,7 +298,7 @@ export function useLobbyScreen(): UseLobbyScreenResult {
           ? `${derived.panelCopy.countdownStarting} ${countdownValue}`
           : derived.showReadyHint
             ? t('lobby.tapAvatarHint')
-          : undefined,
+            : undefined,
       onStart: () => {
         void beginStartSequence();
       },

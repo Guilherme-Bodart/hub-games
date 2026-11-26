@@ -11,6 +11,7 @@ type GameScreenShellProps = PropsWithChildren<{
   contentStyle?: StyleProp<ViewStyle>;
   footer?: ReactNode;
   showBackdrop?: boolean;
+  accentColor?: string;
   footerInset?: number;
 }>;
 
@@ -20,48 +21,32 @@ export function GameScreenShell({
   contentStyle,
   footer,
   showBackdrop = true,
-  footerInset = 128,
+  accentColor,
+  footerInset = 112,
 }: GameScreenShellProps) {
   const { theme } = useTheme();
+  const topTint = accentColor ? withAlpha(accentColor, 0.08) : withAlpha(theme.semantic.button.primary.bg, 0.05);
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }, style]}>
       {showBackdrop ? (
-        <View pointerEvents="none" style={styles.backdropLayer}>
-          <LinearGradient
-            colors={['#FFF4F6', '#F0F7FF', '#F3F0FF']}
-            start={{ x: 0, y: 0.3 }}
-            end={{ x: 1, y: 0.7 }}
-            style={styles.backdropBase}
-          />
-          <View
-            style={[
-              styles.backdropOrbTop,
-              { backgroundColor: withAlpha(theme.semantic.button.primary.bg, 0.12) },
-            ]}
-          />
-          <View
-            style={[
-              styles.backdropOrbBottom,
-              { backgroundColor: withAlpha(theme.semantic.button.accent.bg, 0.1) },
-            ]}
-          />
-          <View
-            style={[
-              styles.backdropOrbCenter,
-              { backgroundColor: withAlpha(theme.semantic.button.secondary.bg, 0.12) },
-            ]}
-          />
-        </View>
+        <LinearGradient
+          pointerEvents="none"
+          colors={[topTint, theme.semantic.bg.app, theme.semantic.bg.app]}
+          locations={[0, 0.34, 1]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.backdrop}
+        />
       ) : null}
       <View
         style={[
           styles.content,
           {
             paddingHorizontal: theme.semantic.layout.spacing.md,
-            paddingTop: theme.semantic.layout.spacing.xl + theme.semantic.layout.spacing.md,
+            paddingTop: 12,
             paddingBottom: footer ? footerInset : theme.semantic.layout.spacing.md,
-            gap: theme.semantic.layout.spacing.md,
+            gap: 12,
           },
           contentStyle,
         ]}>
@@ -76,36 +61,8 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  backdropLayer: {
+  backdrop: {
     ...StyleSheet.absoluteFill,
-    overflow: 'hidden',
-  },
-  backdropBase: {
-    ...StyleSheet.absoluteFill,
-  },
-  backdropOrbTop: {
-    position: 'absolute',
-    width: 320,
-    height: 320,
-    borderRadius: 999,
-    top: -120,
-    left: -70,
-  },
-  backdropOrbBottom: {
-    position: 'absolute',
-    width: 330,
-    height: 330,
-    borderRadius: 999,
-    bottom: -130,
-    right: -90,
-  },
-  backdropOrbCenter: {
-    position: 'absolute',
-    width: 420,
-    height: 420,
-    borderRadius: 999,
-    top: '27%',
-    alignSelf: 'center',
   },
   content: {
     flex: 1,

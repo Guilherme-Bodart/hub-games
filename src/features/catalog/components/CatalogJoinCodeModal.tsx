@@ -1,8 +1,6 @@
-import { Text, TextInput, View } from 'react-native';
-
-import { catalogUi, styles } from '@/src/features/catalog/styles/catalogStyles';
+import { styles } from '@/src/features/catalog/styles/catalogStyles';
 import { useI18n } from '@/src/i18n';
-import { Button, Modal } from '@/src/ui/atoms';
+import { Button, Input, Modal } from '@/src/ui/atoms';
 
 type CatalogJoinCodeModalProps = {
   visible: boolean;
@@ -30,34 +28,28 @@ export function CatalogJoinCodeModal({
       visible={visible}
       onClose={onClose}
       closeStyle="solid"
-      style={styles.codeModal}
-      title={t('catalog.openRoomTitle')}>
-      <Text style={styles.codeModalSubtitle}>{t('catalog.openRoomSubtitle')}</Text>
-
-      <View style={styles.codeModalInputWrap}>
-        <TextInput
-          value={roomCodeInput}
-          onChangeText={onChangeRoomCode}
-          placeholder={t('catalog.openRoomPlaceholder')}
-          placeholderTextColor="rgba(43,42,70,0.45)"
-          style={[styles.codeModalInput, roomCodeError ? styles.codeModalInputError : null]}
-          autoCorrect={false}
-          autoCapitalize="characters"
-          maxLength={5}
-        />
-      </View>
-
-      {roomCodeError ? <Text style={styles.codeModalError}>{roomCodeError}</Text> : null}
+      title={t('catalog.openRoomTitle')}
+      subtitle={t('catalog.openRoomSubtitle')}>
+      <Input
+        value={roomCodeInput}
+        onChangeText={onChangeRoomCode}
+        placeholder={t('catalog.openRoomPlaceholder')}
+        errorText={roomCodeError ?? undefined}
+        autoCapitalize="characters"
+        maxLength={5}
+        returnKeyType="go"
+        onSubmitEditing={onConfirm}
+        disabled={isJoiningRoom}
+      />
 
       <Button
-        label={isJoiningRoom ? t('catalog.openRoomJoining').toUpperCase() : t('catalog.openRoomConfirm').toUpperCase()}
+        label={isJoiningRoom ? t('catalog.openRoomJoining') : t('catalog.openRoomConfirm')}
         onPress={onConfirm}
         disabled={isJoiningRoom}
+        loading={isJoiningRoom}
         variant="primary"
         size="lg"
-        color={catalogUi.roomButton}
-        textColor="#20255C"
-        style={[styles.codeModalConfirmButton, isJoiningRoom ? styles.modeButtonDisabled : null]}
+        style={styles.modalButton}
       />
     </Modal>
   );

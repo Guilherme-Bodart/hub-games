@@ -14,16 +14,17 @@ import {
 import { useLobbyScreen } from '@/src/features/lobby/hooks/useLobbyScreen';
 import { styles } from '@/src/features/lobby/styles/lobbyStyles';
 import { useI18n } from '@/src/i18n';
-import { useTheme } from '@/src/theme';
-import { Button } from '@/src/ui/atoms';
-
-const LOBBY_BACKGROUND_GRADIENT = ['#FFF5D6', '#FFE8F2', '#E9E6FF', '#DDF3FF'] as const;
+import { resolveThemeSystemGradient, useTheme } from '@/src/theme';
+import { Button, Card } from '@/src/ui/atoms';
 
 export default function LobbyScreen() {
   const { t } = useI18n();
   const { theme } = useTheme();
+  const backgroundGradient = resolveThemeSystemGradient(theme.name);
+
   const {
     lobby,
+    gameAccent,
     sessionRestoreStatus,
     settingsVisible,
     setSettingsVisible,
@@ -47,17 +48,16 @@ export default function LobbyScreen() {
 
   if (!lobby) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }]}>
         <LinearGradient
           pointerEvents="none"
-          colors={LOBBY_BACKGROUND_GRADIENT}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
+          colors={backgroundGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
-        <View pointerEvents="none" style={styles.lobbyMilkOverlay} />
         <View style={styles.loadingWrap}>
-          <View style={styles.loadingCard}>
+          <Card style={styles.loadingCard}>
             {sessionRestoreStatus === 'restoring' ? (
               <ActivityIndicator size="small" color={theme.semantic.button.primary.bg} />
             ) : null}
@@ -93,29 +93,35 @@ export default function LobbyScreen() {
                 style={styles.loadingButton}
               />
             )}
-          </View>
+          </Card>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }]}>
       <LinearGradient
         pointerEvents="none"
-        colors={LOBBY_BACKGROUND_GRADIENT}
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 1, y: 0.5 }}
+        colors={backgroundGradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <View pointerEvents="none" style={styles.lobbyMilkOverlay} />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
         <LobbyHeaderPanel
           lobbyTitle={headerPanelProps.lobbyTitle}
+          gameAccent={gameAccent}
+          backLabel={headerPanelProps.panelCopy.backLabel}
+          onPressBack={headerPanelProps.onPressBack}
           settingsLabel={headerPanelProps.panelCopy.settingsTitle}
           onOpenSettings={headerPanelProps.onOpenSettings}
           isRemoteLobby={headerPanelProps.isRemoteLobby}
+          allowLocalPlayers={headerPanelProps.allowLocalPlayers}
+          onlineOnlyBadgeLabel={headerPanelProps.panelCopy.onlineOnlyBadge}
           roomCode={headerPanelProps.roomCode}
           roomCodeLabel={headerPanelProps.roomCodeLabel}
           isRoomCodeHidden={headerPanelProps.isRoomCodeHidden}
@@ -137,6 +143,8 @@ export default function LobbyScreen() {
 
         <LobbyPlayersSection
           visiblePlayers={playersSectionProps.visiblePlayers}
+          gameAccent={gameAccent}
+          panelCopy={playersSectionProps.panelCopy}
           reduceMotion={reduceMotion}
           playerColumns={playersSectionProps.playerColumns}
           playerGap={playersSectionProps.playerGap}
@@ -154,7 +162,16 @@ export default function LobbyScreen() {
         visible={settingsVisible}
         onClose={() => setSettingsVisible(false)}
         panelCopy={settingsModalProps.panelCopy}
+        gameAccent={gameAccent}
         isSettingsEditable={settingsModalProps.isSettingsEditable}
+        supportsOnlineSync={settingsModalProps.supportsOnlineSync}
+        allowLocalPlayers={settingsModalProps.allowLocalPlayers}
+        hasAnyMultiPlayerDevice={settingsModalProps.hasAnyMultiPlayerDevice}
+        onSetAllowLocalPlayers={(allow) =>
+          settingsModalProps.onUpdateSettings({
+            [LOBBY_SETTINGS_KEYS.allowLocalPlayers]: allow,
+          })
+        }
         actionAuthorityMode={settingsModalProps.actionAuthorityMode}
         onSetActionAuthorityMode={(mode) =>
           settingsModalProps.onUpdateSettings({
@@ -201,20 +218,18 @@ export default function LobbyScreen() {
         visible={addModalVisible}
         name={addPlayerName}
         error={addPlayerError}
+        gameAccent={gameAccent}
         onClose={closeAddPlayerModal}
         onChangeName={onAddPlayerNameChange}
         onConfirm={confirmAddPlayer}
       />
 
       <LobbyStartDock
-        style={styles.bottomDock}
         label={startDockProps.label}
         helperText={startDockProps.helperText}
         onStart={startDockProps.onStart}
         disabled={startDockProps.disabled}
-        buttonColor="#F58C83"
-        buttonTextColor="#20255C"
-        startButtonStyle={styles.bottomPrimaryButton}
+        gameAccent={gameAccent}
       />
     </SafeAreaView>
   );

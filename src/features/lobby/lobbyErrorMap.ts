@@ -11,6 +11,10 @@ export const mapRealtimeMessage = (message: string, fallbackMessage: string): st
     return 'Sem permissão para concluir essa ação nesta sala.';
   }
 
+  if (lowered.includes('expired') || lowered.includes('inactivity') || lowered.includes('inativa')) {
+    return 'Sala encerrada por inatividade.';
+  }
+
   if (
     lowered.includes('timeout') ||
     lowered.includes('network') ||

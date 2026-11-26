@@ -1,14 +1,14 @@
 import {
   ActivityIndicator,
+  Pressable,
   StyleProp,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
 
-import { useTheme } from '@/src/theme';
+import { ELEVATION_STYLES, useTheme } from '@/src/theme';
 import { shiftHexColor } from '@/src/theme/utils';
 
 type ButtonVariant = 'primary' | 'secondary' | 'accent' | 'ghost' | 'destructive';
@@ -25,6 +25,7 @@ type ButtonProps = {
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
   color?: string;
+  plinthColor?: string;
   textColor?: string;
 };
 
@@ -39,102 +40,95 @@ export function Button({
   accessibilityLabel,
   style,
   color,
+  plinthColor,
   textColor,
 }: ButtonProps) {
   const { theme } = useTheme();
   const palette = theme.semantic.button[variant];
-  const sizeStyle =
-    size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd;
   const isDisabled = disabled || loading;
-  const baseColor = color ?? palette.bg;
-  const baseTextColor = textColor ?? palette.text;
-  const backgroundColor = isDisabled ? shiftHexColor(baseColor, 0.2) : baseColor;
-  const resolvedTextColor = isDisabled ? shiftHexColor(baseTextColor, -0.05) : baseTextColor;
-  const contentOpacity = !isDisabled && loading ? 0.88 : 1;
-  const borderColor = isDisabled
-    ? shiftHexColor(baseColor, 0.06)
-    : variant === 'ghost'
-      ? theme.semantic.border.subtle
-      : shiftHexColor(baseColor, -0.1);
-  const bottomDepthColor = isDisabled
-    ? shiftHexColor(baseColor, -0.02)
-    : variant === 'ghost'
-      ? shiftHexColor(theme.semantic.border.subtle, -0.06)
-      : shiftHexColor(baseColor, -0.13);
+  const isGhost = variant === 'ghost';
+
+  const baseFace = color ?? palette.bg;
+  const resolvedPlinth =
+    plinthColor ?? (color ? shiftHexColor(color, -0.16) : palette.plinth);
+  const resolvedText = textColor ?? palette.text;
+  const faceBorderColor =
+    variant === 'secondary' || isGhost
+      ? theme.semantic.border.hairline
+      : shiftHexColor(baseFace, -0.06);
+
+  const minHeight = size === 'sm' ? 40 : size === 'lg' ? 50 : 46;
+  const fontSize = size === 'sm' ? 15 : size === 'lg' ? 18 : 17;
+  const lineHeight = size === 'sm' ? 20 : size === 'lg' ? 23 : 22;
 
   return (
-    <TouchableOpacity
+    <Pressable
       testID={testID}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ disabled: isDisabled, busy: loading || undefined }}
       disabled={isDisabled}
       onPress={onPress}
-      activeOpacity={theme.semantic.motion.feedback.pressedOpacity}
       style={[
-        styles.base,
-        sizeStyle,
+        styles.plinth,
+        !isDisabled && !isGhost ? ELEVATION_STYLES.card : ELEVATION_STYLES.flat,
         {
-          backgroundColor,
-          borderColor,
-          borderRadius: 18,
-          borderWidth: 1.2,
-          borderBottomWidth: isDisabled ? 2 : 4,
-          borderBottomColor: bottomDepthColor,
-          shadowColor: theme.semantic.shadow.base,
-          shadowOpacity: isDisabled ? 0.08 : 0.12,
-          shadowRadius: 8,
-          shadowOffset: { width: 0, height: 3 },
-          elevation: isDisabled ? 1 : 3,
+          backgroundColor: isGhost ? 'transparent' : resolvedPlinth,
+          paddingBottom: isGhost ? 0 : 4,
+          opacity: isDisabled ? theme.semantic.motion.feedback.disabledOpacity : 1,
         },
         style,
       ]}>
-      <View style={styles.contentRow}>
-        {loading ? <ActivityIndicator size="small" color={palette.text} style={styles.loader} /> : null}
-        <Text
+      {({ pressed }) => (
+        <View
           style={[
-            styles.label,
+            styles.face,
             {
-              color: resolvedTextColor,
-              fontFamily: theme.semantic.typography.titleFamily,
-              fontWeight: theme.semantic.typography.titleWeight,
-              opacity: contentOpacity,
-              textTransform: 'uppercase',
+              minHeight,
+              backgroundColor: baseFace,
+              borderColor: faceBorderColor,
+              transform: [{ translateY: pressed && !isDisabled ? (isGhost ? 1 : 3) : 0 }],
             },
           ]}>
-          {label}
-        </Text>
-      </View>
-    </TouchableOpacity>
+          {loading ? (
+            <ActivityIndicator size="small" color={resolvedText} style={styles.loader} />
+          ) : null}
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.label,
+              {
+                color: resolvedText,
+                fontFamily: theme.semantic.typography.titleFamily,
+                fontWeight: theme.semantic.typography.titleWeight,
+                fontSize,
+                lineHeight,
+              },
+            ]}>
+            {label}
+          </Text>
+        </View>
+      )}
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  base: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    overflow: 'hidden',
+  plinth: {
+    borderRadius: 16,
   },
-  contentRow: {
+  face: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  sizeSm: {
-    minHeight: 44,
-  },
-  sizeMd: {
-    minHeight: 50,
-  },
-  sizeLg: {
-    minHeight: 54,
+    borderRadius: 16,
+    borderWidth: 1,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
   },
   label: {
-    fontSize: 19,
-    lineHeight: 20,
-    letterSpacing: 1,
+    letterSpacing: 0.3,
+    textAlign: 'center',
   },
   loader: {
     marginRight: 8,

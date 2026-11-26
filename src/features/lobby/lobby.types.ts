@@ -7,6 +7,12 @@ export type VisibleLobbyPlayer = {
 
 export type LobbyPanelCopy = {
   settingsTitle: string;
+  roomMode: string;
+  hybridMode: string;
+  onlineOnlyMode: string;
+  onlineOnlyBadge: string;
+  onlineOnlyBlockedHint: string;
+  localPassPhoneBadge: string;
   controlMode: string;
   hostOnly: string;
   collaborative: string;
@@ -20,4 +26,10 @@ export type LobbyPanelCopy = {
   hostOnlyHint: string;
   waitingHostStart: string;
   countdownStarting: string;
+  addPlayerLabel: string;
+  backLabel: string;
+  hostLabel: string;
+  readyPill: string;
+  tapReadyPill: string;
+  waitingPill: string;
 };

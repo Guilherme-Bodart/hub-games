@@ -1,33 +1,37 @@
 import { buildRevealCardVisualTokens } from '@/src/features/games/shared/reveal-card';
-import { getTheme } from '@/src/theme/themes';
+import { getGameAccent, getTheme } from '@/src/theme';
 
 describe('buildRevealCardVisualTokens', () => {
-  const theme = getTheme('coralPop');
+  const theme = getTheme('studioParty');
 
-  it('keeps the default accent for number and secret variants', () => {
+  it('uses per-game Studio Party accents for number and secret variants', () => {
     const numberTokens = buildRevealCardVisualTokens(theme, 'number');
     const secretTokens = buildRevealCardVisualTokens(theme, 'secret');
 
-    expect(numberTokens.accentColor).toBe(theme.semantic.button.primary.bg);
+    expect(numberTokens.accentColor).toBe(getGameAccent('sintonia').primary);
     expect(secretTokens.accentColor).toBe(theme.semantic.button.primary.bg);
     expect(numberTokens.paperEffect.enabled).toBe(false);
     expect(secretTokens.paperEffect.enabled).toBe(false);
+    expect(numberTokens.foilColors).toHaveLength(4);
+    expect(secretTokens.foilColors).toHaveLength(4);
   });
 
-  it('prepares the impostor variant with error accent and special paper treatment', () => {
+  it('prepares the impostor variant with crimson accent, foil shimmer, and special paper treatment', () => {
     const tokens = buildRevealCardVisualTokens(theme, 'impostor');
+    const impostorAccent = getGameAccent('impostor-neon');
 
-    expect(tokens.accentColor).toBe(theme.semantic.status.error);
-    expect(tokens.revealTextColor).toBe(theme.semantic.status.error);
+    expect(tokens.accentColor).toBe(impostorAccent.primary);
+    expect(tokens.revealTextColor).toBe(impostorAccent.plinth);
     expect(tokens.paperEffect.enabled).toBe(true);
     expect(tokens.paperEffect.gradientColors).toHaveLength(3);
+    expect(tokens.foilColors).toHaveLength(4);
   });
 
   it('keeps impostor cards neutral before they are revealed', () => {
-    const tokens = buildRevealCardVisualTokens(theme, 'impostor', { isRevealed: false });
+    const hiddenTokens = buildRevealCardVisualTokens(theme, 'impostor', { isRevealed: false });
 
-    expect(tokens.accentColor).toBe(theme.semantic.button.primary.bg);
-    expect(tokens.paperEffect.enabled).toBe(false);
-    expect(tokens.revealTextColor).toBe(theme.semantic.text.primary);
+    expect(hiddenTokens.accentColor).toBe(theme.semantic.button.primary.bg);
+    expect(hiddenTokens.revealTextColor).toBe(theme.semantic.text.primary);
+    expect(hiddenTokens.paperEffect.enabled).toBe(false);
   });
 });

@@ -1,6 +1,6 @@
-import { BottomActionDock } from '@/src/ui/atoms';
+import { getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
+import { BottomActionDock } from '@/src/ui/atoms';
 
 type SintoniaBottomDockProps = {
   theme: ThemeTokens;
@@ -15,12 +15,13 @@ type SintoniaBottomDockProps = {
 };
 
 export function SintoniaBottomDock({
-  theme,
   helperText,
   primaryAction,
   backLabel,
   onBack,
 }: SintoniaBottomDockProps) {
+  const accent = getGameAccent('sintonia');
+
   return (
     <BottomActionDock
       helperText={helperText}
@@ -28,26 +29,14 @@ export function SintoniaBottomDock({
         label: primaryAction.label,
         onPress: primaryAction.onPress,
         disabled: primaryAction.disabled,
-        style: {
-          backgroundColor: withAlpha(theme.semantic.button.primary.bg, 0.88),
-          borderColor: withAlpha(theme.semantic.button.primary.bg, 0.92),
-          shadowColor: theme.semantic.button.primary.bg,
-          shadowOpacity: 0.8,
-          shadowRadius: 18,
-          shadowOffset: { width: 0, height: 0 },
-          elevation: 14,
-        },
+        color: accent.primary,
+        plinthColor: accent.plinth,
+        textColor: accent.textOnPrimary,
       }}
       secondaryAction={{
         label: backLabel,
         onPress: onBack,
-        variant: 'ghost',
-        style: {
-          backgroundColor: withAlpha(theme.semantic.bg.surface, 0.35),
-          borderColor: withAlpha(theme.semantic.border.subtle, 0.95),
-          shadowOpacity: 0,
-          elevation: 0,
-        },
+        variant: 'secondary',
       }}
     />
   );

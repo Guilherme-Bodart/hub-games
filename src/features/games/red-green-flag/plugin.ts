@@ -1,12 +1,12 @@
 import { GAME_COVER_ASSETS } from '@/src/features/games/gameCoverAssets';
 import { GamePlugin } from '@/src/features/games/types';
-import { RedGreenFlagScreen } from '@/src/features/games/red-green-flag/RedGreenFlagScreen';
+import { RedGreenFlagScreen } from '@/src/features/games/red-green-flag/screens/RedGreenFlagScreen';
 
 export const redGreenFlagPlugin: GamePlugin = {
   manifest: {
     id: 'red-green-flag',
     coverGlyph: 'FLG',
-    coverTone: '#D96B52',
+    coverTone: '#10B981',
     coverImage: GAME_COVER_ASSETS.RED_GREEN_FLAG,
     title: { pt: 'Red Flag / Green Flag', en: 'Red Flag / Green Flag' },
     subtitle: {

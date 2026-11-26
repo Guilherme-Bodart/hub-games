@@ -1,6 +1,8 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
 
+import { usePreferencesStore } from '@/src/features/settings/preferencesStore';
+
 type MotionContextValue = {
   reduceMotion: boolean;
 };
@@ -8,7 +10,8 @@ type MotionContextValue = {
 const MotionContext = createContext<MotionContextValue | undefined>(undefined);
 
 export function MotionProvider({ children }: PropsWithChildren) {
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [systemReduceMotion, setSystemReduceMotion] = useState(false);
+  const reduceMotionMode = usePreferencesStore((state) => state.reduceMotionMode);
 
   useEffect(() => {
     let isMounted = true;
@@ -17,20 +20,20 @@ export function MotionProvider({ children }: PropsWithChildren) {
       try {
         const enabled = await AccessibilityInfo.isReduceMotionEnabled();
         if (isMounted) {
-          setReduceMotion(enabled);
+          setSystemReduceMotion(enabled);
         }
       } catch {
         if (isMounted) {
-          setReduceMotion(false);
+          setSystemReduceMotion(false);
         }
       }
     };
 
-    syncPreference();
+    void syncPreference();
 
     const subscription = AccessibilityInfo.addEventListener(
       'reduceMotionChanged',
-      setReduceMotion
+      setSystemReduceMotion
     );
 
     return () => {
@@ -38,6 +41,13 @@ export function MotionProvider({ children }: PropsWithChildren) {
       subscription.remove();
     };
   }, []);
+
+  const reduceMotion =
+    reduceMotionMode === 'on'
+      ? true
+      : reduceMotionMode === 'off'
+        ? false
+        : systemReduceMotion;
 
   const value = useMemo<MotionContextValue>(
     () => ({

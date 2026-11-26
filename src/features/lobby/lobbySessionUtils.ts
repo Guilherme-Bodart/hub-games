@@ -53,7 +53,7 @@ export const withAddedLocalPlayer = (
         id: `${device.id}-${Date.now()}`,
         name: playerName,
         avatarId: pickAvailableAvatarId(lobby),
-        isReady: false,
+        isReady: true,
         isHost: false,
         deviceId: device.id,
       };

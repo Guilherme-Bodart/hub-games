@@ -1,8 +1,9 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView } from 'react-native';
 
 import { AVATAR_ASSET_TOTAL } from '@/src/features/lobby/avatarCatalog';
 import { styles } from '@/src/features/catalog/styles/catalogStyles';
 import { useI18n } from '@/src/i18n';
+import { ELEVATION_STYLES, HUB_DEFAULT_ACCENT, useTheme } from '@/src/theme';
 import { AvatarSprite, Modal } from '@/src/ui/atoms';
 
 type CatalogAvatarPickerModalProps = {
@@ -21,16 +22,15 @@ export function CatalogAvatarPickerModal({
   onClose,
 }: CatalogAvatarPickerModalProps) {
   const { t } = useI18n();
+  const { theme } = useTheme();
 
   return (
     <Modal
       visible={visible}
       onClose={onClose}
       closeStyle="solid"
-      style={styles.avatarModal}
-      title={t('catalog.avatarPickerTitle')}>
-      <Text style={styles.avatarModalSubtitle}>{t('catalog.avatarPickerSubtitle')}</Text>
-
+      title={t('catalog.avatarPickerTitle')}
+      subtitle={t('catalog.avatarPickerSubtitle')}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.avatarGrid}>
@@ -43,13 +43,22 @@ export function CatalogAvatarPickerModal({
               onPress={() => onSelectAvatar(avatarId)}
               accessibilityRole="button"
               accessibilityLabel={t('catalog.editAvatar')}
-              style={[
+              accessibilityState={{ selected: isSelected }}
+              style={({ pressed }) => [
                 styles.avatarOption,
-                isSelected ? styles.avatarOptionSelected : null,
+                ELEVATION_STYLES.card,
+                {
+                  backgroundColor: isSelected
+                    ? HUB_DEFAULT_ACCENT.tint
+                    : theme.semantic.bg.surface,
+                  borderColor: isSelected
+                    ? HUB_DEFAULT_ACCENT.primary
+                    : theme.semantic.border.hairline,
+                  borderWidth: isSelected ? 2 : 1,
+                  transform: [{ scale: pressed ? 0.95 : 1 }],
+                },
               ]}>
-              <View style={styles.avatarOptionInner}>
-                <AvatarSprite avatarId={avatarId} size={52} />
-              </View>
+              <AvatarSprite avatarId={avatarId} size={50} />
             </Pressable>
           );
         })}

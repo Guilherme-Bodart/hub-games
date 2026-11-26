@@ -1,4 +1,4 @@
-export type ThemeName = 'coralPop' | 'mintJam' | 'blueberrySky';
+export type ThemeName = 'studioParty';
 
 export type RawColors = {
   background: string;
@@ -12,8 +12,10 @@ export type ThemeSemanticTokens = {
   bg: {
     app: string;
     surface: string;
+    subtle: string;
     elevated: string;
     overlay: string;
+    scrim: string;
   };
   text: {
     primary: string;
@@ -23,29 +25,36 @@ export type ThemeSemanticTokens = {
   };
   border: {
     subtle: string;
+    hairline: string;
+    strong: string;
     accent: string;
     focus: string;
   };
   button: {
     primary: {
       bg: string;
+      plinth: string;
       text: string;
       glow: string;
     };
     secondary: {
       bg: string;
+      plinth: string;
       text: string;
     };
     accent: {
       bg: string;
+      plinth: string;
       text: string;
     };
     destructive: {
       bg: string;
+      plinth: string;
       text: string;
     };
     ghost: {
       bg: string;
+      plinth: string;
       text: string;
     };
   };

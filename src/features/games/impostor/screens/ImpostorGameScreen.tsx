@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import {
   ImpostorCluesPhase,
   ImpostorGuessingPhase,
   ImpostorResultPhase,
   ImpostorRevealPhase,
-  ImpostorRoundHeader,
   ImpostorRoundDecisionPhase,
+  ImpostorRoundHeader,
   ImpostorRulesModal,
   ImpostorVotingPhase,
 } from '@/src/features/games/impostor/components';
@@ -17,8 +16,7 @@ import { useImpostorGameController } from '@/src/features/games/impostor/hooks/u
 import { styles } from '@/src/features/games/impostor/styles/impostorStyles';
 import { GameRuntimeScreenProps } from '@/src/features/games/types';
 import { useI18n } from '@/src/i18n';
-import { useTheme } from '@/src/theme';
-import { withAlpha } from '@/src/theme/utils';
+import { getGameAccent, useTheme } from '@/src/theme';
 import { Button, Card, GameScreenShell } from '@/src/ui/atoms';
 import { triggerGameFeedback } from '@/src/ui/feedback';
 
@@ -27,6 +25,8 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
   const { locale } = useI18n();
   const { width: viewportWidth } = useWindowDimensions();
   const [rulesVisible, setRulesVisible] = useState(false);
+  const [isCardInteracting, setIsCardInteracting] = useState(false);
+  const accent = getGameAccent('impostor-neon');
 
   const game = useImpostorGameController({
     lobby,
@@ -48,23 +48,27 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
                 ? 'Aguardando configuração da rodada. O host pode iniciar novamente.'
                 : 'Waiting for round setup. The host can start again.')
             }>
-            {game.canControl ? (
+            <View style={styles.emptyActions}>
+              {game.canControl ? (
+                <Button
+                  label={game.copy.newRound}
+                  color={accent.primary}
+                  plinthColor={accent.plinth}
+                  onPress={() => {
+                    triggerGameFeedback('confirm');
+                    void game.initializeRound();
+                  }}
+                />
+              ) : null}
               <Button
-                label={game.copy.newRound}
+                label={game.copy.back}
+                variant="secondary"
                 onPress={() => {
-                  triggerGameFeedback('confirm');
-                  void game.initializeRound();
+                  triggerGameFeedback('warning');
+                  void game.handleExitLobby();
                 }}
               />
-            ) : null}
-            <Button
-              label={game.copy.back}
-              variant="ghost"
-              onPress={() => {
-                triggerGameFeedback('warning');
-                void game.handleExitLobby();
-              }}
-            />
+            </View>
           </Card>
         </View>
       </SafeAreaView>
@@ -73,23 +77,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
 
   return (
     <>
-      <GameScreenShell
-        showBackdrop={false}
-        contentStyle={[
-          styles.root,
-          {
-            paddingTop: theme.semantic.layout.spacing.lg,
-          },
-        ]}>
-        <View pointerEvents="none" style={styles.screenBackdrop}>
-          <LinearGradient
-            colors={['#FFFFFF', '#F8FBFF', '#F5F8FF']}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={styles.screenBackdrop}
-          />
-        </View>
-
+      <GameScreenShell accentColor={accent.primary} contentStyle={styles.root}>
         <ImpostorRoundHeader
           theme={theme}
           title={game.copy.title}
@@ -103,25 +91,29 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
           onPressInfo={() => setRulesVisible(true)}
           infoLabel={game.copy.rulesTitle}
         />
+
         {game.error ? (
           <View
             style={[
               styles.errorStrip,
-              {
-                borderColor: withAlpha(theme.semantic.status.error, 0.55),
-                backgroundColor: withAlpha(theme.semantic.status.error, 0.16),
-              },
+              { borderColor: accent.primary, backgroundColor: theme.semantic.badge.errorBg },
             ]}>
-            <Text style={[styles.errorText, { color: theme.semantic.status.error }]}>{game.error}</Text>
+            <Text
+              style={[
+                styles.errorText,
+                {
+                  color: theme.semantic.badge.errorText,
+                  fontFamily: theme.semantic.typography.bodyFamily,
+                  fontWeight: theme.semantic.typography.bodyWeight,
+                },
+              ]}>
+              {game.error}
+            </Text>
           </View>
         ) : null}
 
-        <ScrollView
-          contentContainerStyle={[
-            styles.content,
-            game.round.phase === 'clues' ? { paddingBottom: 36 } : null,
-          ]}>
-          {game.round.phase === 'reveal' ? (
+        {game.round.phase === 'reveal' ? (
+          <View style={{ flex: 1 }}>
             <ImpostorRevealPhase
               round={game.round}
               copy={game.copy}
@@ -134,12 +126,22 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               localRevealPlayers={game.localRevealPlayers}
               canControl={game.canControl}
               isRemote={game.isRemote}
+              onInteractionChange={setIsCardInteracting}
               onPressRevealIn={game.startRevealHold}
               onPressRevealOut={game.stopRevealHold}
               onAdvanceRevealPlayer={game.handleAdvanceRevealPlayer}
               onGoClues={game.handleGoClues}
             />
-          ) : null}
+          </View>
+        ) : (
+        <ScrollView
+          scrollEnabled={!isCardInteracting}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={[
+            styles.content,
+            game.round.phase === 'clues' ? styles.cluesContent : null,
+          ]}>
 
           {game.round.phase === 'clues' ? (
             <ImpostorCluesPhase
@@ -153,7 +155,11 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               clueSubmittedCount={game.clueSubmittedCount}
               typingLabel={game.typingLabel}
               canSubmitClue={game.canSubmitClue}
-              clueTurnLabel={game.round.phase === 'clues' && !game.isClueCycleComplete ? `${game.clueTurnRemainingSeconds}s` : ''}
+              clueTurnLabel={
+                game.round.phase === 'clues' && !game.isClueCycleComplete
+                  ? `${game.clueTurnRemainingSeconds}s`
+                  : ''
+              }
               clueInput={game.clueInput}
               onChangeClueInput={game.setClueInput}
               onSubmitClue={game.handleSubmitClue}
@@ -240,6 +246,7 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
             />
           ) : null}
         </ScrollView>
+        )}
       </GameScreenShell>
 
       <ImpostorRulesModal
@@ -255,4 +262,3 @@ export function ImpostorGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
     </>
   );
 }
-

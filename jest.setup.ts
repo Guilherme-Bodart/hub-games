@@ -10,3 +10,14 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
     clear: jest.fn(() => Promise.resolve()),
   },
 }));
+
+jest.mock('expo-audio', () => ({
+  createAudioPlayer: jest.fn(() => ({
+    volume: 1,
+    play: jest.fn(),
+    pause: jest.fn(),
+    seekTo: jest.fn(() => Promise.resolve()),
+    remove: jest.fn(),
+  })),
+  setAudioModeAsync: jest.fn(() => Promise.resolve()),
+}));

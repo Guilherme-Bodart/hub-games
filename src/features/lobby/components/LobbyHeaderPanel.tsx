@@ -1,15 +1,19 @@
 ﻿import { Text, View } from 'react-native';
 
 import { styles } from '@/src/features/lobby/styles/lobbyStyles';
-import { useTheme } from '@/src/theme';
-import { withAlpha } from '@/src/theme/utils';
-import { IconCircleButton } from '@/src/ui/atoms';
+import { ELEVATION_STYLES, type GameAccentPalette, useTheme } from '@/src/theme';
+import { Badge, IconCircleButton } from '@/src/ui/atoms';
 
 type LobbyHeaderPanelProps = {
   lobbyTitle: string;
+  gameAccent: GameAccentPalette;
+  backLabel: string;
+  onPressBack: () => void;
   settingsLabel: string;
   onOpenSettings: () => void;
   isRemoteLobby: boolean;
+  allowLocalPlayers: boolean;
+  onlineOnlyBadgeLabel: string;
   roomCode: string;
   roomCodeLabel: string;
   isRoomCodeHidden: boolean;
@@ -31,9 +35,14 @@ type LobbyHeaderPanelProps = {
 
 export function LobbyHeaderPanel({
   lobbyTitle,
+  gameAccent,
+  backLabel,
+  onPressBack,
   settingsLabel,
   onOpenSettings,
   isRemoteLobby,
+  allowLocalPlayers,
+  onlineOnlyBadgeLabel,
   roomCode,
   roomCodeLabel,
   isRoomCodeHidden,
@@ -53,30 +62,34 @@ export function LobbyHeaderPanel({
   clueTimerBadgeLabel,
 }: LobbyHeaderPanelProps) {
   const { theme } = useTheme();
-  const hiddenCodeMask = '●';
+  const displayCode = isRoomCodeHidden ? '•'.repeat(Math.max(4, roomCode.length)) : roomCode;
+  const allReady = totalPlayers > 0 && readyCount === totalPlayers;
 
   return (
-    <View
-      style={[
-        styles.sessionPanel,
-        {
-          borderColor: 'transparent',
-          backgroundColor: 'transparent',
-          shadowColor: 'transparent',
-        },
-      ]}>
-      <View style={styles.sessionHeaderRow}>
-        <Text
-          style={[
-            styles.sessionTitle,
-            {
-              color: '#2B2A46',
-              fontFamily: theme.semantic.typography.titleFamily,
-              fontWeight: theme.semantic.typography.titleWeight,
-            },
-          ]}>
-          {lobbyTitle}
-        </Text>
+    <View style={styles.headerRoot}>
+      <View style={styles.topBarRow}>
+        <IconCircleButton
+          icon="chevron-back"
+          accessibilityLabel={backLabel}
+          onPress={onPressBack}
+        />
+
+        <View style={styles.titleWrap}>
+          <View style={[styles.titleAccentDot, { backgroundColor: gameAccent.primary }]} />
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.sessionTitle,
+              {
+                color: theme.semantic.text.primary,
+                fontFamily: theme.semantic.typography.titleFamily,
+                fontWeight: theme.semantic.typography.titleWeight,
+              },
+            ]}>
+            {lobbyTitle}
+          </Text>
+        </View>
+
         <IconCircleButton
           icon="settings-outline"
           accessibilityLabel={settingsLabel}
@@ -84,62 +97,60 @@ export function LobbyHeaderPanel({
         />
       </View>
 
-      <View style={styles.sessionMetaPanel}>
+      <View
+        style={[
+          styles.headerMetaCard,
+          ELEVATION_STYLES.card,
+          {
+            backgroundColor: theme.semantic.bg.surface,
+            borderColor: theme.semantic.border.hairline,
+          },
+        ]}>
         {isRemoteLobby ? (
-          <View style={styles.roomCodeWrap}>
-            <View style={styles.roomCodeHeader}>
-              <Text
+          <>
+            <View style={styles.roomCodeRow}>
+              <View
                 style={[
-                  styles.roomCodeLabel,
+                  styles.roomCodePill,
                   {
-                    color: withAlpha(theme.semantic.text.secondary, 0.8),
-                    fontFamily: theme.semantic.typography.bodyFamily,
-                    fontWeight: theme.semantic.typography.bodyWeight,
+                    backgroundColor: theme.semantic.bg.subtle,
+                    borderColor: theme.semantic.border.hairline,
                   },
                 ]}>
-                {roomCodeLabel}
-              </Text>
-            </View>
-
-            <View style={styles.roomCodeActions}>
-              <View style={[styles.roomCodeTilesWrap, { backgroundColor: 'transparent' }]}>
-                {(isRoomCodeHidden ? hiddenCodeMask.repeat(roomCode.length) : roomCode).split('').map((char, index) => {
-                  const usesMaskChar = isRoomCodeHidden;
-                  return (
-                    <View
-                      key={`room-char-${char}-${index}`}
-                      style={[
-                        styles.roomCodeCharTile,
-                        {
-                          shadowColor: theme.semantic.button.primary.bg,
-                          borderColor: withAlpha(theme.semantic.button.primary.bg, 0.22),
-                        },
-                      ]}>
-                      <Text
-                        style={[
-                          styles.roomCodeCharText,
-                          {
-                            color: '#2B2A46',
-                            fontFamily: usesMaskChar
-                              ? theme.semantic.typography.bodyFamily
-                              : theme.semantic.typography.numberFamily,
-                            fontWeight: usesMaskChar
-                              ? theme.semantic.typography.bodyWeight
-                              : theme.semantic.typography.numberWeight,
-                          },
-                        ]}>
-                        {char}
-                      </Text>
-                    </View>
-                  );
-                })}
+                <Text
+                  style={[
+                    styles.roomCodeLabel,
+                    {
+                      color: theme.semantic.text.muted,
+                      fontFamily: theme.semantic.typography.bodyFamily,
+                      fontWeight: theme.semantic.typography.bodyWeight,
+                    },
+                  ]}>
+                  {roomCodeLabel}
+                </Text>
+                <Text
+                  style={[
+                    styles.roomCodeValue,
+                    {
+                      color: theme.semantic.text.primary,
+                      fontFamily: isRoomCodeHidden
+                        ? theme.semantic.typography.bodyFamily
+                        : theme.semantic.typography.numberFamily,
+                      fontWeight: isRoomCodeHidden
+                        ? theme.semantic.typography.bodyWeight
+                        : theme.semantic.typography.numberWeight,
+                    },
+                  ]}>
+                  {displayCode}
+                </Text>
               </View>
 
               <View style={styles.roomCodeButtons}>
                 <IconCircleButton
-                  icon="copy-outline"
+                  icon={copied ? 'checkmark-outline' : 'copy-outline'}
                   accessibilityLabel={copyCodeLabel}
                   onPress={onCopyRoomCode}
+                  tone={copied ? 'primary' : 'neutral'}
                 />
                 <IconCircleButton
                   icon={isRoomCodeHidden ? 'eye-off-outline' : 'eye-outline'}
@@ -149,87 +160,56 @@ export function LobbyHeaderPanel({
               </View>
             </View>
 
-            <View style={styles.roomCodeFeedbackSlot}>
+            {copied ? (
               <Text
                 style={[
-                  styles.subtitle,
+                  styles.copiedText,
                   {
-                    color: '#5A5C79',
-                    opacity: copied ? 1 : 0,
-                    fontSize: 10,
-                    lineHeight: 12,
+                    color: theme.semantic.status.success,
                     fontFamily: theme.semantic.typography.bodyFamily,
                     fontWeight: theme.semantic.typography.bodyWeight,
                   },
                 ]}>
                 {codeCopiedLabel}
               </Text>
-            </View>
-          </View>
+            ) : null}
+          </>
         ) : null}
 
         <View style={styles.headerBadges}>
-          <View style={[styles.statusPill, styles.statusPillReady]}>
-            <Text
+          {allReady ? (
+            <Badge label={`${readyCount}/${totalPlayers} ${readyLabel}`} variant="success" />
+          ) : (
+            <View
               style={[
-                styles.statusPillText,
+                styles.accentPill,
                 {
-                  color: '#6658D8',
-                  fontFamily: theme.semantic.typography.titleFamily,
-                  fontWeight: theme.semantic.typography.titleWeight,
+                  backgroundColor: gameAccent.tint,
+                  borderColor: theme.semantic.border.hairline,
                 },
               ]}>
-              {`${readyCount}/${totalPlayers} ${readyLabel}`}
-            </Text>
-          </View>
-          {isImpostorLobby ? (
-            <View style={[styles.statusPill, styles.statusPillImpostor]}>
               <Text
                 style={[
-                  styles.statusPillText,
+                  styles.accentPillText,
                   {
-                    color: '#C95A9D',
-                    fontFamily: theme.semantic.typography.titleFamily,
-                    fontWeight: theme.semantic.typography.titleWeight,
+                    color: gameAccent.primary,
+                    fontFamily: theme.semantic.typography.bodyFamily,
+                    fontWeight: theme.semantic.typography.bodyWeight,
                   },
                 ]}>
-                {impostorLobbyBadgeLabel}
+                {`${readyCount}/${totalPlayers} ${readyLabel}`}
               </Text>
             </View>
-          ) : null}
+          )}
+
+          {!allowLocalPlayers ? <Badge label={onlineOnlyBadgeLabel} variant="info" /> : null}
+          {isImpostorLobby ? <Badge label={impostorLobbyBadgeLabel} variant="error" /> : null}
           {impostorContentModeLabel ? (
-            <View style={[styles.statusPill, styles.statusPillMode]}>
-              <Text
-                style={[
-                  styles.statusPillText,
-                  {
-                    color: '#3A89D9',
-                    fontFamily: theme.semantic.typography.titleFamily,
-                    fontWeight: theme.semantic.typography.titleWeight,
-                  },
-                ]}>
-                {impostorContentModeLabel}
-              </Text>
-            </View>
+            <Badge label={impostorContentModeLabel} variant="neutral" />
           ) : null}
-          {clueTimerBadgeLabel ? (
-            <View style={[styles.statusPill, styles.statusPillNeutral]}>
-              <Text
-                style={[
-                  styles.statusPillText,
-                  {
-                    color: '#7780A4',
-                    fontFamily: theme.semantic.typography.titleFamily,
-                    fontWeight: theme.semantic.typography.titleWeight,
-                  },
-                ]}>
-                {clueTimerBadgeLabel}
-              </Text>
-            </View>
-          ) : null}
+          {clueTimerBadgeLabel ? <Badge label={clueTimerBadgeLabel} variant="neutral" /> : null}
         </View>
       </View>
     </View>
   );
 }
-

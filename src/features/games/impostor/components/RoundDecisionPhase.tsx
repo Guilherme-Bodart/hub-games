@@ -1,9 +1,10 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { ImpostorRound } from '@/src/features/games/impostor/types';
 import { impostorPhaseStyles as styles } from '@/src/features/games/impostor/styles/impostorPhaseStyles';
+import { ImpostorRound } from '@/src/features/games/impostor/types';
+import { ELEVATION_STYLES, getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
+import { AvatarSprite } from '@/src/ui/atoms';
 
 type RoundDecisionVote = 'vote-suspect' | 'continue-clues';
 
@@ -31,120 +32,162 @@ export function ImpostorRoundDecisionPhase({
   copy,
   onVote,
 }: ImpostorRoundDecisionPhaseProps) {
+  const accent = getGameAccent('impostor-neon');
+
   return (
     <View style={styles.decisionStage}>
-      <View style={{ gap: 10 }}>
+      <View
+        style={[
+          styles.stageHero,
+          ELEVATION_STYLES.card,
+          {
+            backgroundColor: theme.semantic.bg.surface,
+            borderColor: theme.semantic.border.hairline,
+          },
+        ]}>
+        <View
+          style={[
+            styles.stagePill,
+            { backgroundColor: accent.tint, borderColor: accent.primary },
+          ]}>
+          <Text
+            style={[
+              styles.stagePillText,
+              {
+                color: accent.plinth,
+                fontFamily: theme.semantic.typography.numberFamily,
+                fontWeight: theme.semantic.typography.numberWeight,
+              },
+            ]}>
+            {copy.roundDecision}
+          </Text>
+        </View>
+        <Text
+          style={[
+            styles.stageHint,
+            {
+              color: theme.semantic.text.secondary,
+              fontFamily: theme.semantic.typography.bodyFamily,
+              fontWeight: theme.semantic.typography.bodyWeight,
+            },
+          ]}>
+          {copy.roundDecisionHint}
+        </Text>
+      </View>
+
+      <View style={styles.decisionList}>
         {round.players
           .filter((player) => localPlayerIds.has(player.id))
           .map((player) => {
             const currentVote = round.decisionVotes[player.id];
+            const isContinue = currentVote === 'continue-clues';
+            const isVoteSuspect = currentVote === 'vote-suspect';
 
             return (
               <View
                 key={`decision-${player.id}`}
                 style={[
                   styles.decisionRow,
+                  ELEVATION_STYLES.card,
                   {
-                    borderColor: withAlpha(theme.semantic.border.subtle, 0.94),
-                    backgroundColor: withAlpha('#FFFFFF', 0.94),
+                    borderColor: theme.semantic.border.hairline,
+                    backgroundColor: theme.semantic.bg.surface,
                   },
                 ]}>
-                <Text
-                  style={{
-                    color: theme.semantic.text.primary,
-                    fontFamily: theme.semantic.typography.titleFamily,
-                    fontWeight: theme.semantic.typography.titleWeight,
-                    fontSize: 20,
-                  }}>
-                  {player.name}
-                </Text>
+                <View style={styles.decisionPlayerHeader}>
+                  <AvatarSprite avatarId={player.avatarId} size={32} />
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      styles.decisionPlayerName,
+                      {
+                        color: theme.semantic.text.primary,
+                        fontFamily: theme.semantic.typography.titleFamily,
+                        fontWeight: theme.semantic.typography.titleWeight,
+                      },
+                    ]}>
+                    {player.name}
+                  </Text>
+                </View>
+
                 <View style={styles.decisionButtons}>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityState={{ selected: currentVote === 'continue-clues' }}
+                    accessibilityState={{ selected: isContinue }}
                     accessibilityLabel={`${player.name}. ${copy.continueClues}`}
                     onPress={() => onVote(player.id, 'continue-clues')}
                     style={[
                       styles.decisionButton,
                       {
-                        borderColor:
-                          currentVote === 'continue-clues'
-                            ? theme.semantic.status.info
-                            : withAlpha(theme.semantic.border.subtle, 0.92),
-                        backgroundColor:
-                          currentVote === 'continue-clues'
-                            ? withAlpha(theme.semantic.status.info, 0.94)
-                            : withAlpha(theme.semantic.bg.elevated, 0.9),
+                        borderColor: isContinue
+                          ? theme.semantic.status.info
+                          : theme.semantic.border.hairline,
+                        backgroundColor: isContinue
+                          ? theme.semantic.status.info
+                          : theme.semantic.bg.subtle,
                       },
                     ]}>
                     <Text
-                      style={{
-                        color:
-                          currentVote === 'continue-clues'
-                            ? '#FFFFFF'
-                            : theme.semantic.text.secondary,
-                        fontFamily: theme.semantic.typography.titleFamily,
-                        fontWeight: theme.semantic.typography.titleWeight,
-                        textTransform: 'uppercase',
-                        letterSpacing: 0.7,
-                      }}>
+                      style={[
+                        styles.decisionButtonTitle,
+                        {
+                          color: isContinue ? '#FFFFFF' : theme.semantic.text.primary,
+                          fontFamily: theme.semantic.typography.titleFamily,
+                          fontWeight: theme.semantic.typography.titleWeight,
+                        },
+                      ]}>
                       {copy.continueClues}
                     </Text>
                     <Text
                       style={[
                         styles.decisionButtonHint,
                         {
-                          color:
-                            currentVote === 'continue-clues'
-                              ? withAlpha('#FFFFFF', 0.82)
-                              : theme.semantic.text.muted,
+                          color: isContinue ? '#FFFFFF' : theme.semantic.text.secondary,
+                          fontFamily: theme.semantic.typography.bodyFamily,
+                          fontWeight: theme.semantic.typography.bodyWeight,
                         },
                       ]}>
                       {isPt ? 'Continuar investigando' : 'Keep investigating'}
                     </Text>
                   </Pressable>
+
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityState={{ selected: currentVote === 'vote-suspect' }}
+                    accessibilityState={{ selected: isVoteSuspect }}
                     accessibilityLabel={`${player.name}. ${copy.goSuspects}`}
                     onPress={() => onVote(player.id, 'vote-suspect')}
                     style={[
                       styles.decisionButton,
                       {
-                        borderColor:
-                          currentVote === 'vote-suspect'
-                            ? theme.semantic.status.error
-                            : withAlpha(theme.semantic.border.subtle, 0.92),
-                        backgroundColor:
-                          currentVote === 'vote-suspect'
-                            ? withAlpha(theme.semantic.status.error, 0.94)
-                            : withAlpha(theme.semantic.bg.surface, 0.94),
+                        borderColor: isVoteSuspect
+                          ? accent.primary
+                          : theme.semantic.border.hairline,
+                        backgroundColor: isVoteSuspect
+                          ? accent.primary
+                          : theme.semantic.bg.subtle,
                       },
                     ]}>
                     <Text
-                      style={{
-                        color:
-                          currentVote === 'vote-suspect'
-                            ? '#FFFFFF'
-                            : theme.semantic.text.secondary,
-                        fontFamily: theme.semantic.typography.titleFamily,
-                        fontWeight: theme.semantic.typography.titleWeight,
-                        textTransform: 'uppercase',
-                        letterSpacing: 0.7,
-                      }}>
+                      style={[
+                        styles.decisionButtonTitle,
+                        {
+                          color: isVoteSuspect ? accent.textOnPrimary : theme.semantic.text.primary,
+                          fontFamily: theme.semantic.typography.titleFamily,
+                          fontWeight: theme.semantic.typography.titleWeight,
+                        },
+                      ]}>
                       {copy.goSuspects}
                     </Text>
                     <Text
                       style={[
                         styles.decisionButtonHint,
                         {
-                          color:
-                            currentVote === 'vote-suspect'
-                              ? withAlpha('#FFFFFF', 0.82)
-                              : theme.semantic.text.muted,
+                          color: isVoteSuspect ? accent.textOnPrimary : theme.semantic.text.secondary,
+                          fontFamily: theme.semantic.typography.bodyFamily,
+                          fontWeight: theme.semantic.typography.bodyWeight,
                         },
                       ]}>
-                      {isPt ? 'Avan\u00E7ar para a vota\u00E7\u00E3o' : 'Move to voting'}
+                      {isPt ? 'Avançar para a votação' : 'Move to voting'}
                     </Text>
                   </Pressable>
                 </View>

@@ -1,4 +1,4 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,21 +7,21 @@ import {
   SecretThemeScaleCard,
   SintoniaBoardSection,
   SintoniaBottomDock,
+  SintoniaResultSummaryBanner,
   SintoniaRulesModal,
   SintoniaSecretRevealCard,
 } from '@/src/features/games/sintonia/components';
 import { useSintoniaGameController } from '@/src/features/games/sintonia/hooks/useSintoniaGameController';
-import { secretPhaseStyles as secretStyles } from '@/src/features/games/sintonia/styles/secretPhaseStyles';
 import { styles } from '@/src/features/games/sintonia/styles/sintoniaStyles';
 import { GameRuntimeScreenProps } from '@/src/features/games/types';
 import { useI18n } from '@/src/i18n';
-import { useTheme } from '@/src/theme';
-import { withAlpha } from '@/src/theme/utils';
-import { triggerGameFeedback } from '@/src/ui/feedback';
+import { getGameAccent, useTheme } from '@/src/theme';
 import { Card, GameScreenShell } from '@/src/ui/atoms';
+import { triggerGameFeedback } from '@/src/ui/feedback';
 
 export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRuntimeScreenProps) {
   const { theme } = useTheme();
+  const accent = getGameAccent('sintonia');
   const { locale, t } = useI18n();
   const { width: viewportWidth } = useWindowDimensions();
 
@@ -33,14 +33,11 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
     t,
   });
 
-  const syncingSubtitle = t('sintonia.syncingSubtitle');
-  const unavailableSubtitle = t('sintonia.unavailableSubtitle');
-
   if (game.isRemoteRealtime && !game.round) {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }]}>
         <View style={styles.emptyWrap}>
-          <Card title={t('sintonia.title')} subtitle={game.realtimeError || syncingSubtitle} />
+          <Card title={t('sintonia.title')} subtitle={game.realtimeError || t('sintonia.syncingSubtitle')} />
         </View>
       </SafeAreaView>
     );
@@ -50,7 +47,7 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.semantic.bg.app }]}>
         <View style={styles.emptyWrap}>
-          <Card title={t('sintonia.title')} subtitle={unavailableSubtitle} />
+          <Card title={t('sintonia.title')} subtitle={t('sintonia.unavailableSubtitle')} />
         </View>
       </SafeAreaView>
     );
@@ -61,20 +58,33 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
   }
 
   const isSecretPhase = game.phase === 'secrets';
-  const headerStatusLabel =
-    game.phase === 'revealing'
+  const isFinishedPhase = game.phase === 'finished';
+  const headerStatusLabel = isSecretPhase
+    ? t('sintonia.secretReadyProgress', {
+        ready: game.secretReadyPlayersCount,
+        total: game.secretTotalPlayersCount,
+      })
+    : game.phase === 'revealing'
       ? t('sintonia.revealingProgress', {
           current: game.revealedCount,
           total: game.orderedPlayers.length,
         })
-      : t('sintonia.playersBadge', { count: game.orderedPlayers.length });
+      : t('sintonia.playersCountCompact', { count: game.orderedPlayers.length });
+
+  const correctCount = game.orderedPlayers.filter(
+    (player) => game.revealedById[player.id] === 'correct'
+  ).length;
+
+  const handleExitLobby = () => {
+    triggerGameFeedback('warning');
+    onExitLobby();
+  };
 
   return (
     <>
       <GameScreenShell
-        showBackdrop={!isSecretPhase}
-        style={isSecretPhase ? { backgroundColor: theme.semantic.bg.app } : undefined}
-        contentStyle={isSecretPhase ? { paddingTop: 18, paddingBottom: 20 } : undefined}
+        accentColor={accent.primary}
+        showBackdrop
         footerInset={isSecretPhase ? 24 : 176}
         footer={
           !isSecretPhase ? (
@@ -83,146 +93,123 @@ export function SintoniaGameScreen({ lobby, onExitLobby, setShellPhase }: GameRu
               helperText={game.dockHelperText}
               primaryAction={game.primaryAction}
               backLabel={t('sintonia.backLobby')}
-              onBack={() => {
-                triggerGameFeedback('warning');
-                onExitLobby();
-              }}
+              onBack={handleExitLobby}
             />
           ) : undefined
         }>
+        <SecretPhaseHeader
+          theme={theme}
+          title={t('sintonia.title')}
+          roundLabel={game.phaseHeaderLabel}
+          players={game.round.players}
+          readyStatusLabel={headerStatusLabel}
+          onPressInfo={() => game.setRulesVisible(true)}
+          infoLabel={t('sintonia.rulesTitle')}
+          onPressBack={handleExitLobby}
+          backLabel={t('sintonia.backLobby')}
+          statusTone={game.topBarStatusTone}
+        />
+
+        {game.realtimeError ? (
+          <View
+            style={[
+              styles.errorStrip,
+              {
+                borderColor: theme.semantic.status.error,
+                backgroundColor: theme.semantic.badge.errorBg,
+              },
+            ]}>
+            <Text style={[styles.errorText, { color: theme.semantic.badge.errorText }]}>
+              {game.realtimeError}
+            </Text>
+          </View>
+        ) : null}
+
+        <SecretThemeScaleCard
+          theme={theme}
+          scaleTitle={t('sintonia.themeScaleTitle')}
+          scaleStartLabel={game.round.themeScaleLow}
+          scaleEndLabel={game.round.themeScaleHigh}
+          roundTheme={game.round.theme}
+        />
+
         {isSecretPhase ? (
-          <>
-            <View pointerEvents="none" style={secretStyles.screenBackdrop}>
-              <LinearGradient
-                colors={['#FFFFFF', '#F8FBFF', '#F5F8FF']}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-                style={secretStyles.screenBackdrop}
-              />
-            </View>
-
-            <SecretPhaseHeader
-              theme={theme}
-              title={t('sintonia.title')}
-              roundLabel={game.phaseHeaderLabel}
-              players={game.round.players}
-              readyStatusLabel={t('sintonia.secretReadyProgress', {
-                ready: game.secretReadyPlayersCount,
-                total: game.secretTotalPlayersCount,
-              })}
-              onPressInfo={() => game.setRulesVisible(true)}
-              infoLabel={t('sintonia.rulesTitle')}
-            />
-
-            <SecretThemeScaleCard
-              theme={theme}
-              scaleTitle={t('sintonia.themeScaleTitle')}
-              scaleStartLabel={game.round.themeScaleLow}
-              scaleEndLabel={game.round.themeScaleHigh}
-              roundTheme={game.round.theme}
-            />
-
-            {game.realtimeError ? (
-              <View
-                style={[
-                  styles.errorStrip,
-                  {
-                    borderColor: withAlpha(theme.semantic.status.error, 0.55),
-                    backgroundColor: withAlpha(theme.semantic.status.error, 0.16),
-                  },
-                ]}>
-                <Text style={[styles.errorText, { color: theme.semantic.status.error }]}>{game.realtimeError}</Text>
-              </View>
-            ) : null}
-
-            <SintoniaSecretRevealCard
-              theme={theme}
-              player={game.currentSecretPlayer}
-              isRevealed={game.isCurrentSecretRevealed}
-              isLocalReady={game.isLocalDeviceReady}
-              isWaitingOthers={game.isSecretWaitingOthers}
-              hasMoreLocalPlayers={game.hasMoreLocalSecretPlayers}
-              canAdvance={!game.isLocalDeviceReady && (!game.currentSecretPlayer || game.isCurrentSecretViewed)}
-              phaseSubtitle={t('sintonia.secretPhaseSubtitle')}
-              holdHintLabel={t('sintonia.secretHoldToReveal')}
-              chargingLabel={t('sintonia.secretCharging')}
-              releaseHintLabel={t('sintonia.secretReleaseToHide')}
-              waitingLabel={t('sintonia.secretWaitingOthers')}
-              revealedLabel={t('sintonia.secretRevealedTag')}
-              nextLabel={t('sintonia.secretNextPlayer')}
-              readyLabel={t('sintonia.secretReadyAction')}
-              lockedActionLabel={t('sintonia.secretHoldCardAction')}
-              onPressIn={game.handleSecretPlayerPressIn}
-              onPressOut={game.handleSecretPlayerPressOut}
-              onAdvance={game.advanceSecretCard}
-            />
-          </>
+          <SintoniaSecretRevealCard
+            theme={theme}
+            player={game.currentSecretPlayer}
+            isRevealed={game.isCurrentSecretRevealed}
+            isLocalReady={game.isLocalDeviceReady}
+            isWaitingOthers={game.isSecretWaitingOthers}
+            hasMoreLocalPlayers={game.hasMoreLocalSecretPlayers}
+            canAdvance={!game.isLocalDeviceReady && (!game.currentSecretPlayer || game.isCurrentSecretViewed)}
+            phaseSubtitle={t('sintonia.secretPhaseSubtitle')}
+            holdHintLabel={t('sintonia.secretHoldToReveal')}
+            chargingLabel={t('sintonia.secretCharging')}
+            releaseHintLabel={t('sintonia.secretReleaseToHide')}
+            waitingLabel={t('sintonia.secretWaitingOthers')}
+            revealedLabel={t('sintonia.secretRevealedTag')}
+            nextLabel={t('sintonia.secretNextPlayer')}
+            readyLabel={t('sintonia.secretReadyAction')}
+            lockedActionLabel={t('sintonia.secretHoldCardAction')}
+            onPressIn={game.handleSecretPlayerPressIn}
+            onPressOut={game.handleSecretPlayerPressOut}
+            onAdvance={game.advanceSecretCard}
+          />
         ) : (
           <>
-            <SecretPhaseHeader
-              theme={theme}
-              title={t('sintonia.title')}
-              roundLabel={game.phaseHeaderLabel}
-              players={game.round.players}
-              readyStatusLabel={headerStatusLabel}
-              onPressInfo={() => game.setRulesVisible(true)}
-              infoLabel={t('sintonia.rulesTitle')}
-            />
-
-            {game.realtimeError ? (
+            {isFinishedPhase ? (
+              <SintoniaResultSummaryBanner
+                roundResult={game.roundResult}
+                title={game.phaseBadgeLabel}
+                subtitle={t('sintonia.roundFinishedPrompt')}
+                correctCount={correctCount}
+                totalCount={game.orderedPlayers.length}
+              />
+            ) : (
               <View
                 style={[
-                  styles.errorStrip,
+                  styles.voiceNotice,
                   {
-                    borderColor: withAlpha(theme.semantic.status.error, 0.55),
-                    backgroundColor: withAlpha(theme.semantic.status.error, 0.16),
+                    borderColor: theme.semantic.border.hairline,
+                    backgroundColor: accent.tint,
                   },
                 ]}>
-                <Text style={[styles.errorText, { color: theme.semantic.status.error }]}>{game.realtimeError}</Text>
+                <Ionicons name="mic-outline" size={16} color={accent.primary} />
+                <Text
+                  style={[
+                    styles.voiceNoticeText,
+                    {
+                      color: theme.semantic.text.primary,
+                      fontFamily: theme.semantic.typography.bodyFamily,
+                      fontWeight: theme.semantic.typography.bodyWeight,
+                    },
+                  ]}>
+                  {t('sintonia.voiceNotice')}
+                </Text>
               </View>
-            ) : null}
-
-            <SecretThemeScaleCard
-              theme={theme}
-              scaleTitle={t('sintonia.themeScaleTitle')}
-              scaleStartLabel={game.round.themeScaleLow}
-              scaleEndLabel={game.round.themeScaleHigh}
-              roundTheme={game.round.theme}
-            />
-
-            <View
-              style={[
-                styles.voiceNotice,
-                {
-                  borderColor: theme.semantic.border.subtle,
-                  backgroundColor: withAlpha(theme.semantic.bg.surface, 0.7),
-                },
-              ]}>
-              <Text
-                style={[
-                  styles.voiceNoticeText,
-                  {
-                    color: theme.semantic.text.secondary,
-                    fontFamily: theme.semantic.typography.bodyFamily,
-                    fontWeight: theme.semantic.typography.bodyWeight,
-                  },
-                ]}>
-                {t('sintonia.voiceNotice')}
-              </Text>
-            </View>
+            )}
 
             {!game.canAdvancePhase ? (
-              <Text
+              <View
                 style={[
-                  styles.hostHintText,
+                  styles.hostHintStrip,
                   {
-                    color: theme.semantic.status.warning,
-                    fontFamily: theme.semantic.typography.bodyFamily,
-                    fontWeight: theme.semantic.typography.bodyWeight,
+                    borderColor: theme.semantic.border.hairline,
+                    backgroundColor: theme.semantic.badge.warningBg,
                   },
                 ]}>
-                {t('sintonia.hostControlHint')}
-              </Text>
+                <Text
+                  style={[
+                    styles.hostHintText,
+                    {
+                      color: theme.semantic.badge.warningText,
+                      fontFamily: theme.semantic.typography.bodyFamily,
+                      fontWeight: theme.semantic.typography.bodyWeight,
+                    },
+                  ]}>
+                  {t('sintonia.hostControlHint')}
+                </Text>
+              </View>
             ) : null}
 
             <SintoniaBoardSection

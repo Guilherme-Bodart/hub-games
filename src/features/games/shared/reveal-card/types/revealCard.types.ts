@@ -47,6 +47,7 @@ export type RevealCardVisualTokens = {
   chargeBorderColor: string;
   chargeShadowColor: string;
   chargeSweepColors: [string, string, string];
+  foilColors: [string, string, string, string];
   glossColors: [string, string];
   hintTextColor: string;
   holdProgressFillColor: string;
@@ -79,6 +80,7 @@ export type RevealCardProps = {
   copy: RevealCardCopy;
   isLocalReady: boolean;
   isRevealed: boolean;
+  onInteractionChange?: (active: boolean) => void;
   onPressIn: () => void;
   onPressOut: () => void;
   player: RevealCardPlayer | null;

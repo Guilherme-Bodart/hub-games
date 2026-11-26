@@ -1,10 +1,10 @@
 import { Text, View } from 'react-native';
 
 import { RevealCard } from '@/src/features/games/shared/reveal-card';
-import { SintoniaPlayer } from '@/src/features/games/sintonia/types';
 import { styles } from '@/src/features/games/sintonia/styles/sintoniaStyles';
+import { SintoniaPlayer } from '@/src/features/games/sintonia/types';
+import { getGameAccent } from '@/src/theme';
 import { ThemeTokens } from '@/src/theme/types';
-import { withAlpha } from '@/src/theme/utils';
 import { Button } from '@/src/ui/atoms';
 
 type SintoniaSecretRevealCardProps = {
@@ -50,6 +50,7 @@ export function SintoniaSecretRevealCard({
   onPressOut,
   onAdvance,
 }: SintoniaSecretRevealCardProps) {
+  const accent = getGameAccent('sintonia');
   const isActionLocked = !isWaitingOthers && !canAdvance;
   const actionLabel = isActionLocked
     ? lockedActionLabel
@@ -59,13 +60,7 @@ export function SintoniaSecretRevealCard({
   const helperLabel = isActionLocked ? null : phaseSubtitle;
 
   return (
-    <View
-      style={[
-        styles.secretStage,
-        {
-          backgroundColor: 'transparent',
-        },
-      ]}>
+    <View style={styles.secretStage}>
       <RevealCard
         accessibilityLabel={player ? `Carta secreta de ${player.name}` : waitingLabel}
         content={{
@@ -92,15 +87,15 @@ export function SintoniaSecretRevealCard({
           style={[
             styles.secretWaitingWrap,
             {
-              borderColor: withAlpha(theme.semantic.status.warning, 0.44),
-              backgroundColor: withAlpha(theme.semantic.status.warning, 0.11),
+              borderColor: theme.semantic.border.hairline,
+              backgroundColor: theme.semantic.badge.warningBg,
             },
           ]}>
           <Text
             style={[
               styles.secretWaitingText,
               {
-                color: theme.semantic.status.warning,
+                color: theme.semantic.badge.warningText,
                 fontFamily: theme.semantic.typography.bodyFamily,
                 fontWeight: theme.semantic.typography.bodyWeight,
               },
@@ -108,19 +103,19 @@ export function SintoniaSecretRevealCard({
             {waitingLabel}
           </Text>
         </View>
-      ) : null}
-
-      {!isWaitingOthers ? (
+      ) : (
         <Button
           label={actionLabel}
           onPress={onAdvance}
           disabled={!canAdvance}
+          variant={isActionLocked ? 'secondary' : 'primary'}
           size="lg"
-          color={isActionLocked ? withAlpha(theme.semantic.bg.elevated, 0.98) : undefined}
-          textColor={isActionLocked ? withAlpha(theme.semantic.text.secondary, 0.78) : undefined}
-          style={[styles.secretPrimaryButton, isActionLocked ? styles.secretPrimaryButtonLocked : null]}
+          color={isActionLocked ? undefined : accent.primary}
+          plinthColor={isActionLocked ? undefined : accent.plinth}
+          textColor={isActionLocked ? undefined : accent.textOnPrimary}
+          style={styles.secretPrimaryButton}
         />
-      ) : null}
+      )}
 
       {!isWaitingOthers && helperLabel ? (
         <Text

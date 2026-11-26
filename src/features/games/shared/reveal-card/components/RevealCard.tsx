@@ -1,5 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, View } from 'react-native';
+import { useMemo, useRef } from 'react';
+import { PanResponder, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { RevealCardBackFace } from '@/src/features/games/shared/reveal-card/components/RevealCardBackFace';
@@ -9,6 +10,7 @@ import { useRevealCardAnimation } from '@/src/features/games/shared/reveal-card/
 import { revealCardStyles as styles } from '@/src/features/games/shared/reveal-card/styles/revealCardStyles';
 import { RevealCardProps } from '@/src/features/games/shared/reveal-card/types/revealCard.types';
 import { buildRevealCardVisualTokens } from '@/src/features/games/shared/reveal-card/utils/revealCardPalette';
+import { ELEVATION_STYLES } from '@/src/theme';
 
 export function RevealCard({
   accessibilityLabel,
@@ -16,6 +18,7 @@ export function RevealCard({
   copy,
   isLocalReady,
   isRevealed,
+  onInteractionChange,
   onPressIn,
   onPressOut,
   player,
@@ -27,110 +30,158 @@ export function RevealCard({
     backGlowStyle,
     chargeGlowStyle,
     chargeProgress,
+    foilStyle,
     frontFaceStyle,
     setPressingState,
     shellStyle,
-  } = useRevealCardAnimation({ isLocalReady, isRevealed });
+    updateTiltFromDelta,
+  } = useRevealCardAnimation({ isLocalReady, isRevealed, mode: content.mode });
 
   const isDisabled = !player || isLocalReady;
+  const callbacksRef = useRef({
+    isDisabled,
+    onInteractionChange,
+    onPressIn,
+    onPressOut,
+    setPressingState,
+    updateTiltFromDelta,
+  });
+  callbacksRef.current = {
+    isDisabled,
+    onInteractionChange,
+    onPressIn,
+    onPressOut,
+    setPressingState,
+    updateTiltFromDelta,
+  };
+
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => !callbacksRef.current.isDisabled,
+        onMoveShouldSetPanResponder: () => !callbacksRef.current.isDisabled,
+        onPanResponderTerminationRequest: () => false,
+        onPanResponderGrant: () => {
+          callbacksRef.current.onInteractionChange?.(true);
+          callbacksRef.current.setPressingState(true);
+          callbacksRef.current.onPressIn();
+        },
+        onPanResponderMove: (_evt, gestureState) => {
+          callbacksRef.current.updateTiltFromDelta(gestureState.dx, gestureState.dy);
+        },
+        onPanResponderRelease: () => {
+          callbacksRef.current.setPressingState(false);
+          callbacksRef.current.onPressOut();
+          callbacksRef.current.onInteractionChange?.(false);
+        },
+        onPanResponderTerminate: () => {
+          callbacksRef.current.setPressingState(false);
+          callbacksRef.current.onPressOut();
+          callbacksRef.current.onInteractionChange?.(false);
+        },
+      }),
+    []
+  );
 
   return (
-    <Pressable
+    <View
+      accessible
       accessibilityLabel={accessibilityLabel ?? (player ? player.name : copy.waitingLabel)}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled }}
-      disabled={isDisabled}
-      onPressIn={() => {
-        setPressingState(true);
-        onPressIn();
-      }}
-      onPressOut={() => {
-        setPressingState(false);
-        onPressOut();
-      }}
-      style={{ width: '100%' }}>
+      style={styles.touchRoot}
+      {...panResponder.panHandlers}>
       <Animated.View
         pointerEvents="none"
         style={[
           styles.cardBackGlow,
           backGlowStyle,
-          {
-            backgroundColor: visuals.chargeShadowColor,
-            shadowColor: visuals.chargeShadowColor,
-          },
+          { backgroundColor: visuals.chargeShadowColor },
         ]}
       />
-      <Animated.View
-        style={[
-          styles.cardShell,
-          shellStyle,
-          {
-            backgroundColor: visuals.shellBackgroundColor,
-            borderColor: visuals.shellBorderColor,
-            shadowColor: visuals.shellShadowColor,
-          },
-        ]}>
-        <View
-          pointerEvents="none"
-          style={[styles.cardInset, { backgroundColor: visuals.cardInsetColor }]}
-        />
+
+      <Animated.View style={[styles.cardStage, shellStyle]}>
         <Animated.View
-          pointerEvents="none"
           style={[
-            styles.chargeGlowBorder,
-            chargeGlowStyle,
+            styles.cardFaceShell,
+            ELEVATION_STYLES.hero,
+            frontFaceStyle,
             {
-              borderColor: visuals.chargeBorderColor,
-              shadowColor: visuals.chargeShadowColor,
+              backgroundColor: '#FFFFFF',
+              borderColor: visuals.shellBorderColor,
             },
-          ]}
-        />
-        <LinearGradient
-          colors={visuals.shellToneColors}
-          end={{ x: 1, y: 1 }}
-          pointerEvents="none"
-          start={{ x: 0, y: 0 }}
-          style={styles.cardToneBackground}
-        />
-        <View
-          pointerEvents="none"
-          style={[styles.cardFrameOuter, { borderColor: visuals.shellFrameOuterColor }]}
-        />
-        <View
-          pointerEvents="none"
-          style={[styles.cardFrameInner, { borderColor: visuals.shellFrameInnerColor }]}
-        />
-        <RevealCardChargeFrame chargeProgress={chargeProgress} visuals={visuals} />
-
-        <LinearGradient
-          colors={visuals.glossColors}
-          end={{ x: 0.5, y: 1 }}
-          pointerEvents="none"
-          start={{ x: 0.5, y: 0 }}
-          style={styles.cardGloss}
-        />
-
-        <View style={styles.flipCanvas}>
+          ]}>
+          <View
+            pointerEvents="none"
+            style={[styles.cardInset, { backgroundColor: '#F8FAFF' }]}
+          />
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.chargeGlowBorder,
+              chargeGlowStyle,
+              { borderColor: visuals.chargeBorderColor },
+            ]}
+          />
+          <View
+            pointerEvents="none"
+            style={[styles.cardFrameOuter, { borderColor: visuals.shellFrameOuterColor }]}
+          />
+          <RevealCardChargeFrame chargeProgress={chargeProgress} visuals={visuals} />
           <RevealCardFrontFace
             chargeProgress={chargeProgress}
             copy={copy}
-            frontFaceStyle={frontFaceStyle}
+            frontFaceStyle={styles.faceInnerReset}
             player={player}
             theme={theme}
             visuals={visuals}
             waitingLabel={copy.waitingLabel}
           />
+        </Animated.View>
 
+        <Animated.View
+          style={[
+            styles.cardFaceShell,
+            ELEVATION_STYLES.hero,
+            backFaceStyle,
+            {
+              backgroundColor: visuals.shellBackgroundColor,
+              borderColor: visuals.shellBorderColor,
+            },
+          ]}>
+          <LinearGradient
+            colors={visuals.shellToneColors}
+            end={{ x: 1, y: 1 }}
+            pointerEvents="none"
+            start={{ x: 0, y: 0 }}
+            style={styles.cardToneBackground}
+          />
+          <View
+            pointerEvents="none"
+            style={[styles.cardFrameOuter, { borderColor: visuals.shellFrameOuterColor }]}
+          />
+          <View
+            pointerEvents="none"
+            style={[styles.cardFrameInner, { borderColor: visuals.shellFrameInnerColor }]}
+          />
+          <Animated.View pointerEvents="none" style={[styles.foilBandWrap, foilStyle]}>
+            <LinearGradient
+              colors={visuals.foilColors}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.foilBand}
+            />
+          </Animated.View>
           <RevealCardBackFace
-            backFaceStyle={backFaceStyle}
+            backFaceStyle={styles.faceInnerReset}
             content={content}
             copy={copy}
             player={player}
             theme={theme}
             visuals={visuals}
           />
-        </View>
+        </Animated.View>
       </Animated.View>
-    </Pressable>
+    </View>
   );
 }
