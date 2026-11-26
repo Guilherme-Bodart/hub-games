@@ -70,7 +70,7 @@ export function GamePhaseTransitionOverlay({ phaseLabel }: GamePhaseTransitionOv
 
 const styles = StyleSheet.create({
   root: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 26,
     alignItems: 'center',
     justifyContent: 'center',

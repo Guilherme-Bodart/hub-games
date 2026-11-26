@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 export const secretPhaseStyles = StyleSheet.create({
   screenBackdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     overflow: 'hidden',
   },
   phaseHeader: {
@@ -120,7 +120,7 @@ export const secretPhaseStyles = StyleSheet.create({
     overflow: 'visible',
   },
   scaleTrackGradient: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 999,
   },
   scaleDotHalo: {

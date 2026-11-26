@@ -11,7 +11,7 @@ export const revealCardStyles = StyleSheet.create({
     marginBottom: 8,
   },
   cardGloss: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 28,
   },
   cardBackGlow: {
@@ -69,11 +69,11 @@ export const revealCardStyles = StyleSheet.create({
     borderWidth: 1.2,
   },
   cardToneBackground: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 28,
   },
   chargeGlowBorder: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderWidth: 2.8,
     borderRadius: 28,
     shadowOffset: { width: 0, height: 0 },
@@ -101,7 +101,7 @@ export const revealCardStyles = StyleSheet.create({
     gap: 10,
   },
   flipFace: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backfaceVisibility: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
@@ -174,7 +174,7 @@ export const revealCardStyles = StyleSheet.create({
     borderRadius: 999,
   },
   paperGradient: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   paperTextureLineBottom: {
     position: 'absolute',

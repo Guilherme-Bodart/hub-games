@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
   card: {

@@ -182,10 +182,10 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   secretRevealCardGlow: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   secretRevealFrame: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     top: 10,
     right: 10,
     bottom: 10,
@@ -445,7 +445,7 @@ export const styles = StyleSheet.create({
     backfaceVisibility: 'hidden',
   },
   flipBackFace: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   cornerBadgeWrap: {
     position: 'absolute',

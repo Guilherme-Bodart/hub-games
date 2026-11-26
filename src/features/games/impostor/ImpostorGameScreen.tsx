@@ -1875,7 +1875,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   promptFogLayer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   promptHeader: {
     flexDirection: 'row',
@@ -2028,7 +2028,7 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   votePrivacyOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderWidth: 1,
     borderRadius: 12,
     alignItems: 'center',

@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   innerInsetHighlight: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 16,
     borderWidth: 1.2,
     borderColor: 'rgba(255,255,255,0.72)',

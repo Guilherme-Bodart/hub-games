@@ -67,7 +67,14 @@ export function useLobbyNavigationGuard({
       return;
     }
 
-    const unsubscribe = navigation.addListener('beforeRemove', (event) => {
+    const navWithBeforeRemove = navigation as unknown as {
+      addListener: (
+        type: 'beforeRemove',
+        callback: (event: { preventDefault: () => void }) => void
+      ) => () => void;
+    };
+
+    const unsubscribe = navWithBeforeRemove.addListener('beforeRemove', (event) => {
       if (allowLeaveRef.current) {
         return;
       }

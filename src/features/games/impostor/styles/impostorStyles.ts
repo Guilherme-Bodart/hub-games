@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   screenBackdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     overflow: 'hidden',
   },
 });

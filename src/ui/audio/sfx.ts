@@ -1,4 +1,9 @@
-import { Audio, AVPlaybackSource } from 'expo-av';
+import {
+  createAudioPlayer,
+  setAudioModeAsync,
+  type AudioPlayer,
+  type AudioSource,
+} from 'expo-audio';
 
 export const SFX_SOURCES = {
   sfx_reveal: require('../../../assets/sfx/sfx_reveal.wav'),
@@ -9,11 +14,11 @@ export const SFX_SOURCES = {
   sfx_reconnect: require('../../../assets/sfx/sfx_reconnect.wav'),
   sfx_confirm: require('../../../assets/sfx/sfx_confirm.wav'),
   sfx_error: require('../../../assets/sfx/sfx_error.wav'),
-} as const satisfies Record<string, AVPlaybackSource>;
+} as const satisfies Record<string, AudioSource>;
 
 export type SfxCueId = keyof typeof SFX_SOURCES;
 
-const soundCache = new Map<SfxCueId, Audio.Sound>();
+const soundCache = new Map<SfxCueId, AudioPlayer>();
 let audioConfigured = false;
 
 const configureAudioMode = async (): Promise<void> => {
@@ -22,12 +27,11 @@ const configureAudioMode = async (): Promise<void> => {
   }
 
   try {
-    await Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-      playsInSilentModeIOS: true,
-      shouldDuckAndroid: true,
-      playThroughEarpieceAndroid: false,
-      staysActiveInBackground: false,
+    await setAudioModeAsync({
+      allowsRecording: false,
+      playsInSilentMode: true,
+      interruptionMode: 'duckOthers',
+      shouldPlayInBackground: false,
     });
   } catch {
     // If audio mode fails we still let the app run without SFX.
@@ -36,7 +40,7 @@ const configureAudioMode = async (): Promise<void> => {
   audioConfigured = true;
 };
 
-const ensureSoundLoaded = async (cueId: SfxCueId): Promise<Audio.Sound | null> => {
+const ensureSoundLoaded = async (cueId: SfxCueId): Promise<AudioPlayer | null> => {
   const cached = soundCache.get(cueId);
 
   if (cached) {
@@ -45,13 +49,12 @@ const ensureSoundLoaded = async (cueId: SfxCueId): Promise<Audio.Sound | null> =
 
   try {
     await configureAudioMode();
-    const { sound } = await Audio.Sound.createAsync(SFX_SOURCES[cueId], {
-      shouldPlay: false,
-      volume: 0.85,
-      progressUpdateIntervalMillis: 500,
+    const player = createAudioPlayer(SFX_SOURCES[cueId], {
+      updateInterval: 500,
     });
-    soundCache.set(cueId, sound);
-    return sound;
+    player.volume = 0.85;
+    soundCache.set(cueId, player);
+    return player;
   } catch {
     return null;
   }
@@ -65,34 +68,30 @@ export const playSfxCue = async (
   cueId: SfxCueId,
   options?: { volume?: number }
 ): Promise<void> => {
-  const sound = await ensureSoundLoaded(cueId);
+  const player = await ensureSoundLoaded(cueId);
 
-  if (!sound) {
+  if (!player) {
     return;
   }
 
   try {
-    await sound.setStatusAsync({
-      positionMillis: 0,
-      shouldPlay: true,
-      volume: options?.volume ?? 0.85,
-    });
+    player.volume = options?.volume ?? 0.85;
+    await player.seekTo(0);
+    player.play();
   } catch {
     // Playback errors should not break gameplay flows.
   }
 };
 
 export const unloadAllSfx = async (): Promise<void> => {
-  const sounds = Array.from(soundCache.values());
+  const players = Array.from(soundCache.values());
   soundCache.clear();
 
-  await Promise.all(
-    sounds.map(async (sound) => {
-      try {
-        await sound.unloadAsync();
-      } catch {
-        // Ignore unload errors during shutdown.
-      }
-    })
-  );
+  for (const player of players) {
+    try {
+      player.remove();
+    } catch {
+      // Ignore unload errors during shutdown.
+    }
+  }
 };

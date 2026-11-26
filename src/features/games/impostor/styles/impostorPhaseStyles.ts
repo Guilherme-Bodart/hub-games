@@ -226,7 +226,7 @@ export const impostorPhaseStyles = StyleSheet.create({
     width: '100%',
   },
   votePrivacyOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderWidth: 1,
     borderRadius: 24,
     alignItems: 'center',

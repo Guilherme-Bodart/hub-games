@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   topGloss: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   titleWrap: {
     flex: 1,

@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   lobbyMilkOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(255,255,255,0.6)',
   },
   scrollContent: {

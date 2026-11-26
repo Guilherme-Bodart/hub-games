@@ -77,11 +77,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backdropLayer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     overflow: 'hidden',
   },
   backdropBase: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   backdropOrbTop: {
     position: 'absolute',

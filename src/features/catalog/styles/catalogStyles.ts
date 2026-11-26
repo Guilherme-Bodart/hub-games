@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   backgroundMilkOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
   cardsContent: {
@@ -147,10 +147,10 @@ export const styles = StyleSheet.create({
     elevation: 8,
   },
   gameTileGlow: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   gameTileCoverFrame: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     overflow: 'hidden',
     borderRadius: 30,
   },
@@ -159,7 +159,7 @@ export const styles = StyleSheet.create({
     height: '100%',
   },
   gameTileImageOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 30,
     backgroundColor: 'rgba(20,24,52,0.14)',
   },
